@@ -1,16 +1,15 @@
 package org.ngmon.structlog;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
-public class VarContextProviderVars {
+public class ProviderVariables {
 
     private TypeMirror typeMirror;
-    private List<Element> variables;
+    private List<Variable> variables;
 
 
-    public VarContextProviderVars(final TypeMirror typeMirror, final List<Element> variables) {
+    public ProviderVariables(final TypeMirror typeMirror, final List<Variable> variables) {
         this.typeMirror = typeMirror;
         this.variables = variables;
     }
@@ -19,13 +18,13 @@ public class VarContextProviderVars {
         return typeMirror;
     }
 
-    public List<Element> getVariables() {
+    public List<Variable> getVariables() {
         return variables;
     }
 
     @Override
     public String toString() {
-        return "VarContextProviderVars{" +
+        return "ProviderVariables{" +
                 "typeMirror=" + typeMirror +
                 ", variables=" + variables +
                 '}';

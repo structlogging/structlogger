@@ -17,6 +17,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.Set;
 public class LogInvocationProcessor extends AbstractProcessor {
 
     private final Set<TypeMirror> varContextProviders = new HashSet<>();
-    private final HashMap<TypeMirror, VarContextProviderVars> varsHashMap = new HashMap<>();
+    private final HashMap<TypeMirror, ProviderVariables> varsHashMap = new HashMap<>();
 
     private Trees trees;
 
@@ -51,14 +52,15 @@ public class LogInvocationProcessor extends AbstractProcessor {
             final TypeMirror typeMirror = element.asType();
 
             varContextProviders.add(typeMirror);
-            final List<Element> elements = new ArrayList<>();
+            final List<Variable> elements = new ArrayList<>();
             for (Element enclosed : element.getEnclosedElements()) {
-                Var annotation = enclosed.getAnnotation(Var.class);
+                final Var annotation = enclosed.getAnnotation(Var.class);
                 if (annotation != null) {
-                    elements.add(enclosed);
+                    final ExecutableType executableType = (ExecutableType) enclosed.asType();
+                    elements.add(new Variable(enclosed.getSimpleName(), executableType.getParameterTypes().get(0)));
                 }
             }
-            varsHashMap.put(typeMirror, new VarContextProviderVars(typeMirror, elements));
+            varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
         }
 
         for (Element element : roundEnv.getRootElements()) {
