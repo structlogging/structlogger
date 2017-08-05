@@ -2,11 +2,16 @@ package org.ngmon.structlog;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionStatementTree;
-import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePathScanner;
+import com.sun.tools.javac.model.JavacElements;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.TreeMaker;
+import com.sun.tools.javac.util.Context;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
@@ -15,42 +20,42 @@ import java.util.Stack;
 
 
 public class LogInvocationScanner extends TreePathScanner<Object, CompilationUnitTree> {
-    HashMap<TypeMirror, VarContextProviderVars> varsHashMap;
-    Map<Name, TypeMirror> fields;
+    private final HashMap<TypeMirror, VarContextProviderVars> varsHashMap;
+    private final Map<Name, TypeMirror> fields;
+    private final TreeMaker treeMaker;
+    private final JavacElements elementUtils;
 
 
-    public LogInvocationScanner(HashMap<TypeMirror, VarContextProviderVars> varsHashMap, Map<Name, TypeMirror> fields) {
+    public LogInvocationScanner(final HashMap<TypeMirror, VarContextProviderVars> varsHashMap,
+                                final Map<Name, TypeMirror> fields,
+                                final ProcessingEnvironment processingEnvironment) {
+        final Context context = ((JavacProcessingEnvironment) processingEnvironment).getContext();
+
         this.varsHashMap = varsHashMap;
         this.fields = fields;
-    }
-
-    @Override
-    public Object visitMethodInvocation(final MethodInvocationTree node, final CompilationUnitTree compilationUnitTree) {
-
-        return super.visitMethodInvocation(node, compilationUnitTree);
-    }
-
-
-    @Override
-    public Object visitMemberSelect(final MemberSelectTree node, final CompilationUnitTree compilationUnitTree) {
-        return super.visitMemberSelect(node, compilationUnitTree);
+        this.treeMaker = TreeMaker.instance(context);
+        this.elementUtils = (JavacElements) processingEnvironment.getElementUtils();
     }
 
     @Override
     public Object visitExpressionStatement(final ExpressionStatementTree node, final CompilationUnitTree compilationUnitTree) {
-        System.out.println("--------------------------------------------");
 
-        System.out.println("EXPRESSION: \n" + node.getExpression());
+        final JCTree.JCExpressionStatement statement = (JCTree.JCExpressionStatement)getCurrentPath().getLeaf();
 
-        TreePathScanner scanner = new TreePathScanner<Object, CompilationUnitTree>() {
-            Stack<Name> stack = new Stack<>();
+        final TreePathScanner scanner = new TreePathScanner<Object, CompilationUnitTree>() {
+            Stack<MethodAndParameter> stack = new Stack<>();
 
             @Override
             public Object visitMethodInvocation(final MethodInvocationTree node, final CompilationUnitTree o) {
                 if (node.getMethodSelect() instanceof JCTree.JCFieldAccess) {
                     try {
-                        stack.add(((JCTree.JCFieldAccess) node.getMethodSelect()).name);
-                        handle((JCTree.JCFieldAccess) node.getMethodSelect(), node, stack);
+                        final JCTree.JCFieldAccess methodSelect = (JCTree.JCFieldAccess) node.getMethodSelect();
+                        ExpressionTree parameter = null;
+                        if(!node.getArguments().isEmpty()){
+                            parameter = node.getArguments().get(0);
+                        }
+                        stack.add(new MethodAndParameter(methodSelect.name, parameter));
+                        handle(methodSelect, stack, statement);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -63,29 +68,35 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
 
         scanner.scan(getCurrentPath(), compilationUnitTree);
 
-
-        System.out.println("--------------------------------------------");
-
         return super.visitExpressionStatement(node, compilationUnitTree);
     }
 
-    private void handle(final JCTree.JCFieldAccess fieldAccess, final MethodInvocationTree node, final Stack<Name> stack) throws Exception {
+    private void handle(final JCTree.JCFieldAccess fieldAccess, final Stack<MethodAndParameter> stack, final JCTree.JCExpressionStatement statement) throws Exception {
         if (fieldAccess.getExpression() instanceof JCTree.JCFieldAccess) {
-            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), node, stack);
+            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, statement);
         } else if (fieldAccess.getExpression() instanceof JCTree.JCIdent) {
             final JCTree.JCIdent ident = (JCTree.JCIdent) fieldAccess.getExpression();
             final Name name = ident.getName();
             if(fields.containsKey(name)) {
-                final TypeMirror typeMirror = fields.get(name);
-                final VarContextProviderVars varContextProviderVars = varsHashMap.get(typeMirror);
-                System.out.print("Stack: ");
-                while (!stack.empty()) {
-                    Name pop = stack.pop();
-                    System.out.print(pop + " ");
-                }
-                System.out.println("\nNAME:" + name + "  Provider:" + typeMirror + " Vars:" + varContextProviderVars);
+                printRecord(stack, statement, name);
             }
         }
+    }
+
+    private void printRecord(final Stack<MethodAndParameter> stack, final JCTree.JCExpressionStatement statement, final Name name) {
+        System.out.println("--------------------------------------------");
+        final TypeMirror typeMirror = fields.get(name);
+        final VarContextProviderVars varContextProviderVars = varsHashMap.get(typeMirror);
+        System.out.println("EXPRESSION: " + statement);
+        System.out.print("STACK: ");
+        while (!stack.empty()) {
+            final MethodAndParameter top = stack.pop();
+            System.out.print(top.getMethodName() + "(" + top.getParameter() + ") ");
+        }
+        System.out.println("\nNAME: " + name);
+        System.out.println("PROVIDER: " + typeMirror);
+        System.out.println("PROVIDER VARS: " + varContextProviderVars);
+        System.out.println("--------------------------------------------");
     }
 
 }

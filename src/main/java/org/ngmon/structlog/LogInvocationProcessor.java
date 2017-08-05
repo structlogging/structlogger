@@ -83,7 +83,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
 
             final TreePath path = trees.getPath(element);
-            new LogInvocationScanner(varsHashMap, fields).scan(path, path.getCompilationUnit());
+            new LogInvocationScanner(varsHashMap, fields, processingEnv).scan(path, path.getCompilationUnit());
         }
 
 
