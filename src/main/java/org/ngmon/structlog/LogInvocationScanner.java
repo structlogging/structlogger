@@ -26,6 +26,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
     private final Map<Name, TypeMirror> fields;
     private final TreeMaker treeMaker;
     private final JavacElements elementUtils;
+    private final POJOService pojoService;
 
 
     public LogInvocationScanner(final HashMap<TypeMirror, ProviderVariables> varsHashMap,
@@ -37,6 +38,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         this.fields = fields;
         this.treeMaker = TreeMaker.instance(context);
         this.elementUtils = (JavacElements) processingEnvironment.getElementUtils();
+        this.pojoService = new POJOService(processingEnvironment.getFiler());
     }
 
     @Override
@@ -80,9 +82,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
             final JCTree.JCIdent ident = (JCTree.JCIdent) fieldAccess.getExpression();
             final Name name = ident.getName();
             if (fields.containsKey(name)) {
-                printRecord(stack, node, statement, name);
+//                printRecord(stack, node, statement, name);
 
-//                handleStructLogExpression(stack, node, name);
+                handleStructLogExpression(stack, node, name);
             }
         }
     }
@@ -129,7 +131,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
 
             if (stack.empty() && !top.getMethodName().contentEquals("log")) {
                 // WARN and skip
+                return;
             }
+
+            pojoService.createPojo(literal, level, usedVariables);
 
         }
     }
