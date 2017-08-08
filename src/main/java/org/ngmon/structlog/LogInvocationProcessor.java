@@ -62,7 +62,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
             if (!element.getKind().isInterface()) {
-                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s class should be interface", element));
+                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s should be interface", element));
                 continue;
             }
             final TypeMirror typeMirror = element.asType();
@@ -74,7 +74,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 }
             }
             if (!extendsVariableContext) {
-                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s class should be extending %s", element, VariableContext.class.getName()));
+                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s should be extending %s", element, VariableContext.class.getName()));
                 continue;
             }
             varContextProviders.add(typeMirror);
@@ -87,7 +87,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 }
             }
             if (elements.isEmpty()) {
-                messager.printMessage(Diagnostic.Kind.WARNING, format("%s class has no @Var annotated methods", element));
+                messager.printMessage(Diagnostic.Kind.WARNING, format("%s has no @Var annotated methods", element));
             }
             varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
         }
