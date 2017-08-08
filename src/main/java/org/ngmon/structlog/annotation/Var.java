@@ -6,5 +6,5 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = {ElementType.LOCAL_VARIABLE, ElementType.METHOD})
+@Target(value = {ElementType.METHOD})
 public @interface Var {}
