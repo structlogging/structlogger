@@ -2,7 +2,7 @@ package org.ngmon.structlog;
 
 import com.sun.source.tree.ExpressionTree;
 
-public class VariableAndValue {
+public class VariableAndValue implements Comparable<VariableAndValue> {
 
     private final Variable variable;
     private final ExpressionTree value;
@@ -18,6 +18,11 @@ public class VariableAndValue {
 
     public ExpressionTree getValue() {
         return value;
+    }
+
+    @Override
+    public int compareTo(final VariableAndValue o) {
+        return this.variable.getName().toString().compareTo(o.getVariable().getName().toString());
     }
 
     @Override

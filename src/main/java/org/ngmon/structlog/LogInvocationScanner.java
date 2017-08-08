@@ -1,5 +1,7 @@
 package org.ngmon.structlog;
 
+import static org.ngmon.structlog.POJOService.PACKAGE_NAME;
+
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
@@ -10,15 +12,17 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Names;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 
 
 public class LogInvocationScanner extends TreePathScanner<Object, CompilationUnitTree> {
@@ -26,6 +30,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
     private final Map<Name, TypeMirror> fields;
     private final TreeMaker treeMaker;
     private final JavacElements elementUtils;
+    private final Names names;
     private final POJOService pojoService;
 
 
@@ -39,6 +44,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         this.treeMaker = TreeMaker.instance(context);
         this.elementUtils = (JavacElements) processingEnvironment.getElementUtils();
         this.pojoService = new POJOService(processingEnvironment.getFiler());
+        this.names = Names.instance(context);
     }
 
     @Override
@@ -84,13 +90,13 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
             if (fields.containsKey(name)) {
 //                printRecord(stack, node, statement, name);
 
-                handleStructLogExpression(stack, node, name);
+                handleStructLogExpression(stack, node, name, statement);
             }
         }
     }
 
-    private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name) {
-        final List<VariableAndValue> usedVariables = new ArrayList<>();
+    private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, JCTree.JCExpressionStatement statement) {
+        final SortedSet<VariableAndValue> usedVariables = new TreeSet<>();
         JCTree.JCLiteral literal = null;
         String level = null;
 
@@ -133,15 +139,43 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                 // WARN and skip
                 return;
             }
-
-            pojoService.createPojo(literal, level, usedVariables);
-
         }
+
+        final String className = pojoService.createPojo(literal, level, usedVariables);
+        replaceInCode(className, statement, usedVariables, literal, level);
+    }
+
+    private void replaceInCode(final String className, final JCTree.JCExpressionStatement statement, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+        final ListBuffer listBuffer = new ListBuffer();
+
+        listBuffer.add(treeMaker.Literal(level));
+        listBuffer.add(literal);
+        for(VariableAndValue variableAndValue : usedVariables){
+            listBuffer.add(variableAndValue.getValue());
+        }
+
+        final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(null, com.sun.tools.javac.util.List.nil(), treeMaker.Select(treeMaker.Ident(names.fromString(PACKAGE_NAME)), names.fromString(className)), listBuffer.toList(), null);
+        final JCTree.JCMethodInvocation apply = treeMaker.Apply(
+                com.sun.tools.javac.util.List.nil(),
+                treeMaker.Select(
+                        treeMaker.Select(
+                                treeMaker.Ident(
+                                        elementUtils.getName("System")
+                                ),
+                                elementUtils.getName("out")
+                        ),
+                        elementUtils.getName("println")
+                ),
+                com.sun.tools.javac.util.List.of(
+                        jcNewClass
+                )
+        );
+        statement.expr = apply;
     }
 
     private void printRecord(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final JCTree.JCExpressionStatement statement, final Name name) {
         System.out.println("--------------------------------------------");
-        final List<VariableAndValue> usedVariables = new ArrayList<>();
+        final SortedSet<VariableAndValue> usedVariables = new TreeSet<>();
         JCTree.JCLiteral literal = null;
         String level = null;
         final TypeMirror typeMirror = fields.get(name);
