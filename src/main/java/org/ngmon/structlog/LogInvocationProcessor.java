@@ -24,7 +24,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Trees trees;
     private Messager messager;
     private Elements elements;
-    private Types types;
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -53,7 +51,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         elements = processingEnv.getElementUtils();
-        types = processingEnv.getTypeUtils();
     }
 
     @Override

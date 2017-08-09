@@ -23,7 +23,6 @@ public class POJOService {
     }
 
     public String createPojo(final JCTree.JCLiteral literal,
-                           final String level,
                            final SortedSet<VariableAndValue> usedVariables) {
 
         final String eventName = "Event" + hash(literal.getValue().toString());
