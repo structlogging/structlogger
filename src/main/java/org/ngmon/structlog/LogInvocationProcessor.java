@@ -57,6 +57,14 @@ public class LogInvocationProcessor extends AbstractProcessor {
     public boolean process(final Set<? extends TypeElement> annotations,
                            final RoundEnvironment roundEnv) {
 
+        processVariableContextClasses(roundEnv);
+
+        processStructLogExpressions(roundEnv);
+
+        return false;
+    }
+
+    private void processVariableContextClasses(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
             if (!element.getKind().isInterface()) {
                 messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s should be interface", element));
@@ -88,7 +96,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
             varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
         }
+    }
 
+    private void processStructLogExpressions(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getRootElements()) {
             final Map<Name, TypeMirror> fields = new HashMap<>();
 
@@ -113,8 +123,5 @@ public class LogInvocationProcessor extends AbstractProcessor {
             final TreePath path = trees.getPath(element);
             new LogInvocationScanner(varsHashMap, fields, processingEnv).scan(path, path.getCompilationUnit());
         }
-
-
-        return false;
     }
 }
