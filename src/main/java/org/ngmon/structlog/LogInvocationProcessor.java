@@ -67,8 +67,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private void processVariableContextClasses(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
             if (!element.getKind().isInterface()) {
-                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s should be interface", element));
-                continue;
+                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be interface", element));
+                return;
             }
             final TypeMirror typeMirror = element.asType();
             final TypeElement typeElement = (TypeElement) element;
@@ -79,8 +79,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 }
             }
             if (!extendsVariableContext) {
-                messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format("%s should be extending %s", element, VariableContext.class.getName()));
-                continue;
+                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()));
+                return;
             }
             varContextProviders.add(typeMirror);
             final List<Variable> elements = new ArrayList<>();
@@ -88,7 +88,24 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 final Var annotation = enclosed.getAnnotation(Var.class);
                 if (annotation != null) {
                     final ExecutableType executableType = (ExecutableType) enclosed.asType();
-                    elements.add(new Variable(enclosed.getSimpleName(), executableType.getParameterTypes().get(0)));
+                    final Name simpleName = enclosed.getSimpleName();
+                    if (simpleName.contentEquals("log") ||
+                            simpleName.contentEquals("info") ||
+                            simpleName.contentEquals("error") ||
+                            simpleName.contentEquals("warn") ||
+                            simpleName.contentEquals("debug")) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName));
+                        return;
+                    }
+                    if (!executableType.getReturnType().equals(typeMirror)) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have return type %s", element, simpleName, element));
+                        return;
+                    }
+                    if (executableType.getParameterTypes().size() != 1) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName));
+                        return;
+                    }
+                    elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
                 }
             }
             if (elements.isEmpty()) {
