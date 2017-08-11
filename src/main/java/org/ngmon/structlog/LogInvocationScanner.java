@@ -3,16 +3,20 @@ package org.ngmon.structlog;
 import static java.lang.String.format;
 import static org.ngmon.structlog.POJOService.PACKAGE_NAME;
 
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePathScanner;
+import com.sun.tools.javac.code.Flags;
+import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
 
@@ -50,6 +54,17 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         this.pojoService = new POJOService(processingEnvironment.getFiler());
         this.names = Names.instance(context);
         this.messager = processingEnvironment.getMessager();
+    }
+
+    @Override
+    public Object visitClass(final ClassTree node, final CompilationUnitTree compilationUnitTree) {
+        final JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) getCurrentPath().getLeaf();
+
+        generateLoggerField(node, classDecl);
+
+        generateEventLoggerField(classDecl);
+
+        return super.visitClass(node, compilationUnitTree);
     }
 
     @Override
@@ -111,24 +126,21 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                 final Name topMethodName = top.getMethodName();
                 if (variable.getName().equals(topMethodName)) {
                     usedVariables.add(new VariableAndValue(variable, top.getParameter()));
-                }
-                else if (topMethodName.contentEquals("info")) {
+                } else if (topMethodName.contentEquals("info")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "INFO";
-                }
-                else if (topMethodName.contentEquals("error")) {
+                } else if (topMethodName.contentEquals("error")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "ERROR";
-                }
-                else if (topMethodName.contentEquals("debug")) {
+                } else if (topMethodName.contentEquals("debug")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
                         return;
@@ -160,19 +172,58 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         final JCTree.JCMethodInvocation apply = treeMaker.Apply(
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(
-                        treeMaker.Select(
-                                treeMaker.Ident(
-                                        elementUtils.getName("System")
-                                ),
-                                elementUtils.getName("out")
+                        treeMaker.Ident(
+                                elementUtils.getName("_eventLogger")
                         ),
-                        elementUtils.getName("println")
+                        elementUtils.getName(level.toLowerCase())
                 ),
                 com.sun.tools.javac.util.List.of(
                         jcNewClass
                 )
         );
         statement.expr = apply;
+    }
+
+    private void generateEventLoggerField(final JCTree.JCClassDecl classDecl) {
+        Symbol.ClassSymbol typeElement = elementUtils.getTypeElement("org.ngmon.structlog.EventLogger");
+
+        final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(
+                null,
+                List.nil(),
+                treeMaker.Select(
+                        treeMaker.Ident(names.fromString("org.ngmon.structlog")), names.fromString("EventLogger")
+                ),
+                List.of(
+                        treeMaker.Ident(names.fromString("_logger"))
+                ),
+                null);
+
+        JCTree.JCVariableDecl logger = treeMaker.VarDef(new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName("_eventLogger"), typeElement.asType(), null),
+                jcNewClass);
+
+        classDecl.defs = classDecl.defs.append(logger);
+    }
+
+    private void generateLoggerField(final ClassTree node, final JCTree.JCClassDecl classDecl) {
+        Symbol.ClassSymbol typeElement = elementUtils.getTypeElement("org.slf4j.Logger");
+
+        JCTree.JCVariableDecl logger = treeMaker.VarDef(new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName("_logger"), typeElement.asType(), null),
+                treeMaker.Apply(
+                        com.sun.tools.javac.util.List.nil(),
+                        treeMaker.Select(
+                                treeMaker.Type(
+                                        elementUtils.getTypeElement("org.slf4j.LoggerFactory").type
+                                ),
+                                elementUtils.getName("getLogger")
+                        ),
+                        com.sun.tools.javac.util.List.of(
+                                treeMaker.Literal(
+                                        node.getSimpleName().toString()
+                                )
+                        )
+                ));
+
+        classDecl.defs = classDecl.defs.append(logger);
     }
 
 }
