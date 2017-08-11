@@ -1,5 +1,8 @@
 package org.ngmon.structlog;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -36,6 +39,17 @@ public class POJOService {
         for(VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));
         }
+
+        classBuilder.addAnnotation(AnnotationSpec.builder(JsonTypeInfo.class)
+                .addMember("include",
+                        CodeBlock.builder()
+                                .add("JsonTypeInfo.As.WRAPPER_OBJECT")
+                                .build())
+                .addMember("use",
+                        CodeBlock.builder()
+                                .add("JsonTypeInfo.Id.NAME")
+                                .build())
+                .build());
 
         final TypeSpec build = classBuilder.addMethod(constructorBuilder.build()).build();
 

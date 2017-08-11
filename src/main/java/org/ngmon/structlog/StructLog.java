@@ -8,6 +8,8 @@ public interface StructLog<T extends VariableContext> {
 
     T error(String message);
 
+    T warn(String message);
+
     static <T extends VariableContext> StructLog<T> instance() {
         return null;
     }
