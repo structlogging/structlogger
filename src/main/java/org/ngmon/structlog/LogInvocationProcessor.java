@@ -60,7 +60,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Messager messager;
     private Elements elements;
 
-    private final MyTaskLister listener = new MyTaskLister();
+    private final SchemaGenerator listener = new SchemaGenerator();
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -91,12 +91,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
             final TypeMirror typeMirror = element.asType();
             final TypeElement typeElement = (TypeElement) element;
-            boolean extendsVariableContext = false;
-            for (TypeMirror extendingInterfaces : typeElement.getInterfaces()) {
-                if (extendingInterfaces.equals(elements.getTypeElement(VariableContext.class.getCanonicalName()).asType())) {
-                    extendsVariableContext = true;
-                }
-            }
+            boolean extendsVariableContext = extendsVariableContext(typeElement);
             if (!extendsVariableContext) {
                 messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()));
                 return;
@@ -112,7 +107,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             simpleName.contentEquals("info") ||
                             simpleName.contentEquals("error") ||
                             simpleName.contentEquals("warn") ||
-                            simpleName.contentEquals("debug")) {
+                            simpleName.contentEquals("debug") ||
+                            simpleName.contentEquals("message") ||
+                            simpleName.contentEquals("level")) {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName));
                         return;
                     }
@@ -132,6 +129,16 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
             varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
         }
+    }
+
+    private boolean extendsVariableContext(final TypeElement typeElement) {
+        boolean extendsVariableContext = false;
+        for (TypeMirror extendingInterfaces : typeElement.getInterfaces()) {
+            if (extendingInterfaces.equals(elements.getTypeElement(VariableContext.class.getCanonicalName()).asType())) {
+                extendsVariableContext = true;
+            }
+        }
+        return extendsVariableContext;
     }
 
     private void processStructLogExpressions(final RoundEnvironment roundEnv) {
@@ -161,7 +168,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         }
     }
 
-    private final class MyTaskLister implements TaskListener{
+    private final class SchemaGenerator implements TaskListener {
         @Override
         public void started(final TaskEvent e) {
 
@@ -175,7 +182,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
 
             final Iterator<GeneratedClassInfo> iterator = generatedClassesInfo.iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 final GeneratedClassInfo generatedGeneratedClassInfo = iterator.next();
                 try {
                     final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualified());
