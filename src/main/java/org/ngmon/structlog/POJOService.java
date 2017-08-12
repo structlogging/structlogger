@@ -17,7 +17,7 @@ import java.util.SortedSet;
 
 public class POJOService {
 
-    static final String PACKAGE_NAME = "compilerproject.generated";
+    static final String PACKAGE_NAME = "structlogger.generated";
 
     private final Filer filer;
 

@@ -2,7 +2,13 @@ package org.ngmon.structlog;
 
 import static java.lang.String.format;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.google.auto.service.AutoService;
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.TaskEvent;
+import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import org.ngmon.structlog.annotation.Var;
@@ -25,9 +31,14 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,16 +49,24 @@ import java.util.Set;
 @SupportedAnnotationTypes("*")
 public class LogInvocationProcessor extends AbstractProcessor {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(objectMapper);
+
     private final Set<TypeMirror> varContextProviders = new HashSet<>();
     private final HashMap<TypeMirror, ProviderVariables> varsHashMap = new HashMap<>();
+    private final Set<GeneratedClassInfo> generatedClassesInfo = new HashSet<>();
 
     private Trees trees;
     private Messager messager;
     private Elements elements;
 
+    private final MyTaskLister listener = new MyTaskLister();
+
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        JavacTask.instance(processingEnv).addTaskListener(listener);
+
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         elements = processingEnv.getElementUtils();
@@ -138,7 +157,50 @@ public class LogInvocationProcessor extends AbstractProcessor {
             }
 
             final TreePath path = trees.getPath(element);
-            new LogInvocationScanner(varsHashMap, fields, processingEnv).scan(path, path.getCompilationUnit());
+            new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, path.getCompilationUnit());
+        }
+    }
+
+    private final class MyTaskLister implements TaskListener{
+        @Override
+        public void started(final TaskEvent e) {
+
+        }
+
+        @Override
+        public void finished(final TaskEvent e) {
+
+            if (e.getKind() != TaskEvent.Kind.GENERATE) {
+                return;
+            }
+
+            final Iterator<GeneratedClassInfo> iterator = generatedClassesInfo.iterator();
+            while(iterator.hasNext()) {
+                final GeneratedClassInfo generatedGeneratedClassInfo = iterator.next();
+                try {
+                    final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualified());
+                    final JsonSchema schema = schemaGen.generateSchema(clazz);
+                    schema.set$schema("http://json-schema.org/draft-03/schema#");
+                    schema.setDescription(generatedGeneratedClassInfo.getDescription());
+                    schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getSimple());
+                    iterator.remove();
+                    createSchemaFile("events", generatedGeneratedClassInfo.getSimple(), schema);
+                } catch (Exception e1) {
+                    //TODO
+                }
+            }
+        }
+    }
+
+    private void createSchemaFile(String namespace, String signature, JsonSchema schema) {
+        try {
+            String dir = "schemas/" + namespace.replace(".", "/") + "/";
+            Files.createDirectories(Paths.get(dir));
+            FileOutputStream out = new FileOutputStream(dir + signature + ".json");
+            out.write(this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(schema));
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

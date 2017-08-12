@@ -27,6 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -41,10 +42,12 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
     private final Names names;
     private final POJOService pojoService;
     private final Messager messager;
+    private final Set<GeneratedClassInfo> generatedClassesNames;
 
     public LogInvocationScanner(final HashMap<TypeMirror, ProviderVariables> varsHashMap,
                                 final Map<Name, TypeMirror> fields,
-                                final ProcessingEnvironment processingEnvironment) {
+                                final ProcessingEnvironment processingEnvironment,
+                                final Set<GeneratedClassInfo> generatedClassesNames) {
         final Context context = ((JavacProcessingEnvironment) processingEnvironment).getContext();
 
         this.varsHashMap = varsHashMap;
@@ -54,6 +57,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         this.pojoService = new POJOService(processingEnvironment.getFiler());
         this.names = Names.instance(context);
         this.messager = processingEnvironment.getMessager();
+        this.generatedClassesNames = generatedClassesNames;
     }
 
     @Override
@@ -163,6 +167,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
         }
 
         final String className = pojoService.createPojo(literal, usedVariables);
+        generatedClassesNames.add(new GeneratedClassInfo(PACKAGE_NAME + "." + className, className, (String) literal.getValue()));
         replaceInCode(className, statement, usedVariables, literal, level);
     }
 
