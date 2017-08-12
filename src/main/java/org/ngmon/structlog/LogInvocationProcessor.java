@@ -121,6 +121,10 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName));
                         return;
                     }
+                    if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method cannot be overloaded", element, simpleName));
+                        return;
+                    }
                     elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
                 }
             }
