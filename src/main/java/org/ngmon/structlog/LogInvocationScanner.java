@@ -77,6 +77,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
 
         final JCTree.JCExpressionStatement statement = (JCTree.JCExpressionStatement) getCurrentPath().getLeaf();
 
+        //TODO line, compilation unit neco s tim udelat
+        compilationUnitTree.getLineMap().getLineNumber(statement.pos);
+
         final TreePathScanner scanner = new TreePathScanner<Object, CompilationUnitTree>() {
             Stack<MethodAndParameter> stack = new Stack<>();
 

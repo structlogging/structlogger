@@ -60,12 +60,12 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Messager messager;
     private Elements elements;
 
-    private final SchemaGenerator listener = new SchemaGenerator();
+    private final SchemaGenerator schemaGenerator = new SchemaGenerator();
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        JavacTask.instance(processingEnv).addTaskListener(listener);
+        JavacTask.instance(processingEnv).addTaskListener(schemaGenerator);
 
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
@@ -86,14 +86,14 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private void processVariableContextClasses(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
             if (!element.getKind().isInterface()) {
-                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be interface", element));
+                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be interface", element), element);
                 return;
             }
             final TypeMirror typeMirror = element.asType();
             final TypeElement typeElement = (TypeElement) element;
             boolean extendsVariableContext = extendsVariableContext(typeElement);
             if (!extendsVariableContext) {
-                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()));
+                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()), element);
                 return;
             }
             varContextProviders.add(typeMirror);
@@ -110,26 +110,26 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             simpleName.contentEquals("debug") ||
                             simpleName.contentEquals("message") ||
                             simpleName.contentEquals("level")) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName), element);
                         return;
                     }
                     if (!executableType.getReturnType().equals(typeMirror)) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have return type %s", element, simpleName, element));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have return type %s", element, simpleName, element), element);
                         return;
                     }
                     if (executableType.getParameterTypes().size() != 1) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName), element);
                         return;
                     }
                     if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method cannot be overloaded", element, simpleName));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method cannot be overloaded", element, simpleName), element);
                         return;
                     }
                     elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
                 }
             }
             if (elements.isEmpty()) {
-                messager.printMessage(Diagnostic.Kind.WARNING, format("%s has no @Var annotated methods", element));
+                messager.printMessage(Diagnostic.Kind.WARNING, format("%s has no @Var annotated methods", element), element);
             }
             varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
         }
