@@ -3,6 +3,7 @@ package org.ngmon.structlog;
 import static java.lang.String.format;
 import static org.ngmon.structlog.POJOService.PACKAGE_NAME;
 
+import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionStatementTree;
@@ -166,14 +167,25 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
             }
         }
 
-        final String className = pojoService.createPojo(literal, usedVariables);
-        generatedClassesNames.add(new GeneratedClassInfo(PACKAGE_NAME + "." + className, className, (String) literal.getValue()));
+        final JavaFile javaFile = pojoService.createPojo(literal, usedVariables);
+        final String className = javaFile.typeSpec.name;
+        final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(PACKAGE_NAME + "." + className, className, (String) literal.getValue(), usedVariables);
+        for(GeneratedClassInfo info : generatedClassesNames) {
+            if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
+                    && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
+                    ) {
+                messager.printMessage(Diagnostic.Kind.ERROR, format("Statement %s generates different event structure for same event name", statement));
+                return;
+            }
+        }
+        generatedClassesNames.add(generatedClassInfo);
+
+        pojoService.writeJavaFile(javaFile);
         replaceInCode(className, statement, usedVariables, literal, level);
     }
 
     private void replaceInCode(final String className, final JCTree.JCExpressionStatement statement, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
-
         listBuffer.add(treeMaker.Literal(level));
         listBuffer.add(literal);
         for (VariableAndValue variableAndValue : usedVariables) {

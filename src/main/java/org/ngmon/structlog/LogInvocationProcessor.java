@@ -189,13 +189,13 @@ public class LogInvocationProcessor extends AbstractProcessor {
             while (iterator.hasNext()) {
                 final GeneratedClassInfo generatedGeneratedClassInfo = iterator.next();
                 try {
-                    final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualified());
+                    final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualifiedName());
                     final JsonSchema schema = schemaGen.generateSchema(clazz);
                     schema.set$schema("http://json-schema.org/draft-03/schema#");
                     schema.setDescription(generatedGeneratedClassInfo.getDescription());
-                    schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getSimple());
+                    schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getSimpleName());
                     iterator.remove();
-                    createSchemaFile("events", generatedGeneratedClassInfo.getSimple(), schema);
+                    createSchemaFile("events", generatedGeneratedClassInfo.getSimpleName(), schema);
                 } catch (Exception e1) {
                     //TODO
                 }

@@ -25,8 +25,8 @@ public class POJOService {
         this.filer = filer;
     }
 
-    public String createPojo(final JCTree.JCLiteral literal,
-                           final SortedSet<VariableAndValue> usedVariables) {
+    public JavaFile createPojo(final JCTree.JCLiteral literal,
+                               final SortedSet<VariableAndValue> usedVariables) {
 
         final String eventName = "Event" + hash(literal.getValue().toString());
 
@@ -36,7 +36,7 @@ public class POJOService {
         addPojoField(classBuilder, constructorBuilder, "level", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "message", TypeName.get(String.class));
 
-        for(VariableAndValue variableAndValue : usedVariables) {
+        for (VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));
         }
 
@@ -55,11 +55,14 @@ public class POJOService {
 
         final JavaFile javaFile = JavaFile.builder(PACKAGE_NAME, build).build();
 
+        return javaFile;
+    }
+
+    public void writeJavaFile(final JavaFile javaFile) {
         try {
             javaFile.writeTo(filer);
         } catch (Exception ignored) {
         }
-        return eventName;
     }
 
     private void addPojoField(final TypeSpec.Builder classBuilder,
