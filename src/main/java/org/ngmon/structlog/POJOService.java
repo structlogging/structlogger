@@ -35,6 +35,8 @@ public class POJOService {
 
         addPojoField(classBuilder, constructorBuilder, "level", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "message", TypeName.get(String.class));
+        addPojoField(classBuilder, constructorBuilder, "sourceFile", TypeName.get(String.class));
+        addPojoField(classBuilder, constructorBuilder, "lineNumber", TypeName.LONG);
 
         for (VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));

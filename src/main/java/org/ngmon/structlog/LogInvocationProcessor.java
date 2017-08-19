@@ -167,8 +167,10 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 }
             }
 
+            final TypeElement typeElement = (TypeElement) element;
             final TreePath path = trees.getPath(element);
-            new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, path.getCompilationUnit());
+
+            new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
         }
     }
 

@@ -5,7 +5,6 @@ import static org.ngmon.structlog.POJOService.PACKAGE_NAME;
 
 import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
@@ -34,7 +33,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 
-public class LogInvocationScanner extends TreePathScanner<Object, CompilationUnitTree> {
+public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
 
     private final HashMap<TypeMirror, ProviderVariables> varsHashMap;
     private final Map<Name, TypeMirror> fields;
@@ -62,7 +61,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
     }
 
     @Override
-    public Object visitClass(final ClassTree node, final CompilationUnitTree compilationUnitTree) {
+    public Object visitClass(final ClassTree node, final ScannerParams compilationUnitTree) {
         final JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) getCurrentPath().getLeaf();
 
         generateLoggerField(node, classDecl);
@@ -73,18 +72,19 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
     }
 
     @Override
-    public Object visitExpressionStatement(final ExpressionStatementTree node, final CompilationUnitTree compilationUnitTree) {
+    public Object visitExpressionStatement(final ExpressionStatementTree node, final ScannerParams scannerParams) {
 
         final JCTree.JCExpressionStatement statement = (JCTree.JCExpressionStatement) getCurrentPath().getLeaf();
 
-        //TODO line, compilation unit neco s tim udelat
-        compilationUnitTree.getLineMap().getLineNumber(statement.pos);
+        final StatementInfo statementInfo = new StatementInfo(scannerParams.getCompilationUnitTree().getLineMap().getLineNumber(statement.pos),
+                scannerParams.getTypeElement().getQualifiedName().toString(),
+                statement);
 
-        final TreePathScanner scanner = new TreePathScanner<Object, CompilationUnitTree>() {
+        final TreePathScanner scanner = new TreePathScanner<Object, ScannerParams>() {
             Stack<MethodAndParameter> stack = new Stack<>();
 
             @Override
-            public Object visitMethodInvocation(final MethodInvocationTree node, final CompilationUnitTree o) {
+            public Object visitMethodInvocation(final MethodInvocationTree node, final ScannerParams o) {
                 if (node.getMethodSelect() instanceof JCTree.JCFieldAccess) {
                     try {
                         final JCTree.JCFieldAccess methodSelect = (JCTree.JCFieldAccess) node.getMethodSelect();
@@ -93,7 +93,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                             parameter = node.getArguments().get(0);
                         }
                         stack.add(new MethodAndParameter(methodSelect.name, parameter));
-                        handle(methodSelect, stack, node, statement);
+                        handle(methodSelect, stack, node, statementInfo);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -104,24 +104,24 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
 
         };
 
-        scanner.scan(getCurrentPath(), compilationUnitTree);
+        scanner.scan(getCurrentPath(), scannerParams);
 
-        return super.visitExpressionStatement(node, compilationUnitTree);
+        return super.visitExpressionStatement(node, scannerParams);
     }
 
-    private void handle(final JCTree.JCFieldAccess fieldAccess, final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final JCTree.JCExpressionStatement statement) throws Exception {
+    private void handle(final JCTree.JCFieldAccess fieldAccess, final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final StatementInfo statementInfo) throws Exception {
         if (fieldAccess.getExpression() instanceof JCTree.JCFieldAccess) {
-            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, node, statement);
+            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, node, statementInfo);
         } else if (fieldAccess.getExpression() instanceof JCTree.JCIdent) {
             final JCTree.JCIdent ident = (JCTree.JCIdent) fieldAccess.getExpression();
             final Name name = ident.getName();
             if (fields.containsKey(name)) {
-                handleStructLogExpression(stack, node, name, statement);
+                handleStructLogExpression(stack, node, name, statementInfo);
             }
         }
     }
 
-    private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, JCTree.JCExpressionStatement statement) {
+    private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, final StatementInfo statementInfo) {
         final SortedSet<VariableAndValue> usedVariables = new TreeSet<>();
         JCTree.JCLiteral literal = null;
         String level = null;
@@ -136,28 +136,28 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                     usedVariables.add(new VariableAndValue(variable, top.getParameter()));
                 } else if (topMethodName.contentEquals("info")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "INFO";
                 } else if (topMethodName.contentEquals("error")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "ERROR";
                 } else if (topMethodName.contentEquals("debug")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "DEBUG";
                 } else if (topMethodName.contentEquals("warn")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statement));
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
@@ -165,7 +165,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                 }
             }
             if (stack.empty() && !top.getMethodName().contentEquals("log")) {
-                messager.printMessage(Diagnostic.Kind.ERROR, format("statement %s must be ended by calling log() method", statement));
+                messager.printMessage(Diagnostic.Kind.ERROR, format("statement %s must be ended by calling log() method", statementInfo.getStatement()));
                 return;
             }
         }
@@ -177,20 +177,22 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
             if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
                     && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
                     ) {
-                messager.printMessage(Diagnostic.Kind.ERROR, format("Statement %s generates different event structure for same event name", statement));
+                messager.printMessage(Diagnostic.Kind.ERROR, format("Statement %s generates different event structure for same event name", statementInfo.getStatement()));
                 return;
             }
         }
         generatedClassesNames.add(generatedClassInfo);
 
         pojoService.writeJavaFile(javaFile);
-        replaceInCode(className, statement, usedVariables, literal, level);
+        replaceInCode(className, statementInfo, usedVariables, literal, level);
     }
 
-    private void replaceInCode(final String className, final JCTree.JCExpressionStatement statement, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+    private void replaceInCode(final String className, final StatementInfo statementInfo, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
         listBuffer.add(treeMaker.Literal(level));
         listBuffer.add(literal);
+        listBuffer.add(treeMaker.Literal(statementInfo.getSourceFileName()));
+        listBuffer.add(treeMaker.Literal(statementInfo.getLineNumber()));
         for (VariableAndValue variableAndValue : usedVariables) {
             listBuffer.add(variableAndValue.getValue());
         }
@@ -208,7 +210,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, CompilationUni
                         jcNewClass
                 )
         );
-        statement.expr = apply;
+        statementInfo.getStatement().expr = apply;
     }
 
     private void generateEventLoggerField(final JCTree.JCClassDecl classDecl) {
