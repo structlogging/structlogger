@@ -61,17 +61,6 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     @Override
-    public Object visitClass(final ClassTree node, final ScannerParams compilationUnitTree) {
-        final JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) getCurrentPath().getLeaf();
-
-        generateLoggerField(node, classDecl);
-
-        generateEventLoggerField(classDecl);
-
-        return super.visitClass(node, compilationUnitTree);
-    }
-
-    @Override
     public Object visitExpressionStatement(final ExpressionStatementTree node, final ScannerParams scannerParams) {
 
         final JCTree.JCExpressionStatement statement = (JCTree.JCExpressionStatement) getCurrentPath().getLeaf();
@@ -216,8 +205,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         final JCTree.JCMethodInvocation apply = treeMaker.Apply(
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(
-                        treeMaker.Ident(
-                                elementUtils.getName("_eventLogger")
+                        treeMaker.Select(
+                                treeMaker.Select(
+                                        treeMaker.Ident(names.fromString("org.ngmon.structlog")), names.fromString("StructLogger")
+                                ), names.fromString("eventLogger")
                         ),
                         elementUtils.getName(level.toLowerCase())
                 ),
