@@ -133,7 +133,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             for (Variable variable : providerVariables.getVariables()) {
                 final Name topMethodName = top.getMethodName();
                 if (variable.getName().equals(topMethodName)) {
-                    usedVariables.add(new VariableAndValue(variable, top.getParameter()));
+                    addToUsedVariables(usedVariables, top, variable);
                 } else if (topMethodName.contentEquals("info")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
                         messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
@@ -185,6 +185,21 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
         pojoService.writeJavaFile(javaFile);
         replaceInCode(className, statementInfo, usedVariables, literal, level);
+    }
+
+    private void addToUsedVariables(final SortedSet<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
+        VariableAndValue variableAndValue = new VariableAndValue(variable, top.getParameter());
+        if (!usedVariables.contains(variableAndValue)) {
+            usedVariables.add(variableAndValue);
+        } else {
+            int i = 0;
+            do {
+                i++;
+                variableAndValue = new VariableAndValue(new Variable(elementUtils.getName(variable.getName().toString() + i), variable.getType()),
+                        top.getParameter());
+            } while (usedVariables.contains(variableAndValue));
+            usedVariables.add(variableAndValue);
+        }
     }
 
     private void replaceInCode(final String className, final StatementInfo statementInfo, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {

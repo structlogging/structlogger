@@ -1,6 +1,6 @@
 package org.ngmon.structlog;
 
-public interface StructLog<T extends VariableContext> {
+public interface StructLogger<T extends VariableContext> {
 
     T debug(String message);
 
@@ -10,7 +10,7 @@ public interface StructLog<T extends VariableContext> {
 
     T warn(String message);
 
-    static <T extends VariableContext> StructLog<T> instance() {
+    static <T extends VariableContext> StructLogger<T> instance() {
         return null;
     }
 }
