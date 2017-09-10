@@ -1,18 +1,18 @@
 package org.ngmon.structlog;
 
-import java.util.SortedSet;
+import java.util.List;
 
 public class GeneratedClassInfo {
 
     private final String qualifiedName;
     private final String simpleName;
     private final String description;
-    private final SortedSet<VariableAndValue> usedVariables;
+    private final List<VariableAndValue> usedVariables;
 
     public GeneratedClassInfo(final String qualifiedName,
                               final String simpleName,
                               final String description,
-                              final SortedSet<VariableAndValue> usedVariables) {
+                              final List<VariableAndValue> usedVariables) {
         this.qualifiedName = qualifiedName;
         this.simpleName = simpleName;
         this.description = description;
@@ -31,7 +31,7 @@ public class GeneratedClassInfo {
         return description;
     }
 
-    public SortedSet<VariableAndValue> getUsedVariables() {
+    public List<VariableAndValue> getUsedVariables() {
         return usedVariables;
     }
 

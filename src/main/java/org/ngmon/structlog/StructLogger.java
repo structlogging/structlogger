@@ -2,6 +2,7 @@ package org.ngmon.structlog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 public interface StructLogger<T extends VariableContext> {
 
@@ -18,5 +19,9 @@ public interface StructLogger<T extends VariableContext> {
 
     static <T extends VariableContext> StructLogger<T> instance() {
         return null;
+    }
+
+    static String format(final String pattern, Object... params) {
+        return MessageFormatter.arrayFormat(pattern, params).getMessage();
     }
 }

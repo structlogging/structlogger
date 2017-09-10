@@ -19,18 +19,18 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 
 
 public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
@@ -111,7 +111,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, final StatementInfo statementInfo) {
-        final SortedSet<VariableAndValue> usedVariables = new TreeSet<>();
+        final java.util.List<VariableAndValue> usedVariables = new ArrayList<>();
         JCTree.JCLiteral literal = null;
         String level = null;
 
@@ -159,10 +159,16 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             }
         }
 
+        final int countOfStringVariables = StringUtils.countMatches(literal.getValue().toString(), "{}");
+        if (countOfStringVariables != usedVariables.size()) {
+            messager.printMessage(Diagnostic.Kind.ERROR, format("literal %s contains %d variables, but statement %s uses %d variables",
+                    literal.getValue().toString(), countOfStringVariables, statementInfo.getStatement(), usedVariables.size()));
+            return;
+        }
         final JavaFile javaFile = pojoService.createPojo(literal, usedVariables);
         final String className = javaFile.typeSpec.name;
         final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(PACKAGE_NAME + "." + className, className, (String) literal.getValue(), usedVariables);
-        for(GeneratedClassInfo info : generatedClassesNames) {
+        for (GeneratedClassInfo info : generatedClassesNames) {
             if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
                     && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
                     ) {
@@ -176,7 +182,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         replaceInCode(className, statementInfo, usedVariables, literal, level);
     }
 
-    private void addToUsedVariables(final SortedSet<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
+    private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
         VariableAndValue variableAndValue = new VariableAndValue(variable, top.getParameter());
         if (!usedVariables.contains(variableAndValue)) {
             usedVariables.add(variableAndValue);
@@ -191,15 +197,15 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         }
     }
 
-    private void replaceInCode(final String className, final StatementInfo statementInfo, SortedSet<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+    private void replaceInCode(final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
         listBuffer.add(treeMaker.Literal(level));
-        listBuffer.add(literal);
+
+        listBuffer.add(createStructLoggerFormatCall(usedVariables, literal));
+
         listBuffer.add(treeMaker.Literal(statementInfo.getSourceFileName()));
         listBuffer.add(treeMaker.Literal(statementInfo.getLineNumber()));
-        for (VariableAndValue variableAndValue : usedVariables) {
-            listBuffer.add(variableAndValue.getValue());
-        }
+        addVariablesToBuffer(usedVariables, listBuffer);
 
         final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(null, com.sun.tools.javac.util.List.nil(), treeMaker.Select(treeMaker.Ident(names.fromString(PACKAGE_NAME)), names.fromString(className)), listBuffer.toList(), null);
         final JCTree.JCMethodInvocation apply = treeMaker.Apply(
@@ -217,6 +223,24 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 )
         );
         statementInfo.getStatement().expr = apply;
+    }
+
+    private JCTree.JCMethodInvocation createStructLoggerFormatCall(final java.util.List<VariableAndValue> usedVariables, final JCTree.JCLiteral literal) {
+        final ListBuffer lb = new ListBuffer();
+        lb.add(literal);
+        addVariablesToBuffer(usedVariables, lb);
+
+        return treeMaker.Apply(List.nil(), treeMaker.Select(
+                treeMaker.Select(
+                        treeMaker.Ident(names.fromString("org.ngmon.structlog")), names.fromString("StructLogger")
+                ), names.fromString("format")
+        ), lb.toList());
+    }
+
+    private void addVariablesToBuffer(final java.util.List<VariableAndValue> usedVariables, final ListBuffer listBuffer) {
+        for (VariableAndValue variableAndValue : usedVariables) {
+            listBuffer.add(variableAndValue.getValue());
+        }
     }
 
     private void generateEventLoggerField(final JCTree.JCClassDecl classDecl) {

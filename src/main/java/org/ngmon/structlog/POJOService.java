@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
-import java.util.SortedSet;
+import java.util.List;
 
 public class POJOService {
 
@@ -26,7 +26,7 @@ public class POJOService {
     }
 
     public JavaFile createPojo(final JCTree.JCLiteral literal,
-                               final SortedSet<VariableAndValue> usedVariables) {
+                               final List<VariableAndValue> usedVariables) {
 
         final String eventName = "Event" + hash(literal.getValue().toString());
 
