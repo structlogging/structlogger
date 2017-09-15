@@ -4,6 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
+/**
+ * Dummy logger interface for creating logger fields
+ * @param <T> class extending {@link VariableContext} to provide fluent API for logging
+ *
+ * Typical usage:
+ * <code>
+ * public class Example {
+ *      @VarContext(context = DefaultContext.class)
+ *      private static StructLogger<DefaultContext> defaultLog = StructLogger.instance();
+ * }
+ * </code>
+ *
+ * StructLogger field can then be used for structured logging
+ */
 public interface StructLogger<T extends VariableContext> {
 
     Logger logger = LoggerFactory.getLogger(StructLogger.class);

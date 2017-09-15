@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package org.ngmon.structlog.utils;
 
 import com.sun.source.tree.ExpressionTree;
 

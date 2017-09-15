@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package org.ngmon.structlog.utils;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package org.ngmon.structlog.processor;
 
 import static java.lang.String.format;
 
@@ -11,6 +11,11 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+import org.ngmon.structlog.utils.GeneratedClassInfo;
+import org.ngmon.structlog.utils.ProviderVariables;
+import org.ngmon.structlog.utils.ScannerParams;
+import org.ngmon.structlog.utils.Variable;
+import org.ngmon.structlog.VariableContext;
 import org.ngmon.structlog.annotation.Var;
 import org.ngmon.structlog.annotation.VarContext;
 import org.ngmon.structlog.annotation.VarContextProvider;
@@ -45,6 +50,10 @@ import java.util.Map;
 import java.util.Set;
 
 
+/**
+ * Main annotation processor of structlogger, takes care of locating {@link VarContextProvider} annotated classes, {@link VarContext} annotated StructLogger fields
+ * and takes care of replacing all valid structured log statements with generated structured log events invocations of slf4j logging API
+ */
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes("*")

@@ -3,6 +3,9 @@ package org.ngmon.structlog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 
+/**
+ * Slf4j logger wrapper for serializing objects
+ */
 public class EventLogger {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();

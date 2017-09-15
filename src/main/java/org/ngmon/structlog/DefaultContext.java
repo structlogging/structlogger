@@ -3,6 +3,9 @@ package org.ngmon.structlog;
 import org.ngmon.structlog.annotation.Var;
 import org.ngmon.structlog.annotation.VarContextProvider;
 
+/**
+ * Default {@link VariableContext} containing basic variables
+ */
 @VarContextProvider
 public interface DefaultContext extends VariableContext {
 

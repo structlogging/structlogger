@@ -1,7 +1,7 @@
-package org.ngmon.structlog;
+package org.ngmon.structlog.processor;
 
 import static java.lang.String.format;
-import static org.ngmon.structlog.POJOService.PACKAGE_NAME;
+import static org.ngmon.structlog.service.POJOService.PACKAGE_NAME;
 
 import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ClassTree;
@@ -20,6 +20,14 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
 import org.apache.commons.lang3.StringUtils;
+import org.ngmon.structlog.utils.GeneratedClassInfo;
+import org.ngmon.structlog.utils.MethodAndParameter;
+import org.ngmon.structlog.utils.ProviderVariables;
+import org.ngmon.structlog.utils.ScannerParams;
+import org.ngmon.structlog.utils.StatementInfo;
+import org.ngmon.structlog.utils.Variable;
+import org.ngmon.structlog.utils.VariableAndValue;
+import org.ngmon.structlog.service.POJOService;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;

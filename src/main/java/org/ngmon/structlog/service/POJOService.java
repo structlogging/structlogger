@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package org.ngmon.structlog.service;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.squareup.javapoet.AnnotationSpec;
@@ -10,14 +10,18 @@ import com.squareup.javapoet.TypeSpec;
 import com.sun.tools.javac.tree.JCTree;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ngmon.structlog.utils.VariableAndValue;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;
 import java.util.List;
 
+/**
+ * Service for creating POJO and generating them during annotation processing
+ */
 public class POJOService {
 
-    static final String PACKAGE_NAME = "structlogger.generated";
+    public static final String PACKAGE_NAME = "structlogger.generated";
 
     private final Filer filer;
 
@@ -25,6 +29,13 @@ public class POJOService {
         this.filer = filer;
     }
 
+    /**
+     * Create JavaFile representing POJO based on String literal and usedVariables of log statement
+     *
+     * @param literal String literal used in structured log statement
+     * @param usedVariables list of logging variables used by structured log statement
+     * @return JavaFile representing Structured log Event (this JavaFile is not yet written, @see POJOService.writeJavaFile)
+     */
     public JavaFile createPojo(final JCTree.JCLiteral literal,
                                final List<VariableAndValue> usedVariables) {
 
@@ -60,6 +71,10 @@ public class POJOService {
         return javaFile;
     }
 
+    /**
+     * writes JavaFile using filer (generates POJO class in generated sources)
+     * @param javaFile JavaFile representation of POJO
+     */
     public void writeJavaFile(final JavaFile javaFile) {
         try {
             javaFile.writeTo(filer);
