@@ -4,6 +4,9 @@ import com.sun.source.tree.CompilationUnitTree;
 
 import javax.lang.model.element.TypeElement;
 
+/**
+ * Class representing parameters passed to {@link org.ngmon.structlog.processor.LogInvocationScanner}
+ */
 public class ScannerParams {
 
     private final TypeElement typeElement;

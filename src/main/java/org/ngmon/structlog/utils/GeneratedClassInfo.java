@@ -2,6 +2,9 @@ package org.ngmon.structlog.utils;
 
 import java.util.List;
 
+/**
+ * Class containing info about generated POJO for structured log event
+ */
 public class GeneratedClassInfo {
 
     private final String qualifiedName;

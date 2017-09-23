@@ -2,6 +2,9 @@ package org.ngmon.structlog.utils;
 
 import com.sun.source.tree.ExpressionTree;
 
+/**
+ * Class representing Variable in log invocation statement together with passed expression parameter
+ */
 public class VariableAndValue implements Comparable<VariableAndValue> {
 
     private final Variable variable;

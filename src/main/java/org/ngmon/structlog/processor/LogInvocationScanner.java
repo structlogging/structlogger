@@ -40,7 +40,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-
+/**
+ * TreePathScanner which takes care of structured log statements replacement
+ */
 public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
 
     private final HashMap<TypeMirror, ProviderVariables> varsHashMap;

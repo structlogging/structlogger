@@ -2,6 +2,9 @@ package org.ngmon.structlog.utils;
 
 import com.sun.tools.javac.tree.JCTree;
 
+/**
+ * Class representing info about statement
+ */
 public class StatementInfo {
 
     private long lineNumber;

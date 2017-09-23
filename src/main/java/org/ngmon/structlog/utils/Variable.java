@@ -3,6 +3,9 @@ package org.ngmon.structlog.utils;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 
+/**
+ * Class representing variable in log invocation statement or declared in {@link org.ngmon.structlog.annotation.VarContextProvider}
+ */
 public class Variable {
 
     private final Name name;
