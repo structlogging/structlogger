@@ -16,7 +16,7 @@ in your java code you can then declare, fields like this:
 private static StructLogger<DefaultContext> logger = StructLogger.instance();
 ```
 
-(please note that StructLogger should not be declared and cannot be used on as local variable)
+(please note that StructLogger should not be declared and cannot be used as local variable)
 
 this declared logger can then be used for logging in structured way like this:
 
