@@ -216,7 +216,11 @@ public class LogInvocationProcessor extends AbstractProcessor {
             final TypeElement typeElement = (TypeElement) element;
             final TreePath path = trees.getPath(element);
 
-            new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
+            // do not generate logger fields for classes which do not specify any VarContext annotated StructLogger
+            // and do not do any code replacement in such class
+            if (!fields.isEmpty()) {
+                new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
+            }
         }
     }
 
