@@ -14,6 +14,7 @@ import org.slf4j.helpers.MessageFormatter;
  * }
  * </code>
  *
+ * StructLogger field can then be used for structured logging
  */
 public interface StructLogger<T extends VariableContext> {
 
