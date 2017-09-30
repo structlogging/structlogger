@@ -1,4 +1,6 @@
-package org.ngmon.structlog.annotation;
+package cz.muni.fi.annotation;
+
+import cz.muni.fi.DefaultContext;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for specifying interfaces providing {@link Var} annotated methods
- * @see org.ngmon.structlog.DefaultContext for example
+ * @see DefaultContext for example
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.TYPE})

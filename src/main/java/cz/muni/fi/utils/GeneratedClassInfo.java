@@ -1,4 +1,4 @@
-package org.ngmon.structlog.utils;
+package cz.muni.fi.utils;
 
 import java.util.List;
 

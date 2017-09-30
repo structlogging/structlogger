@@ -1,7 +1,7 @@
-package org.ngmon.structlog;
+package cz.muni.fi;
 
-import org.ngmon.structlog.annotation.Var;
-import org.ngmon.structlog.annotation.VarContextProvider;
+import cz.muni.fi.annotation.Var;
+import cz.muni.fi.annotation.VarContextProvider;
 
 /**
  * Default {@link VariableContext} containing basic variables

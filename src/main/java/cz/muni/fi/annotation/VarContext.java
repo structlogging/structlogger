@@ -1,4 +1,7 @@
-package org.ngmon.structlog.annotation;
+package cz.muni.fi.annotation;
+
+import cz.muni.fi.StructLogger;
+import cz.muni.fi.VariableContext;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,8 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to specify {@link org.ngmon.structlog.StructLogger} fields
- * and specifying used {@link org.ngmon.structlog.VariableContext}
+ * Annotation to specify {@link StructLogger} fields
+ * and specifying used {@link VariableContext}
  *
  * Typical usage:
  * <code>

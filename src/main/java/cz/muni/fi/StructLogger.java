@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package cz.muni.fi;
 
 import org.slf4j.helpers.MessageFormatter;
 

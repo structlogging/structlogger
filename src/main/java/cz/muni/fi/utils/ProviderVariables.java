@@ -1,10 +1,12 @@
-package org.ngmon.structlog.utils;
+package cz.muni.fi.utils;
+
+import cz.muni.fi.annotation.VarContextProvider;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
 /**
- * Class representing class annotated with {@link org.ngmon.structlog.annotation.VarContextProvider}
+ * Class representing class annotated with {@link VarContextProvider}
  */
 public class ProviderVariables {
 
@@ -18,7 +20,7 @@ public class ProviderVariables {
 
     /**
      *
-     * @return TypeMirror of {@link org.ngmon.structlog.annotation.VarContextProvider} annotated class
+     * @return TypeMirror of {@link VarContextProvider} annotated class
      */
     public TypeMirror getTypeMirror() {
         return typeMirror;
@@ -26,7 +28,7 @@ public class ProviderVariables {
 
     /**
      *
-     * @return List of variables provided by {@link org.ngmon.structlog.annotation.VarContextProvider} annotated class
+     * @return List of variables provided by {@link VarContextProvider} annotated class
      */
     public List<Variable> getVariables() {
         return variables;

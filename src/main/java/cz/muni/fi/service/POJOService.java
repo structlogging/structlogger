@@ -1,4 +1,4 @@
-package org.ngmon.structlog.service;
+package cz.muni.fi.service;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.squareup.javapoet.AnnotationSpec;
@@ -10,7 +10,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.sun.tools.javac.tree.JCTree;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ngmon.structlog.utils.VariableAndValue;
+import cz.muni.fi.utils.VariableAndValue;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Modifier;

@@ -1,4 +1,4 @@
-package org.ngmon.structlog.processor;
+package cz.muni.fi.processor;
 
 import static java.lang.String.format;
 
@@ -11,14 +11,14 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-import org.ngmon.structlog.utils.GeneratedClassInfo;
-import org.ngmon.structlog.utils.ProviderVariables;
-import org.ngmon.structlog.utils.ScannerParams;
-import org.ngmon.structlog.utils.Variable;
-import org.ngmon.structlog.VariableContext;
-import org.ngmon.structlog.annotation.Var;
-import org.ngmon.structlog.annotation.VarContext;
-import org.ngmon.structlog.annotation.VarContextProvider;
+import cz.muni.fi.VariableContext;
+import cz.muni.fi.annotation.Var;
+import cz.muni.fi.annotation.VarContext;
+import cz.muni.fi.annotation.VarContextProvider;
+import cz.muni.fi.utils.GeneratedClassInfo;
+import cz.muni.fi.utils.ProviderVariables;
+import cz.muni.fi.utils.ScannerParams;
+import cz.muni.fi.utils.Variable;
 import org.reflections.Reflections;
 
 import javax.annotation.processing.AbstractProcessor;

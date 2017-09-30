@@ -1,4 +1,4 @@
-package org.ngmon.structlog;
+package cz.muni.fi;
 
 /**
  * Interface to be extended by concrete variable context interface

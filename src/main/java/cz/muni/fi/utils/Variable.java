@@ -1,10 +1,12 @@
-package org.ngmon.structlog.utils;
+package cz.muni.fi.utils;
+
+import cz.muni.fi.annotation.VarContextProvider;
 
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Class representing variable in log invocation statement or declared in {@link org.ngmon.structlog.annotation.VarContextProvider}
+ * Class representing variable in log invocation statement or declared in {@link VarContextProvider}
  */
 public class Variable {
 

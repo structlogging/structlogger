@@ -1,11 +1,12 @@
-package org.ngmon.structlog.utils;
+package cz.muni.fi.utils;
 
 import com.sun.source.tree.CompilationUnitTree;
+import cz.muni.fi.processor.LogInvocationScanner;
 
 import javax.lang.model.element.TypeElement;
 
 /**
- * Class representing parameters passed to {@link org.ngmon.structlog.processor.LogInvocationScanner}
+ * Class representing parameters passed to {@link LogInvocationScanner}
  */
 public class ScannerParams {
 
