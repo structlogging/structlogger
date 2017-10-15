@@ -243,7 +243,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 try {
                     final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualifiedName());
                     final JsonSchema schema = schemaGen.generateSchema(clazz);
-                    schema.set$schema("http://json-schema.org/draft-03/schema#");
+                    schema.set$schema("http://json-schema.org/draft-04/schema#");
                     schema.setDescription(generatedGeneratedClassInfo.getDescription());
                     schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getSimpleName());
                     iterator.remove();
