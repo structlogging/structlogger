@@ -62,14 +62,28 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(objectMapper);
 
+    /**
+     * Set of all classes annotated with {@link VarContextProvider}, set of all classes which can provide variable logging context
+     */
     private final Set<TypeMirror> varContextProviders = new HashSet<>();
+
+    /**
+     * Map representing for all {@link VarContextProvider} annotated classes, what kind of variables they expose (all {@link Var} annotated elements
+     */
     private final HashMap<TypeMirror, ProviderVariables> varsHashMap = new HashMap<>();
+
+    /**
+     * Set of all generated classes (logging events), used by {@link SchemaGenerator}
+     */
     private final Set<GeneratedClassInfo> generatedClassesInfo = new HashSet<>();
 
     private Trees trees;
     private Messager messager;
     private Elements elements;
 
+    /**
+     * Used for generating json schemas by {@link SchemaGenerator}
+     */
     private final SchemaGenerator schemaGenerator = new SchemaGenerator();
 
     @Override
@@ -86,13 +100,20 @@ public class LogInvocationProcessor extends AbstractProcessor {
     public boolean process(final Set<? extends TypeElement> annotations,
                            final RoundEnvironment roundEnv) {
 
+        // process all classes annotated with @VarContextProvider either using reflection API or compiler API
         processVariableContextClasses(roundEnv);
 
+        // process every class to be compiled, locate all StructLogger fields annotated with VarContext annotation, find all usages in given file and replace
+        // it with generated event class
         processStructLogExpressions(roundEnv);
 
+        // do not claim ownership of any annotation
         return false;
     }
 
+    /**
+     * find all classes annotated with {@link VarContextProvider} and check whether they are valid variable context providers
+     */
     private void processVariableContextClasses(final RoundEnvironment roundEnv) {
 
         try { //use reflection here to get already compiled classes from dependencies
@@ -114,14 +135,14 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
         //use compiler api and annotation api here to get classes yet to be compiled
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
-            if (!element.getKind().isInterface()) {
+            if (!element.getKind().isInterface()) { //check whether class is interface
                 messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be interface", element), element);
                 return;
             }
             final TypeMirror typeMirror = element.asType();
             final TypeElement typeElement = (TypeElement) element;
             boolean extendsVariableContext = extendsVariableContext(typeElement);
-            if (!extendsVariableContext) {
+            if (!extendsVariableContext) { //check whether interface extends VariableContext
                 messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()), element);
                 return;
             }
@@ -138,7 +159,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             if (annotation != null) {
                 final ExecutableType executableType = (ExecutableType) enclosed.asType();
                 final Name simpleName = enclosed.getSimpleName();
-                if (simpleName.contentEquals("log") ||
+                if (simpleName.contentEquals("log") || // check name of method
                         simpleName.contentEquals("info") ||
                         simpleName.contentEquals("error") ||
                         simpleName.contentEquals("warn") ||
@@ -148,15 +169,15 @@ public class LogInvocationProcessor extends AbstractProcessor {
                     messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName), element);
                     return true;
                 }
-                if (!executableType.getReturnType().toString().equals(typeMirror.toString())) {
+                if (!executableType.getReturnType().toString().equals(typeMirror.toString())) { //check return type
                     messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have return type %s", element, simpleName, element), element);
                     return true;
                 }
-                if (executableType.getParameterTypes().size() != 1) {
+                if (executableType.getParameterTypes().size() != 1) { //check number of parameters
                     messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName), element);
                     return true;
                 }
-                if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) {
+                if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) { //check whether there is no method with same name
                     messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method cannot be overloaded", element, simpleName), element);
                     return true;
                 }
@@ -170,6 +191,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
         return false;
     }
 
+    /**
+     * Check whether type element extends {@link VariableContext}
+     */
     private boolean extendsVariableContext(final TypeElement typeElement) {
         boolean extendsVariableContext = false;
         for (TypeMirror extendingInterfaces : typeElement.getInterfaces()) {
@@ -180,6 +204,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
         return extendsVariableContext;
     }
 
+    /**
+     * Check whether class extends {@link VariableContext}
+     */
     private boolean extendsVariableContext(final Class<?> c) {
         final Class<?>[] interfaces = c.getInterfaces();
         boolean extendsVariableContext = false;
@@ -191,6 +218,10 @@ public class LogInvocationProcessor extends AbstractProcessor {
         return extendsVariableContext;
     }
 
+    /**
+     * Find all classes, which have some fields annotated with {@link VarContext} and call {@link LogInvocationScanner} for given class if class indeed
+     * have such fields
+     */
     private void processStructLogExpressions(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getRootElements()) {
             final Map<Name, TypeMirror> fields = new HashMap<>();
@@ -224,6 +255,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
         }
     }
 
+    /**
+     * TaskListener, which takes care of generating json schemas for logging events, after GENERATE phase of compilation
+     */
     private final class SchemaGenerator implements TaskListener {
         @Override
         public void started(final TaskEvent e) {

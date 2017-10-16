@@ -76,6 +76,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         this.generatedClassesNames = generatedClassesNames;
     }
 
+    /**
+     * Generates {@link Logger} field and {@link EventLogger} field static/non-static based on context (non static inner classes cannot have static fields, etc.)
+     * fields are preferably generated as static
+     */
     @Override
     public Object visitClass(final ClassTree node, final ScannerParams scannerParams) {
         final JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) getCurrentPath().getLeaf();
@@ -93,6 +97,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         return super.visitClass(node, scannerParams);
     }
 
+    /**
+     *  Checks expressions, if expression is method call on {@link cz.muni.fi.annotation.VarContext} field, it is considered structured log statement and is
+     *  expression is transformed in such way, that expression is replaced with call to {@link EventLogger} with generated Event for given expression
+     */
     @Override
     public Object visitExpressionStatement(final ExpressionStatementTree node, final ScannerParams scannerParams) {
 
@@ -230,6 +238,14 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         }
     }
 
+    /**
+     * replaces statement with our call to {@link EventLogger}
+     * @param className
+     * @param statementInfo
+     * @param usedVariables
+     * @param literal
+     * @param level
+     */
     private void replaceInCode(final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
         listBuffer.add(treeMaker.Literal(level));
@@ -274,6 +290,11 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         }
     }
 
+    /**
+     * generates {@link EventLogger} for given class
+     * @param classDecl
+     * @param shouldBeStatic
+     */
     private void generateEventLoggerField(final JCTree.JCClassDecl classDecl, final boolean shouldBeStatic) {
         Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(EventLogger.class.getName());
 
@@ -303,6 +324,12 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         classDecl.defs = classDecl.defs.append(logger);
     }
 
+    /**
+     * generates {@link Logger} for given class
+     * @param node
+     * @param classDecl
+     * @param shouldBeStatic
+     */
     private void generateLoggerField(final ClassTree node, final JCTree.JCClassDecl classDecl, final boolean shouldBeStatic) {
         Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(Logger.class.getName());
         Symbol.VarSymbol varSymbol;
