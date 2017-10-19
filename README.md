@@ -29,13 +29,17 @@ logger.info("test {} string literal {}")
 
 this structured log statement will generate json like this:
 ```json
-{"Event853e32ae":
-  {"level":"INFO",
-  "message":"test 1.2 string literal false",
-  "sourceFile":"some.package.classname",
-  "lineNumber":39,
-  "varDouble":1.2,
-  "varBoolean":false}
+{ 
+  "event":
+      {   
+        "message":"test 1.2 string literal false",
+        "sourceFile":"cz.muni.fi.Example",
+        "lineNumber":24,
+        "varDouble":1.2,
+        "varBoolean":false},
+  "sid":1,
+  "logLevel":"INFO",
+  "eventIdentifier":"Event853e32ae"
 }
 ```
-and this json will logged using *slf4j* logging API, implementation of this API should be provided by your project
+and this json will logged using *slf4j* logging API, implementation of this API should be provided by your project (like logback or log4j)
