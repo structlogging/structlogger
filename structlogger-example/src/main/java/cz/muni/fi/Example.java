@@ -1,14 +1,6 @@
 package cz.muni.fi;
 
 import cz.muni.fi.annotation.VarContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class Example {
 
@@ -21,37 +13,13 @@ public class Example {
     @VarContext(context = AnotherContext.class)
     private static StructLogger<AnotherContext> anotherContextStructLog = StructLogger.instance();
 
-    static Logger logger = LoggerFactory.getLogger("Example");
-
-    private Map<String,Integer> map = new HashMap() {{
-        put("ahoj", 1);
-    }};
-
     public static void main(String[] args) throws Exception {
-
-        new Predicate<Integer>(){
-            @VarContext(context = DefaultContext.class)
-            private StructLogger<AnotherContext> structlog2 = StructLogger.instance();
-
-
-            @Override
-            public boolean test(final Integer o) {
-                structlog2.error("errorek").log();
-                return false;
-            }
-        };
-
-        String message = MessageFormatter.arrayFormat("ahoj {}", Arrays.asList(1).toArray()).getMessage();
-        System.out.println(message);
-        logger.error("ahoj {}", new Test("aa").toString());
 
         int numCached = 0;
         int neededCached = 0;
         long blockId = 0;
         long datanodeUuid = 0;
         String reason = "reason";
-
-        long startTime = System.currentTimeMillis();
 
         defaultLog.info("test {} string literal {}")
                 .varDouble(1.2)
@@ -105,14 +73,9 @@ public class Example {
                 .blockId(blockId)
                 .log();
 
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-        System.out.println(elapsedTime);
-
-
         structLog.info("Block {} removal for dataNode {} from PENDING_UNCACHED - it was uncached by the dataNode.")
                 .blockId(new Object().hashCode())
-                .dataNodeUuid(in())
+                .dataNodeUuid(someMethod())
                 .log();
 
         structLog.error("errorek {}")
@@ -125,33 +88,15 @@ public class Example {
 
         structLog.info("Block {} removal for dataNode {} from PENDING_UNCACHED - it was uncached by the dataNode.")
                 .blockId(new Object().hashCode())
-                .dataNodeUuid(in())
+                .dataNodeUuid(someMethod())
                 .log();
 
         structLog.info("ahojkya {}")
                 .object(new Test("ahoj"))
                 .log();
-
-        new Example().new Petr().doIt();
     }
 
-    private static void a(Object o) {
-        System.out.println(o);
-    }
-
-    private static int in() {
+    private static int someMethod() {
         return 0;
-    }
-
-    class Petr {
-        @VarContext(context = AnotherContext.class)
-        private StructLogger<AnotherContext> anotherContextStructLog = StructLogger.instance();
-
-        private int b;
-
-        public void doIt() {
-            anotherContextStructLog.error("tu").log();
-
-        }
     }
 }

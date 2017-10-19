@@ -248,7 +248,6 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
      */
     private void replaceInCode(final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
-        listBuffer.add(treeMaker.Literal(level));
 
         listBuffer.add(createStructLoggerFormatCall(usedVariables, literal));
 

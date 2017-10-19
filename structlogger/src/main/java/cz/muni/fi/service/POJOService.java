@@ -44,7 +44,6 @@ public class POJOService {
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(eventName).addModifiers(Modifier.PUBLIC);
         final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
 
-        addPojoField(classBuilder, constructorBuilder, "level", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "message", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "sourceFile", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "lineNumber", TypeName.LONG);
