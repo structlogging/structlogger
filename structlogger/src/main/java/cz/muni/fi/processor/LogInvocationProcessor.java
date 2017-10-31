@@ -82,6 +82,11 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Elements elements;
 
     /**
+     * absolute path, where folder with schemas should be created
+     */
+    private String schemasRoot;
+
+    /**
      * Used for generating json schemas by {@link SchemaGenerator}
      */
     private final SchemaGenerator schemaGenerator = new SchemaGenerator();
@@ -94,6 +99,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         elements = processingEnv.getElementUtils();
+        schemasRoot = processingEnv.getOptions().get("schemasRoot");
     }
 
     @Override
@@ -291,7 +297,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
     private void createSchemaFile(String namespace, String signature, JsonSchema schema) {
         try {
-            String dir = "schemas/" + namespace.replace(".", "/") + "/";
+            final String dir = schemasRoot + "/schemas/" + namespace.replace(".", "/") + "/";
+            messager.printMessage(Diagnostic.Kind.WARNING, dir);
             Files.createDirectories(Paths.get(dir));
             FileOutputStream out = new FileOutputStream(dir + signature + ".json");
             out.write(this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(schema));
