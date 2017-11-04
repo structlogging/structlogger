@@ -8,13 +8,13 @@ public class WrappedLogEvent {
     private Object event;
     private long sid;
     private String logLevel;
-    private String eventIdentifier;
+    private String type;
 
-    public WrappedLogEvent(final Object event, final long sid, final String logLevel, final String eventIdentifier) {
+    public WrappedLogEvent(final Object event, final long sid, final String logLevel, final String type) {
         this.event = event;
         this.sid = sid;
         this.logLevel = logLevel;
-        this.eventIdentifier = eventIdentifier;
+        this.type = type;
     }
 
     public Object getEvent() {
@@ -29,7 +29,7 @@ public class WrappedLogEvent {
         return logLevel;
     }
 
-    public String getEventIdentifier() {
-        return eventIdentifier;
+    public String getType() {
+        return type;
     }
 }
