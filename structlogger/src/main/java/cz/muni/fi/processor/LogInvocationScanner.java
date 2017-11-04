@@ -155,6 +155,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         final java.util.List<VariableAndValue> usedVariables = new ArrayList<>();
         JCTree.JCLiteral literal = null;
         String level = null;
+        String eventName = null;
 
         final TypeMirror typeMirror = fields.get(name);
         final ProviderVariables providerVariables = varsHashMap.get(typeMirror);
@@ -194,6 +195,17 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     level = "WARN";
                 }
             }
+            if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
+                if (!(top.getParameter() instanceof JCTree.JCLiteral)){
+                    messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", top.getMethodName(), statementInfo.getStatement()));
+                    return;
+                }
+                eventName = ((JCTree.JCLiteral) top.getParameter()).getValue().toString();
+                if (eventName.contains(" ") || eventName.contains(System.lineSeparator())) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal without spaces and new lines as argument", top.getMethodName(), statementInfo.getStatement()));
+                    return;
+                }
+            }
             if (stack.empty() && !top.getMethodName().contentEquals("log")) {
                 messager.printMessage(Diagnostic.Kind.ERROR, format("statement %s must be ended by calling log() method", statementInfo.getStatement()));
                 return;
@@ -206,7 +218,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     literal.getValue().toString(), countOfStringVariables, statementInfo.getStatement(), usedVariables.size()));
             return;
         }
-        final JavaFile javaFile = pojoService.createPojo(literal, usedVariables);
+        final JavaFile javaFile = pojoService.createPojo(eventName, literal, usedVariables);
         final String className = javaFile.typeSpec.name;
         final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(POJOService.PACKAGE_NAME + "." + className, className, (String) literal.getValue(), usedVariables);
         for (GeneratedClassInfo info : generatedClassesNames) {

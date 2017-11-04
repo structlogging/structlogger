@@ -32,14 +32,21 @@ public class POJOService {
     /**
      * Create JavaFile representing POJO based on String literal and usedVariables of log statement
      *
+     * @param name    name of POJO to be generated, if null, event is generated based on log literal (hash of it)
      * @param literal String literal used in structured log statement
      * @param usedVariables list of logging variables used by structured log statement
      * @return JavaFile representing Structured log Event (this JavaFile is not yet written, @see POJOService.writeJavaFile)
      */
-    public JavaFile createPojo(final JCTree.JCLiteral literal,
+    public JavaFile createPojo(final String name,
+                               final JCTree.JCLiteral literal,
                                final List<VariableAndValue> usedVariables) {
-
-        final String eventName = "Event" + hash(literal.getValue().toString());
+        String eventName;
+        if (name != null) {
+            eventName = name;
+        }
+        else {
+            eventName = "Event" + hash(literal.getValue().toString());
+        }
 
         final TypeSpec.Builder classBuilder = TypeSpec.classBuilder(eventName).addModifiers(Modifier.PUBLIC);
         final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);

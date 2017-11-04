@@ -6,4 +6,6 @@ package cz.muni.fi;
  */
 public interface VariableContext {
     void log();
+
+    void log(final String name);
 }
