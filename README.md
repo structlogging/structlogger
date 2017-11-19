@@ -40,7 +40,7 @@ this structured log statement will generate json like this:
        },
   "sid":1,
   "logLevel":"INFO",
-  "eventIdentifier":"Event853e32ae"
+  "type":"Event853e32ae"
 }
 ```
 
@@ -66,7 +66,7 @@ this will generate event like this:
       },
   "sid":1,
   "logLevel":"INFO",
-  "eventIdentifier":"TestEvent"
+  "type":"TestEvent"
 }
 ```
 
