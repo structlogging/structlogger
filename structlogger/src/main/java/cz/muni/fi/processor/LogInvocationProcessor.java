@@ -12,12 +12,13 @@ import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import cz.muni.fi.VariableContext;
+import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.annotation.Var;
-import cz.muni.fi.annotation.VarContext;
 import cz.muni.fi.annotation.VarContextProvider;
 import cz.muni.fi.utils.GeneratedClassInfo;
 import cz.muni.fi.utils.ProviderVariables;
 import cz.muni.fi.utils.ScannerParams;
+import cz.muni.fi.utils.StructLoggerFieldContext;
 import cz.muni.fi.utils.Variable;
 import org.reflections.Reflections;
 
@@ -51,7 +52,7 @@ import java.util.Set;
 
 
 /**
- * Main annotation processor of structlogger, takes care of locating {@link VarContextProvider} annotated classes, {@link VarContext} annotated StructLogger fields
+ * Main annotation processor of structlogger, takes care of locating {@link VarContextProvider} annotated classes, {@link LoggerContext} annotated StructLogger fields
  * and takes care of replacing all valid structured log statements with generated structured log events invocations of slf4j logging API
  */
 @AutoService(Processor.class)
@@ -109,7 +110,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         // process all classes annotated with @VarContextProvider either using reflection API or compiler API
         processVariableContextClasses(roundEnv);
 
-        // process every class to be compiled, locate all StructLogger fields annotated with VarContext annotation, find all usages in given file and replace
+        // process every class to be compiled, locate all StructLogger fields annotated with LoggerContext annotation, find all usages in given file and replace
         // it with generated event class
         processStructLogExpressions(roundEnv);
 
@@ -225,18 +226,20 @@ public class LogInvocationProcessor extends AbstractProcessor {
     }
 
     /**
-     * Find all classes, which have some fields annotated with {@link VarContext} and call {@link LogInvocationScanner} for given class if class indeed
+     * Find all classes, which have some fields annotated with {@link LoggerContext} and call {@link LogInvocationScanner} for given class if class indeed
      * have such fields
      */
     private void processStructLogExpressions(final RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getRootElements()) {
-            final Map<Name, TypeMirror> fields = new HashMap<>();
+            final Map<Name, StructLoggerFieldContext> fields = new HashMap<>();
 
             for (Element enclosed : element.getEnclosedElements()) {
                 if (enclosed.getKind().isField()) {
+                    String loggerName = null;
                     try {
-                        final VarContext annotation = enclosed.getAnnotation(VarContext.class);
+                        final LoggerContext annotation = enclosed.getAnnotation(LoggerContext.class);
                         if (annotation != null) {
+                            loggerName = annotation.name();
                             annotation.context();
                             //TODO class is already compiled
                         }
@@ -244,7 +247,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         final TypeMirror typeMirror = ex.getTypeMirror();
 
                         if (varContextProviders.contains(typeMirror)) {
-                            fields.put(enclosed.getSimpleName(), typeMirror);
+                            fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(typeMirror, loggerName));
                         }
                     }
                 }
@@ -253,7 +256,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             final TypeElement typeElement = (TypeElement) element;
             final TreePath path = trees.getPath(element);
 
-            // do not generate logger fields for classes which do not specify any VarContext annotated StructLogger
+            // do not generate logger fields for classes which do not specify any LoggerContext annotated StructLogger
             // and do not do any code replacement in such class
             if (!fields.isEmpty()) {
                 new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));

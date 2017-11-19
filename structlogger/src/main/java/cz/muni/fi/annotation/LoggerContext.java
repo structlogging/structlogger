@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to specify {@link StructLogger} fields
- * and specifying used {@link VariableContext}
+ * and specifying used {@link VariableContext} and name of logger (underlying slf4j logger)
  *
  * Typical usage:
  * <code>
@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.FIELD})
-public @interface VarContext {
+public @interface LoggerContext {
     Class context();
+    String name() default "StructuredLogger";
 }

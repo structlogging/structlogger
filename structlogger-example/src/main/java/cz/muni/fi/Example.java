@@ -1,16 +1,16 @@
 package cz.muni.fi;
 
-import cz.muni.fi.annotation.VarContext;
+import cz.muni.fi.annotation.LoggerContext;
 
 public class Example {
 
-    @VarContext(context = DefaultContext.class)
+    @LoggerContext(context = DefaultContext.class, name = "Default")
     private static StructLogger<DefaultContext> defaultLog = StructLogger.instance();
 
-    @VarContext(context = BlockCacheContext.class)
+    @LoggerContext(context = BlockCacheContext.class)
     private static StructLogger<BlockCacheContext> structLog = StructLogger.instance();
 
-    @VarContext(context = AnotherContext.class)
+    @LoggerContext(context = AnotherContext.class, name = "Another")
     private static StructLogger<AnotherContext> anotherContextStructLog = StructLogger.instance();
 
     public static void main(String[] args) throws Exception {

@@ -12,7 +12,7 @@ add dependency to your project
 
 in your java code you can then declare, fields like this:
 ```
-@VarContext(context = DefaultContext.class)
+@LoggerContext(context = DefaultContext.class)
 private static StructLogger<DefaultContext> logger = StructLogger.instance();
 ```
 

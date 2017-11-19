@@ -1,6 +1,7 @@
 package cz.muni.fi.processor;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ClassTree;
@@ -20,11 +21,13 @@ import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
 import cz.muni.fi.EventLogger;
 import cz.muni.fi.StructLogger;
+import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.service.POJOService;
 import cz.muni.fi.utils.GeneratedClassInfo;
 import cz.muni.fi.utils.ProviderVariables;
 import cz.muni.fi.utils.ScannerParams;
 import cz.muni.fi.utils.StatementInfo;
+import cz.muni.fi.utils.StructLoggerFieldContext;
 import cz.muni.fi.utils.Variable;
 import cz.muni.fi.utils.VariableAndValue;
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +51,11 @@ import java.util.Stack;
  */
 public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
 
-    private static final String EVENT_LOGGER_FIELD_NAME = "_eventLogger";
-    private static final String LOGGER_FIELD_NAME = "_logger";
+    private static final String EVENT_LOGGER_FIELD_NAME_SUFFIX = "_eventLogger";
+    private static final String LOGGER_FIELD_NAME_SUFFIX = "_logger";
 
     private final HashMap<TypeMirror, ProviderVariables> varsHashMap;
-    private final Map<Name, TypeMirror> fields;
+    private final Map<Name, StructLoggerFieldContext> fields;
     private final TreeMaker treeMaker;
     private final JavacElements elementUtils;
     private final Names names;
@@ -61,7 +64,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     private final Set<GeneratedClassInfo> generatedClassesNames;
 
     public LogInvocationScanner(final HashMap<TypeMirror, ProviderVariables> varsHashMap,
-                                final Map<Name, TypeMirror> fields,
+                                final Map<Name, StructLoggerFieldContext> fields,
                                 final ProcessingEnvironment processingEnvironment,
                                 final Set<GeneratedClassInfo> generatedClassesNames) {
         final Context context = ((JavacProcessingEnvironment) processingEnvironment).getContext();
@@ -86,11 +89,11 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
         // generate static logger fields only in static inner classes or not inner classes
         if (classDecl.getModifiers().getFlags().contains(Flags.STATIC) || scannerParams.getTypeElement().getSimpleName().toString().equals(classDecl.name.toString())) {
-            generateLoggerField(node, classDecl, true);
+            generateLoggerField(classDecl, true);
             generateEventLoggerField(classDecl, true);
         }
         else { //generate non static logger fields in inner classes
-            generateLoggerField(node, classDecl, false);
+            generateLoggerField(classDecl, false);
             generateEventLoggerField(classDecl, false);
         }
 
@@ -98,7 +101,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     /**
-     *  Checks expressions, if expression is method call on {@link cz.muni.fi.annotation.VarContext} field, it is considered structured log statement and is
+     *  Checks expressions, if expression is method call on {@link LoggerContext} field, it is considered structured log statement and is
      *  expression is transformed in such way, that expression is replaced with call to {@link EventLogger} with generated Event for given expression
      */
     @Override
@@ -151,13 +154,21 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         }
     }
 
+    /**
+     *
+     * @param stack all method calls on one line
+     * @param node
+     * @param name of field
+     * @param statementInfo about whole one line statement
+     */
     private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, final StatementInfo statementInfo) {
         final java.util.List<VariableAndValue> usedVariables = new ArrayList<>();
         JCTree.JCLiteral literal = null;
         String level = null;
         String eventName = null;
 
-        final TypeMirror typeMirror = fields.get(name);
+        final StructLoggerFieldContext structLoggerFieldContext = fields.get(name);
+        final TypeMirror typeMirror = structLoggerFieldContext.getContextProvider();
         final ProviderVariables providerVariables = varsHashMap.get(typeMirror);
         while (!stack.empty()) {
             final MethodAndParameter top = stack.pop();
@@ -232,7 +243,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         generatedClassesNames.add(generatedClassInfo);
 
         pojoService.writeJavaFile(javaFile);
-        replaceInCode(className, statementInfo, usedVariables, literal, level);
+        replaceInCode(structLoggerFieldContext.getLoggerName(), className, statementInfo, usedVariables, literal, level);
     }
 
     private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
@@ -252,13 +263,14 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
     /**
      * replaces statement with our call to {@link EventLogger}
+     * @param loggerName
      * @param className
      * @param statementInfo
      * @param usedVariables
      * @param literal
      * @param level
      */
-    private void replaceInCode(final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+    private void replaceInCode(final String loggerName, final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
 
         listBuffer.add(createStructLoggerFormatCall(usedVariables, literal));
@@ -272,7 +284,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(
                         treeMaker.Ident(
-                                elementUtils.getName(EVENT_LOGGER_FIELD_NAME)
+                                elementUtils.getName(getEventLoggerName(loggerName))
                         ),
                         elementUtils.getName(level.toLowerCase())
                 ),
@@ -307,67 +319,81 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
      * @param shouldBeStatic
      */
     private void generateEventLoggerField(final JCTree.JCClassDecl classDecl, final boolean shouldBeStatic) {
-        Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(EventLogger.class.getName());
+        for(String loggerName : fields.values().stream().map(e -> e.getLoggerName()).distinct().collect(toList())) {
 
-        final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(
-                null,
-                List.nil(),
-                treeMaker.Select(
-                        treeMaker.Ident(names.fromString(EventLogger.class.getPackage().getName())), names.fromString(EventLogger.class.getSimpleName())
-                ),
-                List.of(
-                        treeMaker.Ident(names.fromString(LOGGER_FIELD_NAME))
-                ),
-                null);
+            Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(EventLogger.class.getName());
 
-        Symbol.VarSymbol varSymbol;
+            final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(
+                    null,
+                    List.nil(),
+                    treeMaker.Select(
+                            treeMaker.Ident(names.fromString(EventLogger.class.getPackage().getName())), names.fromString(EventLogger.class.getSimpleName())
+                    ),
+                    List.of(
+                            treeMaker.Ident(names.fromString(getLoggerFieldName(loggerName)))
+                    ),
+                    null);
 
-        if(shouldBeStatic) {
-            varSymbol = new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName(EVENT_LOGGER_FIELD_NAME), typeElement.asType(), null);
+            Symbol.VarSymbol varSymbol;
+
+            final String eventLoggerName = getEventLoggerName(loggerName);
+            if (shouldBeStatic) {
+                varSymbol = new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName(eventLoggerName), typeElement.asType(), null);
+            } else {
+                varSymbol = new Symbol.VarSymbol(Flags.FINAL, elementUtils.getName(eventLoggerName), typeElement.asType(), null);
+            }
+
+            JCTree.JCVariableDecl logger = treeMaker.VarDef(varSymbol,
+                    jcNewClass);
+
+            classDecl.defs = classDecl.defs.append(logger);
         }
-        else {
-            varSymbol = new Symbol.VarSymbol(Flags.FINAL, elementUtils.getName(EVENT_LOGGER_FIELD_NAME), typeElement.asType(), null);
-        }
+    }
 
-        JCTree.JCVariableDecl logger = treeMaker.VarDef(varSymbol,
-                jcNewClass);
-
-        classDecl.defs = classDecl.defs.append(logger);
+    private String getEventLoggerName(final String loggerName) {
+        return loggerName + EVENT_LOGGER_FIELD_NAME_SUFFIX;
     }
 
     /**
      * generates {@link Logger} for given class
-     * @param node
      * @param classDecl
      * @param shouldBeStatic
      */
-    private void generateLoggerField(final ClassTree node, final JCTree.JCClassDecl classDecl, final boolean shouldBeStatic) {
-        Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(Logger.class.getName());
-        Symbol.VarSymbol varSymbol;
+    private void generateLoggerField(final JCTree.JCClassDecl classDecl, final boolean shouldBeStatic) {
 
-        if (shouldBeStatic) {
-            varSymbol = new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName(LOGGER_FIELD_NAME), typeElement.asType(), null);
-        } else {
-            varSymbol = new Symbol.VarSymbol(Flags.FINAL, elementUtils.getName(LOGGER_FIELD_NAME), typeElement.asType(), null);
+        for(String loggerName : fields.values().stream().map(e -> e.getLoggerName()).distinct().collect(toList())) {
+            Symbol.ClassSymbol typeElement = elementUtils.getTypeElement(Logger.class.getName());
+            Symbol.VarSymbol varSymbol;
+
+            final String loggerFieldName = getLoggerFieldName(loggerName);
+            if (shouldBeStatic) {
+                varSymbol = new Symbol.VarSymbol(Flags.STATIC | Flags.FINAL, elementUtils.getName(loggerFieldName), typeElement.asType(), null);
+            } else {
+                varSymbol = new Symbol.VarSymbol(Flags.FINAL, elementUtils.getName(loggerFieldName), typeElement.asType(), null);
+            }
+
+            JCTree.JCVariableDecl logger = treeMaker.VarDef(varSymbol,
+                    treeMaker.Apply(
+                            com.sun.tools.javac.util.List.nil(),
+                            treeMaker.Select(
+                                    treeMaker.Type(
+                                            elementUtils.getTypeElement(LoggerFactory.class.getName()).type
+                                    ),
+                                    elementUtils.getName("getLogger")
+                            ),
+                            com.sun.tools.javac.util.List.of(
+                                    treeMaker.Literal(
+                                            loggerName
+                                    )
+                            )
+                    ));
+
+            classDecl.defs = classDecl.defs.append(logger);
         }
+    }
 
-        JCTree.JCVariableDecl logger = treeMaker.VarDef(varSymbol,
-                treeMaker.Apply(
-                        com.sun.tools.javac.util.List.nil(),
-                        treeMaker.Select(
-                                treeMaker.Type(
-                                        elementUtils.getTypeElement(LoggerFactory.class.getName()).type
-                                ),
-                                elementUtils.getName("getLogger")
-                        ),
-                        com.sun.tools.javac.util.List.of(
-                                treeMaker.Literal(
-                                        node.getSimpleName().toString()
-                                )
-                        )
-                ));
-
-        classDecl.defs = classDecl.defs.append(logger);
+    private String getLoggerFieldName(final String loggerName) {
+        return loggerName + LOGGER_FIELD_NAME_SUFFIX;
     }
 
 }
