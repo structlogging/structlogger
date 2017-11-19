@@ -4,13 +4,13 @@ import cz.muni.fi.annotation.LoggerContext;
 
 public class Example {
 
-    @LoggerContext(context = DefaultContext.class, name = "Default")
+    @LoggerContext(context = DefaultContext.class, name = "cz.muni.fi.Default")
     private static StructLogger<DefaultContext> defaultLog = StructLogger.instance();
 
-    @LoggerContext(context = BlockCacheContext.class)
+    @LoggerContext(context = BlockCacheContext.class, name = "cz.muni.fi.Structured")
     private static StructLogger<BlockCacheContext> structLog = StructLogger.instance();
 
-    @LoggerContext(context = AnotherContext.class, name = "Another")
+    @LoggerContext(context = AnotherContext.class, name = "cz.muni.fi.Another")
     private static StructLogger<AnotherContext> anotherContextStructLog = StructLogger.instance();
 
     public static void main(String[] args) throws Exception {
