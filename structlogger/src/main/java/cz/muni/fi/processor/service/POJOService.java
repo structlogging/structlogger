@@ -1,4 +1,4 @@
-package cz.muni.fi.service;
+package cz.muni.fi.processor.service;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.squareup.javapoet.AnnotationSpec;

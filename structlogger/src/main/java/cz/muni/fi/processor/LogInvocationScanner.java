@@ -22,7 +22,7 @@ import com.sun.tools.javac.util.Names;
 import cz.muni.fi.EventLogger;
 import cz.muni.fi.StructLogger;
 import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.service.POJOService;
+import cz.muni.fi.processor.service.POJOService;
 import cz.muni.fi.utils.GeneratedClassInfo;
 import cz.muni.fi.utils.ProviderVariables;
 import cz.muni.fi.utils.ScannerParams;
