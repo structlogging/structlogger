@@ -30,17 +30,13 @@ logger.info("test {} string literal {}")
 this structured log statement will generate json like this:
 ```json
 { 
-  "event":
-      {   
         "message":"test 1.2 string literal false",
         "sourceFile":"cz.muni.fi.Example",
         "lineNumber":24,
+        "type":"Event853e32ae",
+        "sid":1,
         "varDouble":1.2,
         "varBoolean":false
-       },
-  "sid":1,
-  "logLevel":"INFO",
-  "type":"Event853e32ae"
 }
 ```
 
@@ -55,18 +51,14 @@ Beware that you cannot pass String containing white spaces or new lines, such St
 
 this will generate event like this:
 ```json
-{ 
-  "event":
-      {   
+{
         "message":"test 1.2 string literal false",
         "sourceFile":"cz.muni.fi.Example",
         "lineNumber":24,
+        "type":"TestEvent",
+        "sid":1,
         "varDouble":1.2,
         "varBoolean":false
-      },
-  "sid":1,
-  "logLevel":"INFO",
-  "type":"TestEvent"
 }
 ```
 

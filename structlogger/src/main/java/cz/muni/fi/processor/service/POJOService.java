@@ -54,21 +54,13 @@ public class POJOService {
         addPojoField(classBuilder, constructorBuilder, "message", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "sourceFile", TypeName.get(String.class));
         addPojoField(classBuilder, constructorBuilder, "lineNumber", TypeName.LONG);
+        addPojoField(classBuilder, constructorBuilder, "type", TypeName.get(String.class));
+        addPojoField(classBuilder, constructorBuilder, "sid", TypeName.get(Long.class));
+
 
         for (VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));
         }
-
-        classBuilder.addAnnotation(AnnotationSpec.builder(JsonTypeInfo.class)
-                .addMember("include",
-                        CodeBlock.builder()
-                                .add("JsonTypeInfo.As.WRAPPER_OBJECT")
-                                .build())
-                .addMember("use",
-                        CodeBlock.builder()
-                                .add("JsonTypeInfo.Id.NAME")
-                                .build())
-                .build());
 
         final TypeSpec build = classBuilder.addMethod(constructorBuilder.build()).build();
 

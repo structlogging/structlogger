@@ -10,7 +10,7 @@
                 <pattern>
                     <pattern>
                         {
-                        "payload": "#asJson{%message}"
+                        "event": "#asJson{%message}"
                         }
                     </pattern>
                 </pattern>
