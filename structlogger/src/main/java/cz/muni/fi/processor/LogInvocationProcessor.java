@@ -235,11 +235,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
             for (Element enclosed : element.getEnclosedElements()) {
                 if (enclosed.getKind().isField()) {
-                    String loggerName = null;
                     try {
                         final LoggerContext annotation = enclosed.getAnnotation(LoggerContext.class);
                         if (annotation != null) {
-                            loggerName = annotation.name();
                             annotation.context();
                             //TODO class is already compiled
                         }
@@ -247,7 +245,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         final TypeMirror typeMirror = ex.getTypeMirror();
 
                         if (varContextProviders.contains(typeMirror)) {
-                            fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(typeMirror, loggerName));
+                            fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(typeMirror));
                         }
                     }
                 }

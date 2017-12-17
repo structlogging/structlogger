@@ -1,6 +1,5 @@
 package cz.muni.fi.annotation;
 
-import cz.muni.fi.StructLogger;
 import cz.muni.fi.VariableContext;
 
 import java.lang.annotation.ElementType;
@@ -9,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to specify {@link StructLogger} fields
+ * Annotation to specify {@link cz.muni.fi.EventLogger} fields
  * and specifying used {@link VariableContext} and name of logger (underlying slf4j logger)
  *
  * Typical usage:

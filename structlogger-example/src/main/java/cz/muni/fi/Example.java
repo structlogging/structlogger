@@ -1,17 +1,18 @@
 package cz.muni.fi;
 
 import cz.muni.fi.annotation.LoggerContext;
+import org.slf4j.LoggerFactory;
 
 public class Example {
 
     @LoggerContext(context = DefaultContext.class, name = "cz.muni.fi.Default")
-    private static StructLogger<DefaultContext> defaultLog = StructLogger.instance();
+    private static EventLogger<DefaultContext> defaultLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Default"));
 
     @LoggerContext(context = BlockCacheContext.class, name = "cz.muni.fi.Structured")
-    private static StructLogger<BlockCacheContext> structLog = StructLogger.instance();
+    private static EventLogger<BlockCacheContext> structLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Structured"));
 
     @LoggerContext(context = AnotherContext.class, name = "cz.muni.fi.Another")
-    private static StructLogger<AnotherContext> anotherContextStructLog = StructLogger.instance();
+    private static EventLogger<AnotherContext> anotherContextStructLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Another"));
 
     public static void main(String[] args) throws Exception {
 
