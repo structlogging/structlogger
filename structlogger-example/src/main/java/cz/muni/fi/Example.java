@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 
 public class Example {
 
-    @LoggerContext(context = DefaultContext.class, name = "cz.muni.fi.Default")
+    @LoggerContext(context = DefaultContext.class)
     private static EventLogger<DefaultContext> defaultLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Default"));
 
-    @LoggerContext(context = BlockCacheContext.class, name = "cz.muni.fi.Structured")
+    @LoggerContext(context = BlockCacheContext.class)
     private static EventLogger<BlockCacheContext> structLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Structured"));
 
-    @LoggerContext(context = AnotherContext.class, name = "cz.muni.fi.Another")
+    @LoggerContext(context = AnotherContext.class)
     private static EventLogger<AnotherContext> anotherContextStructLog = new EventLogger<>(LoggerFactory.getLogger("cz.muni.fi.Another"));
 
     public static void main(String[] args) throws Exception {

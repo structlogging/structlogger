@@ -23,5 +23,4 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.FIELD})
 public @interface LoggerContext {
     Class context();
-    String name() default "StructuredLogger";
 }
