@@ -22,7 +22,7 @@ public class EventLogger {
     /**
      * log event on info level
      */
-    public void info(final Object o) {
+    public void info(final LoggingEvent o) {
         try {
             this.logger.info(MAPPER.writeValueAsString(o));
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class EventLogger {
     /**
      * log event on debug level
      */
-    public void debug(final Object o) {
+    public void debug(final LoggingEvent o) {
         try {
             this.logger.debug(MAPPER.writeValueAsString(o));
         } catch (Exception e) {
@@ -44,7 +44,7 @@ public class EventLogger {
     /**
      * log event on error level
      */
-    public void error(final Object o) {
+    public void error(final LoggingEvent o) {
         try {
             this.logger.error(MAPPER.writeValueAsString(o));
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class EventLogger {
     /**
      * log event on warn level
      */
-    public void warn(final Object o) {
+    public void warn(final LoggingEvent o) {
         try {
             this.logger.warn(MAPPER.writeValueAsString(o));
         } catch (Exception e) {
