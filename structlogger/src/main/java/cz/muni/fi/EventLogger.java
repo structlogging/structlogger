@@ -1,7 +1,5 @@
 package cz.muni.fi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -12,73 +10,58 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class EventLogger<T extends VariableContext> {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    public static final AtomicLong SEQ_NUMBER = new AtomicLong();
-    private final Logger logger;
+    public static final AtomicLong SEQ_NUMBER = new AtomicLong(); //must be static, generated events use it to generate sequence id
 
-    public EventLogger(final Logger logger) {
-        this.logger = logger;
+    public LoggingCallback callback;
+
+    public EventLogger(final LoggingCallback callback) {
+        this.callback = callback;
     }
 
     /**
      * log event on info level
      */
-    public void info(final LoggingEvent o) {
-        try {
-            this.logger.info(MAPPER.writeValueAsString(o));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void info(final LoggingEvent e) {
+        callback.info(e);
     }
 
     /**
      * log event on debug level
      */
-    public void debug(final LoggingEvent o) {
-        try {
-            this.logger.debug(MAPPER.writeValueAsString(o));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void debug(final LoggingEvent e) {
+        callback.debug(e);
+
     }
 
     /**
      * log event on error level
      */
-    public void error(final LoggingEvent o) {
-        try {
-            this.logger.error(MAPPER.writeValueAsString(o));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void error(final LoggingEvent e) {
+        callback.error(e);
     }
 
     /**
      * log event on warn level
      */
-    public void warn(final LoggingEvent o) {
-        try {
-            this.logger.warn(MAPPER.writeValueAsString(o));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void warn(final LoggingEvent e) {
+        callback.warn(e);
     }
 
     public T debug(String message) {
         return null;
-    };
+    }
 
     public T info(String message) {
         return null;
-    };
+    }
 
     public T error(String message) {
         return null;
-    };
+    }
 
     public T warn(String message) {
         return null;
-    };
+    }
 
     /**
      * based on String pattern, which contains placeholder <code>{}</code>, inserts params into
