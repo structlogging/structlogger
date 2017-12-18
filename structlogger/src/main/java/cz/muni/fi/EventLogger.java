@@ -47,6 +47,13 @@ public class EventLogger<T extends VariableContext> {
         callback.warn(e);
     }
 
+    /**
+     * log event on trace level
+     */
+    public void trace(final LoggingEvent e) {
+        callback.trace(e);
+    }
+
     public T debug(String message) {
         return null;
     }
@@ -60,6 +67,10 @@ public class EventLogger<T extends VariableContext> {
     }
 
     public T warn(String message) {
+        return null;
+    }
+
+    public T trace(String message) {
         return null;
     }
 

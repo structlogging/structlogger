@@ -56,7 +56,7 @@ public class Example {
                 .reason(reason)
                 .log("CannotCache");
 
-        structLog.info("Block {} removal for dataNode {} from PENDING_CACHED - we already have enough cached replicas {} {}")
+        structLog.trace("Block {} removal for dataNode {} from PENDING_CACHED - we already have enough cached replicas {} {}")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .numCached(numCached)

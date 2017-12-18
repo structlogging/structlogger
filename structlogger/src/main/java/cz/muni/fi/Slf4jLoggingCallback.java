@@ -18,7 +18,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void info(final LoggingEvent e) {
         try {
-            this.logger.info(MAPPER.writeValueAsString(e));
+            logger.info(MAPPER.writeValueAsString(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -27,7 +27,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void warn(final LoggingEvent e) {
         try {
-            this.logger.warn(MAPPER.writeValueAsString(e));
+            logger.warn(MAPPER.writeValueAsString(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -36,7 +36,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void debug(final LoggingEvent e) {
         try {
-            this.logger.debug(MAPPER.writeValueAsString(e));
+            logger.debug(MAPPER.writeValueAsString(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -45,7 +45,16 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void error(final LoggingEvent e) {
         try {
-            this.logger.error(MAPPER.writeValueAsString(e));
+            logger.error(MAPPER.writeValueAsString(e));
+        } catch (Exception ex) {
+            throw new RuntimeException("unable to serialize event", ex);
+        }
+    }
+
+    @Override
+    public void trace(final LoggingEvent e) {
+        try {
+            logger.trace(MAPPER.writeValueAsString(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }

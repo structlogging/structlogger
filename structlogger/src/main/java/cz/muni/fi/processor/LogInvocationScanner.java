@@ -174,6 +174,13 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "WARN";
+                } else if (topMethodName.contentEquals("trace")) {
+                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
+                        return;
+                    }
+                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
+                    level = "TRACE";
                 }
             }
             if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
@@ -259,6 +266,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 ),
                 List.nil())
         );
+        listBuffer.add(treeMaker.Literal(level));
         addVariablesToBuffer(usedVariables, listBuffer);
 
         final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(null, com.sun.tools.javac.util.List.nil(), treeMaker.Select(treeMaker.Ident(names.fromString(POJOService.PACKAGE_NAME)), names.fromString(className)), listBuffer.toList(), null);

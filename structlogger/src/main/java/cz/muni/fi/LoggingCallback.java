@@ -11,4 +11,6 @@ public interface LoggingCallback {
     void debug(LoggingEvent e);
 
     void error(LoggingEvent e);
+
+    void trace(LoggingEvent e);
 }

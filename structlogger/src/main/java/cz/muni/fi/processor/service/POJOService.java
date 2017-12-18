@@ -52,12 +52,7 @@ public class POJOService {
 
         final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
 
-        addPojoField(classBuilder, constructorBuilder, "message", TypeName.get(String.class));
-        addPojoField(classBuilder, constructorBuilder, "sourceFile", TypeName.get(String.class));
-        addPojoField(classBuilder, constructorBuilder, "lineNumber", TypeName.LONG);
-        addPojoField(classBuilder, constructorBuilder, "type", TypeName.get(String.class));
-        addPojoField(classBuilder, constructorBuilder, "sid", TypeName.get(Long.class));
-
+        addCommonLoggingEventFields(constructorBuilder);
 
         for (VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));
@@ -68,6 +63,16 @@ public class POJOService {
         final JavaFile javaFile = JavaFile.builder(PACKAGE_NAME, build).build();
 
         return javaFile;
+    }
+
+    private void addCommonLoggingEventFields(final MethodSpec.Builder constructorBuilder) {
+        constructorBuilder.addParameter(TypeName.get(String.class), "message", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.get(String.class), "sourceFile", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.LONG, "lineNumber", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.get(String.class), "type", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.LONG, "sid", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.get(String.class), "logLevel", Modifier.FINAL);
+        constructorBuilder.addCode("super(message,sourceFile,lineNumber,type,sid,logLevel);");
     }
 
     /**
