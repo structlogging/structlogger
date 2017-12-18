@@ -13,10 +13,11 @@ add dependency to your project
 in your java code you can then declare, fields like this:
 ```
 @LoggerContext(context = DefaultContext.class)
-private static StructLogger<DefaultContext> logger = StructLogger.instance();
+private static EventLogger<DefaultContext> logger = new EventLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("LOGGER")));
 ```
 
-(please note that StructLogger should not be declared and cannot be used as local variable)
+please note that EventLogger should not be declared and cannot be used as local variable!!
+EventLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/cz/muni/fi/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/cz/muni/fi/LoggingCallback.java)
 
 this declared logger can then be used for logging in structured way like this:
 
@@ -35,6 +36,7 @@ this structured log statement will generate json like this:
         "lineNumber":24,
         "type":"Event853e32ae",
         "sid":1,
+        "logLevel":"INFO",
         "varDouble":1.2,
         "varBoolean":false
 }
