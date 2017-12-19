@@ -95,6 +95,11 @@ public class Example {
         structLog.info("ahojkya {}")
                 .object(new Test("ahoj"))
                 .log();
+
+        structLog.audit("audited event with blockId={} and dataNode={}")
+                .blockId(1)
+                .dataNodeUuid(2)
+                .log();
     }
 
     private static int someMethod() {

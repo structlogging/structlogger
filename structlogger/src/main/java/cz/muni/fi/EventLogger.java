@@ -53,6 +53,13 @@ public class EventLogger<T extends VariableContext> {
         callback.trace(e);
     }
 
+    /**
+     * log audit event
+     */
+    public void audit(final LoggingEvent e) {
+        callback.audit(e);
+    }
+
     // this are used just as placeholders, they should not be called at runtime,
     // calls to these methods are replaced by annotation processor to calls to correct method which accepts LoggingEvent
     // these methods are just used to give programmer a nice way to work with fluent logging API instead of creating logging events manually
@@ -74,6 +81,10 @@ public class EventLogger<T extends VariableContext> {
     }
 
     public T trace(String message) {
+        return null;
+    }
+
+    public T audit(String message) {
         return null;
     }
     /////////////////////////////////////////////////////////////

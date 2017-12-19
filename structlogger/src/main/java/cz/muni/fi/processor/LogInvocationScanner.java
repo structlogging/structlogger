@@ -181,6 +181,13 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "TRACE";
+                } else if (topMethodName.contentEquals("audit")) {
+                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, format("method %s in %s statement must have String literal as argument", topMethodName, statementInfo.getStatement()));
+                        return;
+                    }
+                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
+                    level = "AUDIT";
                 }
             }
             if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
