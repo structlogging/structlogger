@@ -137,6 +137,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         String level = null;
         String eventName = null;
 
+        //statement check
         final StructLoggerFieldContext structLoggerFieldContext = fields.get(name);
         final TypeMirror typeMirror = structLoggerFieldContext.getContextProvider();
         final ProviderVariables providerVariables = varsHashMap.get(typeMirror);
@@ -207,12 +208,15 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             }
         }
 
+        //parametrization check
         final int countOfStringVariables = StringUtils.countMatches(literal.getValue().toString(), "{}");
         if (countOfStringVariables != usedVariables.size()) {
             messager.printMessage(Diagnostic.Kind.ERROR, format("literal %s contains %d variables, but statement %s uses %d variables",
                     literal.getValue().toString(), countOfStringVariables, statementInfo.getStatement(), usedVariables.size()));
             return;
         }
+
+        //event class generation
         final JavaFile javaFile = pojoService.createPojo(eventName, literal, usedVariables);
         final String className = javaFile.typeSpec.name;
         final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(POJOService.PACKAGE_NAME + "." + className, className, (String) literal.getValue(), usedVariables);
@@ -227,6 +231,8 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         generatedClassesNames.add(generatedClassInfo);
 
         pojoService.writeJavaFile(javaFile);
+
+        //replace statement
         replaceInCode(name.toString(), className, statementInfo, usedVariables, literal, level);
     }
 
@@ -283,7 +289,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                         treeMaker.Ident(
                                 elementUtils.getName(loggerName)
                         ),
-                        elementUtils.getName(level.toLowerCase())
+                        elementUtils.getName(level.toLowerCase() + "Event")
                 ),
                 com.sun.tools.javac.util.List.of(
                         jcNewClass

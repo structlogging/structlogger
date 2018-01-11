@@ -21,42 +21,42 @@ public class EventLogger<T extends VariableContext> {
     /**
      * log event on info level
      */
-    public void info(final LoggingEvent e) {
+    public void infoEvent(final LoggingEvent e) {
         callback.info(e);
     }
 
     /**
      * log event on debug level
      */
-    public void debug(final LoggingEvent e) {
+    public void debugEvent(final LoggingEvent e) {
         callback.debug(e);
     }
 
     /**
      * log event on error level
      */
-    public void error(final LoggingEvent e) {
+    public void errorEvent(final LoggingEvent e) {
         callback.error(e);
     }
 
     /**
      * log event on warn level
      */
-    public void warn(final LoggingEvent e) {
+    public void warnEvent(final LoggingEvent e) {
         callback.warn(e);
     }
 
     /**
      * log event on trace level
      */
-    public void trace(final LoggingEvent e) {
+    public void traceEvent(final LoggingEvent e) {
         callback.trace(e);
     }
 
     /**
      * log audit event
      */
-    public void audit(final LoggingEvent e) {
+    public void auditEvent(final LoggingEvent e) {
         callback.audit(e);
     }
 
