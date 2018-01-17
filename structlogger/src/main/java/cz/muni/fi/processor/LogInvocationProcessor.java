@@ -38,14 +38,9 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,8 +55,6 @@ import java.util.Set;
 @SupportedAnnotationTypes("*")
 public class LogInvocationProcessor extends AbstractProcessor {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(objectMapper);
 
     /**
      * Set of all classes annotated with {@link VarContextProvider}, set of all classes which can provide variable logging context
@@ -83,24 +76,21 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Elements elements;
 
     /**
-     * absolute path, where folder with schemas should be created
-     */
-    private String schemasRoot;
-
-    /**
      * Used for generating json schemas by {@link SchemaGenerator}
      */
-    private final SchemaGenerator schemaGenerator = new SchemaGenerator();
+    private SchemaGenerator schemaGenerator;
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        //TODO check that schemasRoot is set
+        schemaGenerator = new SchemaGenerator(generatedClassesInfo, processingEnv.getOptions().get("schemasRoot"));
+
         JavacTask.instance(processingEnv).addTaskListener(schemaGenerator);
 
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         elements = processingEnv.getElementUtils();
-        schemasRoot = processingEnv.getOptions().get("schemasRoot");
     }
 
     @Override
@@ -259,53 +249,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
             if (!fields.isEmpty()) {
                 new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
             }
-        }
-    }
-
-    /**
-     * TaskListener, which takes care of generating json schemas for logging events, after GENERATE phase of compilation
-     */
-    private final class SchemaGenerator implements TaskListener {
-        @Override
-        public void started(final TaskEvent e) {
-
-        }
-
-        @Override
-        public void finished(final TaskEvent e) {
-
-            if (e.getKind() != TaskEvent.Kind.GENERATE) {
-                return;
-            }
-
-            final Iterator<GeneratedClassInfo> iterator = generatedClassesInfo.iterator();
-            while (iterator.hasNext()) {
-                final GeneratedClassInfo generatedGeneratedClassInfo = iterator.next();
-                try {
-                    final Class<?> clazz = Class.forName(generatedGeneratedClassInfo.getQualifiedName());
-                    final JsonSchema schema = schemaGen.generateSchema(clazz);
-                    schema.set$schema("http://json-schema.org/draft-04/schema#");
-                    schema.setDescription(generatedGeneratedClassInfo.getDescription());
-                    schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getSimpleName());
-                    iterator.remove();
-                    createSchemaFile("events", generatedGeneratedClassInfo.getSimpleName(), schema);
-                } catch (Exception e1) {
-                    //TODO
-                }
-            }
-        }
-    }
-
-    private void createSchemaFile(String namespace, String signature, JsonSchema schema) {
-        try {
-            final String dir = schemasRoot + "/schemas/" + namespace.replace(".", "/") + "/";
-            messager.printMessage(Diagnostic.Kind.WARNING, dir);
-            Files.createDirectories(Paths.get(dir));
-            FileOutputStream out = new FileOutputStream(dir + signature + ".json");
-            out.write(this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(schema));
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

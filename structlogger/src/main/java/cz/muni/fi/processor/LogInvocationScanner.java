@@ -64,9 +64,12 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         this.fields = fields;
         this.treeMaker = TreeMaker.instance(context);
         this.elementUtils = (JavacElements) processingEnvironment.getElementUtils();
-        this.pojoService = new POJOService(processingEnvironment.getFiler());
-        this.names = Names.instance(context);
         this.messager = processingEnvironment.getMessager();
+
+        //TODO check that generatedEventsPackage is set
+        final String generatedEventsPackage = processingEnvironment.getOptions().get("generatedEventsPackage");
+        this.pojoService = new POJOService(processingEnvironment.getFiler(), generatedEventsPackage);
+        this.names = Names.instance(context);
         this.generatedClassesNames = generatedClassesNames;
     }
 
@@ -219,7 +222,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         //event class generation
         final JavaFile javaFile = pojoService.createPojo(eventName, literal, usedVariables);
         final String className = javaFile.typeSpec.name;
-        final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(POJOService.PACKAGE_NAME + "." + className, className, (String) literal.getValue(), usedVariables);
+        final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(javaFile.packageName + "." + className, className, (String) literal.getValue(), usedVariables, javaFile.packageName);
         for (GeneratedClassInfo info : generatedClassesNames) {
             if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
                     && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
@@ -233,7 +236,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         pojoService.writeJavaFile(javaFile);
 
         //replace statement
-        replaceInCode(name.toString(), className, statementInfo, usedVariables, literal, level);
+        replaceInCode(name.toString(), generatedClassInfo, statementInfo, usedVariables, literal, level);
     }
 
     private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
@@ -254,20 +257,20 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     /**
      * replaces statement with our improved call to {@link EventLogger}
      * @param loggerName
-     * @param className
+     * @param generatedClassInfo
      * @param statementInfo
      * @param usedVariables
      * @param literal
      * @param level
      */
-    private void replaceInCode(final String loggerName, final String className, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+    private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
         final ListBuffer listBuffer = new ListBuffer();
 
         listBuffer.add(createEventLoggerFormatCall(usedVariables, literal));
 
         listBuffer.add(treeMaker.Literal(statementInfo.getSourceFileName()));
         listBuffer.add(treeMaker.Literal(statementInfo.getLineNumber()));
-        listBuffer.add(treeMaker.Literal(className));
+        listBuffer.add(treeMaker.Literal(generatedClassInfo.getSimpleName()));
         listBuffer.add(treeMaker.Apply(
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(
@@ -282,7 +285,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         listBuffer.add(treeMaker.Literal(level));
         addVariablesToBuffer(usedVariables, listBuffer);
 
-        final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(null, com.sun.tools.javac.util.List.nil(), treeMaker.Select(treeMaker.Ident(names.fromString(POJOService.PACKAGE_NAME)), names.fromString(className)), listBuffer.toList(), null);
+        final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(null, com.sun.tools.javac.util.List.nil(), treeMaker.Select(treeMaker.Ident(names.fromString(generatedClassInfo.getPackageName())), names.fromString(generatedClassInfo.getSimpleName())), listBuffer.toList(), null);
         final JCTree.JCMethodInvocation apply = treeMaker.Apply(
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(

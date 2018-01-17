@@ -19,12 +19,15 @@ import java.util.List;
  */
 public class POJOService {
 
-    public static final String PACKAGE_NAME = "structlogger.generated";
+    private static final String PACKAGE_NAME = "structlogger.generated";
 
     private final Filer filer;
+    private String generatedEventsPackage;
 
-    public POJOService(final Filer filer) {
+    public POJOService(final Filer filer, final String generatedEventsPackage) {
         this.filer = filer;
+
+        this.generatedEventsPackage = StringUtils.isBlank(generatedEventsPackage) ? PACKAGE_NAME : generatedEventsPackage;
     }
 
     /**
@@ -60,7 +63,7 @@ public class POJOService {
 
         final TypeSpec build = classBuilder.addMethod(constructorBuilder.build()).build();
 
-        final JavaFile javaFile = JavaFile.builder(PACKAGE_NAME, build).build();
+        final JavaFile javaFile = JavaFile.builder(generatedEventsPackage, build).build();
 
         return javaFile;
     }

@@ -11,6 +11,10 @@
 
     <artifactId>structlogger-example</artifactId>
 
+    <properties>
+        <generatedEventsPackage>auto</generatedEventsPackage>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -68,6 +72,7 @@
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
                         <arg>-AschemasRoot=${basedir}</arg>
+                        <arg>-AgeneratedEventsPackage=${generatedEventsPackage}</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
