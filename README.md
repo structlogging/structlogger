@@ -1,3 +1,7 @@
+## Travis build
+
+[![Build Status](https://travis-ci.org/Tantalor93/structlogger.svg?branch=master)](https://travis-ci.org/Tantalor93/structlogger)
+
 ## How to use this project
 clone this project from github and build this project using maven `mvn clean install`
 
