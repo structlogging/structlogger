@@ -14,6 +14,25 @@ add dependency to your project
 </dependency>
 ```
 
+then you should set compiler argument `schemasRoot` in order to set path where schemas are generated, also you can set package (namespace) for auto generated events using compiler argument `generatedEventsPackage`, which takes qualified package (dot notation, e.g. cz.muni.fi). You can set compiler arguments using maven-compiler-plugin
+
+```
+<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-AschemasRoot=${basedir}</arg>
+                        <arg>-AgeneratedEventsPackage=${generatedEventsPackage}</arg>
+                    </compilerArgs>
+                </configuration>
+</plugin>
+```
+
 in your java code you can then declare, fields like this:
 ```
 @LoggerContext(context = DefaultContext.class)
