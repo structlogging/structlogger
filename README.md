@@ -18,7 +18,7 @@ then you should set compiler argument `schemasRoot` in order to set path where s
 
 ```
 <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
