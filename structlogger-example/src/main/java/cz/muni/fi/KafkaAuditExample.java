@@ -9,11 +9,11 @@ public class KafkaAuditExample {
 
     public static void main(String[] args) throws Exception {
 
-        logger.audit("start action id= {}")
+        logger.audit("start action")
                 .id(1)
                 .log("StartAction");
 
-        logger.audit("end action id= {}")
+        logger.audit("end action")
                 .id(2)
                 .log("EndAction");
     }

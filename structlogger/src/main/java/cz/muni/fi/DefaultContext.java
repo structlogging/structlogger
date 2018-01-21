@@ -6,7 +6,7 @@ import cz.muni.fi.annotation.VarContextProvider;
 /**
  * Default {@link VariableContext} containing basic variables
  */
-@VarContextProvider
+@VarContextProvider(parametrization = true)
 public interface DefaultContext extends VariableContext {
 
     @Var

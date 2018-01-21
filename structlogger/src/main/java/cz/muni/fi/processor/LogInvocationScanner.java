@@ -20,7 +20,7 @@ import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.processor.service.POJOService;
 import cz.muni.fi.utils.GeneratedClassInfo;
 import cz.muni.fi.utils.MethodAndParameter;
-import cz.muni.fi.utils.ProviderVariables;
+import cz.muni.fi.utils.VariableContextProvider;
 import cz.muni.fi.utils.ScannerParams;
 import cz.muni.fi.utils.StatementInfo;
 import cz.muni.fi.utils.StructLoggerFieldContext;
@@ -45,7 +45,7 @@ import java.util.Stack;
 public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
 
 
-    private final HashMap<TypeMirror, ProviderVariables> varsHashMap;
+    private final HashMap<TypeMirror, VariableContextProvider> varsHashMap;
     private final Map<Name, StructLoggerFieldContext> fields;
     private final TreeMaker treeMaker;
     private final JavacElements elementUtils;
@@ -54,7 +54,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     private final Messager messager;
     private final Set<GeneratedClassInfo> generatedClassesNames;
 
-    public LogInvocationScanner(final HashMap<TypeMirror, ProviderVariables> varsHashMap,
+    public LogInvocationScanner(final HashMap<TypeMirror, VariableContextProvider> varsHashMap,
                                 final Map<Name, StructLoggerFieldContext> fields,
                                 final ProcessingEnvironment processingEnvironment,
                                 final Set<GeneratedClassInfo> generatedClassesNames) {
@@ -143,10 +143,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         //statement check
         final StructLoggerFieldContext structLoggerFieldContext = fields.get(name);
         final TypeMirror typeMirror = structLoggerFieldContext.getContextProvider();
-        final ProviderVariables providerVariables = varsHashMap.get(typeMirror);
+        final VariableContextProvider variableContextProvider = varsHashMap.get(typeMirror);
         while (!stack.empty()) {
             final MethodAndParameter top = stack.pop();
-            for (Variable variable : providerVariables.getVariables()) {
+            for (Variable variable : variableContextProvider.getVariables()) {
                 final Name topMethodName = top.getMethodName();
                 if (variable.getName().equals(topMethodName)) {
                     addToUsedVariables(usedVariables, top, variable);
@@ -212,11 +212,13 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         }
 
         //parametrization check
-        final int countOfStringVariables = StringUtils.countMatches(literal.getValue().toString(), "{}");
-        if (countOfStringVariables != usedVariables.size()) {
-            messager.printMessage(Diagnostic.Kind.ERROR, format("literal %s contains %d variables, but statement %s uses %d variables",
-                    literal.getValue().toString(), countOfStringVariables, statementInfo.getStatement(), usedVariables.size()));
-            return;
+        if (variableContextProvider.shouldParametrize()) {
+            final int countOfStringVariables = StringUtils.countMatches(literal.getValue().toString(), "{}");
+            if (countOfStringVariables != usedVariables.size()) {
+                messager.printMessage(Diagnostic.Kind.ERROR, format("literal %s contains %d variables, but statement %s uses %d variables",
+                        literal.getValue().toString(), countOfStringVariables, statementInfo.getStatement(), usedVariables.size()));
+                return;
+            }
         }
 
         //event class generation
@@ -236,7 +238,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         pojoService.writeJavaFile(javaFile);
 
         //replace statement
-        replaceInCode(name.toString(), generatedClassInfo, statementInfo, usedVariables, literal, level);
+        replaceInCode(name.toString(), generatedClassInfo, statementInfo, usedVariables, literal, level, variableContextProvider);
     }
 
     private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
@@ -262,11 +264,17 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
      * @param usedVariables
      * @param literal
      * @param level
+     * @param variableContextProvider
      */
-    private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level) {
+    private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level, VariableContextProvider variableContextProvider) {
         final ListBuffer listBuffer = new ListBuffer();
 
-        listBuffer.add(createEventLoggerFormatCall(usedVariables, literal));
+        if(variableContextProvider.shouldParametrize()) {
+            listBuffer.add(createEventLoggerFormatCall(usedVariables, literal));
+        }
+        else {
+            listBuffer.add(literal);
+        }
 
         listBuffer.add(treeMaker.Literal(statementInfo.getSourceFileName()));
         listBuffer.add(treeMaker.Literal(statementInfo.getLineNumber()));

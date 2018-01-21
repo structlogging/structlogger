@@ -2,13 +2,8 @@ package cz.muni.fi.processor;
 
 import static java.lang.String.format;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.google.auto.service.AutoService;
 import com.sun.source.util.JavacTask;
-import com.sun.source.util.TaskEvent;
-import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import cz.muni.fi.VariableContext;
@@ -16,7 +11,7 @@ import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.annotation.Var;
 import cz.muni.fi.annotation.VarContextProvider;
 import cz.muni.fi.utils.GeneratedClassInfo;
-import cz.muni.fi.utils.ProviderVariables;
+import cz.muni.fi.utils.VariableContextProvider;
 import cz.muni.fi.utils.ScannerParams;
 import cz.muni.fi.utils.StructLoggerFieldContext;
 import cz.muni.fi.utils.Variable;
@@ -64,7 +59,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     /**
      * Map representing for all {@link VarContextProvider} annotated classes, what kind of variables they expose (all {@link Var} annotated elements
      */
-    private final HashMap<TypeMirror, ProviderVariables> varsHashMap = new HashMap<>();
+    private final HashMap<TypeMirror, VariableContextProvider> varsHashMap = new HashMap<>();
 
     /**
      * Set of all generated classes (logging events), used by {@link SchemaGenerator}
@@ -151,6 +146,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private boolean processElement(final Element element, final TypeMirror typeMirror) {
         varContextProviders.add(typeMirror);
         final List<Variable> elements = new ArrayList<>();
+        final VarContextProvider varContextProvider = element.getAnnotation(VarContextProvider.class);
         for (Element enclosed : element.getEnclosedElements()) {
             final Var annotation = enclosed.getAnnotation(Var.class);
             if (annotation != null) {
@@ -184,7 +180,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         if (elements.isEmpty()) {
             messager.printMessage(Diagnostic.Kind.WARNING, format("%s has no @Var annotated methods", element), element);
         }
-        varsHashMap.put(typeMirror, new ProviderVariables(typeMirror, elements));
+        varsHashMap.put(typeMirror, new VariableContextProvider(typeMirror, elements, varContextProvider.parametrization()));
         return false;
     }
 

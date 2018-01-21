@@ -36,67 +36,62 @@ public class Example {
                 .varBoolean(false)
                 .log();
 
-        structLog.warn("Block removal {} for dataNode from {} PENDING_UNCACHED - it was uncached by the dataNode.")
+        structLog.warn("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .log();
 
-        structLog.warn("Block removal {} for dataNode from {} PENDING_UNCACHED - it was uncached by the dataNode.")
+        structLog.warn("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .log();
 
-        structLog.warn("Block removal {} for dataNode from {} PENDING_UNCACHED - it was uncached by the dataNode.")
-                .blockId(blockId)
-                .dataNodeUuid(datanodeUuid)
-                .log();
-
-        structLog.info("Cannot cache block {} because {}")
+        structLog.info("Cannot cache block because")
                 .blockId(blockId)
                 .reason(reason)
                 .log("CannotCache");
 
-        structLog.trace("Block {} removal for dataNode {} from PENDING_CACHED - we already have enough cached replicas {} {}")
+        structLog.trace("Block removal for dataNode from PENDING_CACHED - we already have enough cached replicas")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .numCached(numCached)
                 .neededCached(neededCached)
                 .log("BlockRemoval");
 
-        structLog.info("Block {} removal for dataNode {} from PENDING_UNCACHED - we do not have enough cached replicas {} {}")
+        structLog.info("Block removal for dataNode from PENDING_UNCACHED - we do not have enough cached replicas")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .numCached(numCached)
                 .neededCached(neededCached)
                 .log("BlockRemoval");
 
-        structLog.info("Block {} removal for dataNode from cachedBlocks - neededCached == 0, and pendingUncached and pendingCached are empty.")
+        structLog.info("Block removal for dataNode from cachedBlocks - neededCached == 0, and pendingUncached and pendingCached are empty.")
                 .blockId(blockId)
                 .log();
 
-        structLog.info("Block {} removal for dataNode {} from PENDING_UNCACHED - it was uncached by the dataNode.")
+        structLog.info("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")
                 .blockId(new Object().hashCode())
                 .dataNodeUuid(someMethod())
                 .log();
 
-        structLog.error("errorek {}")
+        structLog.error("errorek")
                 .blockId(blockId)
                 .log();
 
-        anotherContextStructLog.info("ahoj {} ")
+        anotherContextStructLog.info("ahoj")
                 .context("ahoj")
                 .log();
 
-        structLog.info("Block {} removal for dataNode {} from PENDING_UNCACHED - it was uncached by the dataNode.")
+        structLog.info("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")
                 .blockId(new Object().hashCode())
                 .dataNodeUuid(someMethod())
                 .log();
 
-        structLog.info("ahojkya {}")
+        structLog.info("ahojkya")
                 .object(new Test("ahoj"))
                 .log();
 
-        structLog.audit("audited event with blockId={} and dataNode={}")
+        structLog.audit("audited event with blockId and dataNode")
                 .blockId(1)
                 .dataNodeUuid(2)
                 .log();

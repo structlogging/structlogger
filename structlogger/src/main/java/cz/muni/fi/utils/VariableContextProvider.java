@@ -8,14 +8,16 @@ import java.util.List;
 /**
  * Class representing class annotated with {@link VarContextProvider}
  */
-public class ProviderVariables {
+public class VariableContextProvider {
 
     private TypeMirror typeMirror;
     private List<Variable> variables;
+    private boolean parametrization;
 
-    public ProviderVariables(final TypeMirror typeMirror, final List<Variable> variables) {
+    public VariableContextProvider(final TypeMirror typeMirror, final List<Variable> variables, final boolean parametrization) {
         this.typeMirror = typeMirror;
         this.variables = variables;
+        this.parametrization = parametrization;
     }
 
     /**
@@ -34,9 +36,17 @@ public class ProviderVariables {
         return variables;
     }
 
+    /**
+     *
+     * @return whether this variable context provider uses parametrized log message
+     */
+    public boolean shouldParametrize() {
+        return parametrization;
+    }
+
     @Override
     public String toString() {
-        return "ProviderVariables{" +
+        return "VariableContextProvider{" +
                 "typeMirror=" + typeMirror +
                 ", variables=" + variables +
                 '}';
