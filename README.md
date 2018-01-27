@@ -158,3 +158,6 @@ logger.info("test {} string literal {}")
 must contain two `{}` placeholders, because we are using two parameters here `varDouble` and `varBoolean`, these placeholders are at runtime replaced with values passed as argument to log parameters, so here it will create event message will look like this `test 1.2 string literal false`.
 
 If `parametrization` is set to false, no placeholder `{}` is replaced in log message and no placeholders are enforced in log message during compilation
+
+## Structlogger tests
+tests of structlogger API and annotation processor are located in [structlogger-tests](structlogger-tests) module
