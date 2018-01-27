@@ -10,6 +10,7 @@ import cz.muni.fi.VariableContext;
 import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.annotation.Var;
 import cz.muni.fi.annotation.VarContextProvider;
+import cz.muni.fi.processor.exception.PackageNameException;
 import cz.muni.fi.utils.GeneratedClassInfo;
 import cz.muni.fi.utils.VariableContextProvider;
 import cz.muni.fi.utils.ScannerParams;
@@ -33,6 +34,7 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -243,7 +245,13 @@ public class LogInvocationProcessor extends AbstractProcessor {
             // do not generate logger fields for classes which do not specify any LoggerContext annotated StructLogger
             // and do not do any code replacement in such class
             if (!fields.isEmpty()) {
-                new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
+                try {
+                    new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
+                } catch (IOException e) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, "IOException caught");
+                } catch (PackageNameException e) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                }
             }
         }
     }

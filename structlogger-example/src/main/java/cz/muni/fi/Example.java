@@ -25,7 +25,7 @@ public class Example {
         defaultLog.info("test {} string literal {}")
                 .varDouble(1.2)
                 .varBoolean(false)
-                .log("TestEvent");
+                .log("edu.TestEvent");
 
         defaultLog.info("cau3 {} {} {} mnau {} {} {}")
                 .varDouble(1.2)
@@ -56,14 +56,14 @@ public class Example {
                 .dataNodeUuid(datanodeUuid)
                 .numCached(numCached)
                 .neededCached(neededCached)
-                .log("BlockRemoval");
+                .log("cz.muni.BlockRemoval");
 
         structLog.info("Block removal for dataNode from PENDING_UNCACHED - we do not have enough cached replicas")
                 .blockId(blockId)
                 .dataNodeUuid(datanodeUuid)
                 .numCached(numCached)
                 .neededCached(neededCached)
-                .log("BlockRemoval");
+                .log("cz.BlockRemoval");
 
         structLog.info("Block removal for dataNode from cachedBlocks - neededCached == 0, and pendingUncached and pendingCached are empty.")
                 .blockId(blockId)
