@@ -42,7 +42,7 @@ public class POJOService {
                             StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
         }
 
-        final boolean containsJavaKeyword = javaKeywords.stream().anyMatch(e -> generatedEventsPackage.contains(e));
+        final boolean containsJavaKeyword = javaKeywords.stream().anyMatch(e -> this.generatedEventsPackage.contains(e));
         if (containsJavaKeyword) {
             throw new PackageNameException("generatedEventsPackage compiler argument contains java keyword");
         }

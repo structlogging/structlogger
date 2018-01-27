@@ -11,6 +11,7 @@
     <modules>
         <module>structlogger</module>
         <module>structlogger-example</module>
+        <module>structlogger-tests</module>
     </modules>
 
     <properties>

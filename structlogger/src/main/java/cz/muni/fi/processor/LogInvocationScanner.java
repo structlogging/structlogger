@@ -233,7 +233,8 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             return;
         }
         final String className = javaFile.typeSpec.name;
-        final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(javaFile.packageName + "." + className, className, (String) literal.getValue(), usedVariables, javaFile.packageName);
+        final String qualifiedName = StringUtils.isBlank(javaFile.packageName) ? className : javaFile.packageName + "." + className;
+        final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(qualifiedName, className, (String) literal.getValue(), usedVariables, javaFile.packageName);
         for (GeneratedClassInfo info : generatedClassesNames) {
             if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
                     && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
