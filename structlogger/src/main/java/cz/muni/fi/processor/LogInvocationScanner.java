@@ -155,84 +155,42 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     addToUsedVariables(usedVariables, top, variable);
                 } else if (topMethodName.contentEquals("info")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "INFO";
                 } else if (topMethodName.contentEquals("error")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "ERROR";
                 } else if (topMethodName.contentEquals("debug")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "DEBUG";
                 } else if (topMethodName.contentEquals("warn")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "WARN";
                 } else if (topMethodName.contentEquals("trace")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
                     level = "TRACE";
                 } else if (topMethodName.contentEquals("audit")) {
                     if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        messager.printMessage(
-                                Diagnostic.Kind.ERROR,
-                                format(
-                                        "method %s in %s statement must have String literal as argument",
-                                        topMethodName,
-                                        statementInfo.getStatement()
-                                )
-                        );
+                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
                         return;
                     }
                     literal = (JCTree.JCLiteral) node.getArguments().get(0);
@@ -241,22 +199,17 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             }
             if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
                 if (!(top.getParameter() instanceof JCTree.JCLiteral)){
-                    messager.printMessage(
-                            Diagnostic.Kind.ERROR,
-                            format(
-                                    "method %s in %s statement must have String literal as argument",
-                                    top.getMethodName(),
-                                    statementInfo.getStatement()
-                            )
-                    );
+                    printStatementMustHaveStringLiteralError(statementInfo, top.getMethodName());
                     return;
                 }
                 eventName = ((JCTree.JCLiteral) top.getParameter()).getValue().toString();
                 if (!Pattern.compile("^(\\w+(\\.\\w+)*)+$").matcher(eventName).matches()) {
                     messager.printMessage(
                             Diagnostic.Kind.ERROR,
-                            format(
-                                    "%s statement must specify valid qualified class name",
+                            formatWithStatementLocation(
+                                    "qualified event name %s specified by %s statement is not valid",
+                                    statementInfo,
+                                    eventName,
                                     statementInfo.getStatement()
                             )
                     );
@@ -266,8 +219,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             if (stack.empty() && !top.getMethodName().contentEquals("log")) {
                 messager.printMessage(
                         Diagnostic.Kind.ERROR,
-                        format(
+                        formatWithStatementLocation(
                                 "statement %s must be ended by calling log() method",
+                                statementInfo,
                                 statementInfo.getStatement()
                         )
                 );
@@ -281,8 +235,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             if (countOfStringVariables != usedVariables.size()) {
                 messager.printMessage(
                         Diagnostic.Kind.ERROR,
-                        format(
+                        formatWithStatementLocation(
                                 "literal %s contains %d variables, but statement %s uses %d variables",
+                                statementInfo,
                                 literal.getValue().toString(),
                                 countOfStringVariables,
                                 statementInfo.getStatement(),
@@ -300,8 +255,11 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         } catch (PackageNameException e) {
             messager.printMessage(
                     Diagnostic.Kind.ERROR,
-                    format("qualified event name generated by statement %s is not valid, please check specified event name and package does not contain java keyword or no subpackage or class name starts with number",
-                           statementInfo.getStatement()
+                    formatWithStatementLocation(
+                            "qualified event name %s generated by statement %s is not valid, please check specified event name and package does not contain java keyword or no subpackage or class name starts with number",
+                            statementInfo,
+                            eventName,
+                            statementInfo.getStatement()
                     )
             );
             return;
@@ -315,8 +273,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     ) {
                 messager.printMessage(
                         Diagnostic.Kind.ERROR,
-                        format(
+                        formatWithStatementLocation(
                                 "Statement %s generates different event structure for same event name",
+                                statementInfo,
                                 statementInfo.getStatement()
                         )
                 );
@@ -329,6 +288,22 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
         //replace statement
         replaceInCode(name.toString(), generatedClassInfo, statementInfo, usedVariables, literal, level, variableContextProvider);
+    }
+
+    private void printStatementMustHaveStringLiteralError(final StatementInfo statementInfo, final Name topMethodName) {
+        messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                formatWithStatementLocation(
+                        "method %s in %s statement must have String literal as argument",
+                        statementInfo,
+                        topMethodName,
+                        statementInfo.getStatement()
+                )
+        );
+    }
+
+    private String formatWithStatementLocation(String format, StatementInfo statementInfo, Object... args) {
+        return format(format, args) + format(" [%s:%s]", statementInfo.getSourceFileName(), statementInfo.getLineNumber());
     }
 
     private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
