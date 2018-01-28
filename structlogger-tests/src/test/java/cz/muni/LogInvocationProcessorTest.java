@@ -10,10 +10,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import cz.muni.fi.DefaultContext;
 import cz.muni.fi.EventLogger;
 import cz.muni.fi.LoggingEvent;
 import cz.muni.fi.annotation.LoggerContext;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,17 +26,21 @@ public class LogInvocationProcessorTest {
     private ListLoggingCallback callback;
 
     @LoggerContext(context = TestContext.class)
-    private EventLogger<TestContext> defaultLog;
+    private EventLogger<TestContext> testLogger;
+
+    @LoggerContext(context = DefaultContext.class)
+    private EventLogger<DefaultContext> defaultContextLogger;
 
     @Before
     public void setUp() throws Exception {
         callback = new ListLoggingCallback();
-        defaultLog = new EventLogger<>(callback);
+        testLogger = new EventLogger<>(callback);
+        defaultContextLogger = new EventLogger<>(callback);
     }
 
     @Test
     public void shouldLogEventWithNoNamespace() throws Exception {
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(1)
                 .varString("ahoj")
                 .log("NoNamespaceEvent");
@@ -51,7 +55,7 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogEventGeneratedEventName() throws Exception {
-        defaultLog.info("test generated event name")
+        testLogger.info("test generated event name")
                 .log();
 
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
@@ -63,7 +67,7 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogCorrectEvent() throws Exception {
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(1)
                 .varString("ahoj")
                 .log("structlogger.test.TestEvent");
@@ -85,7 +89,7 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogEventWithSequencedFields() throws Exception {
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(1)
                 .varInt(1)
                 .varInt(1)
@@ -102,16 +106,16 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogEventWithIncreasingSid() throws Exception {
-        defaultLog.info("test")
+        testLogger.info("test")
                   .log("X1");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                   .log("X2");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                   .log("X3");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                    .log("X4");
 
         final List<LoggingEvent> eventList = callback.getLoggingEventList();
@@ -122,23 +126,23 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogMultipleEvents() {
-        defaultLog.info("test")
+        testLogger.info("test")
                   .varInt(1)
                   .log("structlogger.test.A");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(2)
                 .log("structlogger.test.B");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(3)
                 .log("structlogger.test.C");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(4)
                 .log("structlogger.test.D");
 
-        defaultLog.info("test")
+        testLogger.info("test")
                 .varInt(5)
                 .log("structlogger.test.E");
 
@@ -147,25 +151,35 @@ public class LogInvocationProcessorTest {
 
     @Test
     public void shouldLogEventsWithCorrectLogLevel() throws Exception {
-        defaultLog.info("test")
+        testLogger.info("test")
                   .log("structlogger.test.F");
 
-        defaultLog.warn("test")
+        testLogger.warn("test")
                   .log("structlogger.test.G");
 
-        defaultLog.error("test")
+        testLogger.error("test")
                   .log("structlogger.test.H");
 
-        defaultLog.trace("test")
+        testLogger.trace("test")
                   .log("structlogger.test.I");
 
-        defaultLog.debug("test")
+        testLogger.debug("test")
                   .log("structlogger.test.J");
 
-        defaultLog.audit("test")
+        testLogger.audit("test")
                   .log("structlogger.test.K");
 
         assertThat(callback.getLoggingEventList().stream().map(e -> e.getLogLevel()).collect(Collectors.toList()),
                 is(hasItems("INFO", "WARN", "ERROR", "TRACE", "DEBUG", "AUDIT")));
+    }
+
+    @Test
+    public void shouldParametrizeMessage() throws Exception {
+        defaultContextLogger.info("parameter1={} parameter2={}")
+                            .varInt(1)
+                            .varBoolean(true)
+                            .log("structlogger.test.ParametrizedEvent");
+
+        assertThat(callback.getLoggingEventList().get(0).getMessage(), is(equalTo("parameter1=1 parameter2=true")));
     }
 }

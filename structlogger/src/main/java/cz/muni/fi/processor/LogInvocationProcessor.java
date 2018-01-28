@@ -12,11 +12,10 @@ import cz.muni.fi.annotation.Var;
 import cz.muni.fi.annotation.VarContextProvider;
 import cz.muni.fi.processor.exception.PackageNameException;
 import cz.muni.fi.utils.GeneratedClassInfo;
-import cz.muni.fi.utils.VariableContextProvider;
 import cz.muni.fi.utils.ScannerParams;
 import cz.muni.fi.utils.StructLoggerFieldContext;
 import cz.muni.fi.utils.Variable;
-import org.reflections.Reflections;
+import cz.muni.fi.utils.VariableContextProvider;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -32,7 +31,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
     private Trees trees;
     private Messager messager;
-    private Elements elements;
+    private Types types;
 
     /**
      * Used for generating json schemas by {@link SchemaGenerator}
@@ -87,16 +86,12 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
-        elements = processingEnv.getElementUtils();
+        types = processingEnv.getTypeUtils();
     }
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations,
                            final RoundEnvironment roundEnv) {
-
-        // process all classes annotated with @VarContextProvider either using reflection API or compiler API
-        processVariableContextClasses(roundEnv);
-
         // process every class to be compiled, locate all StructLogger fields annotated with LoggerContext annotation, find all usages in given file and replace
         // it with generated event class
         processStructLogExpressions(roundEnv);
@@ -106,71 +101,58 @@ public class LogInvocationProcessor extends AbstractProcessor {
     }
 
     /**
-     * find all classes annotated with {@link VarContextProvider} and check whether they are valid variable context providers
+     * checks VarContextProvider
+     * @param typeMirror of VarContextProvider
+     * @return false when VarContextProvider is not valid
      */
-    private void processVariableContextClasses(final RoundEnvironment roundEnv) {
-
-        try { //use reflection here to get already compiled classes from dependencies
-            final Reflections reflections = new Reflections();
-            final Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(VarContextProvider.class);
-            for (Class<?> c : typesAnnotatedWith) {
-                boolean extendsVariableContext = extendsVariableContext(c);
-                if (!extendsVariableContext) {
-                    messager.printMessage(
-                            Diagnostic.Kind.ERROR,
-                            format(
-                                    "%s should be extending %s",
-                                    c.getName(),
-                                    VariableContext.class.getName()
-                            )
-                    );
-                    return;
-                }
-
-                final TypeElement typeElement = elements.getTypeElement(c.getCanonicalName());
-                if (processElement(typeElement, typeElement.asType()))
-                    return;
-            }
-        } catch (Exception ex) {
+    private boolean checkVarContextProvider(final TypeMirror typeMirror) {
+        final TypeElement element = (TypeElement) types.asElement(typeMirror);
+        if (varContextProviders.contains(typeMirror)) { // this VarContextProvider is already processed
+            return true;
         }
 
-        //use compiler api and annotation api here to get classes yet to be compiled
-        for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
-            if (!element.getKind().isInterface()) { //check whether class is interface
-                messager.printMessage(
-                        Diagnostic.Kind.ERROR,
-                        format(
-                                "%s should be interface",
-                                element
-                        ),
-                        element
-                );
-                return;
-            }
-            final TypeMirror typeMirror = element.asType();
-            final TypeElement typeElement = (TypeElement) element;
-            boolean extendsVariableContext = extendsVariableContext(typeElement);
-            if (!extendsVariableContext) { //check whether interface extends VariableContext
-                messager.printMessage(
-                        Diagnostic.Kind.ERROR,
-                        format(
-                                "%s should be extending %s",
-                                element,
-                                VariableContext.class.getName()
-                        ),
-                        element
-                );
-                return;
-            }
-            if (processElement(element, typeMirror))
-                return;
+        if (!element.getKind().isInterface()) { //check whether class is interface
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    format(
+                            "%s should be interface",
+                            element
+                    ),
+                    element
+            );
+            return false;
         }
-    }
 
-    private boolean processElement(final Element element, final TypeMirror typeMirror) {
-        varContextProviders.add(typeMirror);
+        boolean extendsVariableContext = extendsVariableContext(element);
+
+        if (!extendsVariableContext) { //check whether interface extends VariableContext
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    format(
+                            "%s should be extending %s",
+                            element,
+                            VariableContext.class.getName()
+                    ),
+                    element
+            );
+            return false;
+        }
+
         final List<Variable> elements = new ArrayList<>();
         final VarContextProvider varContextProvider = element.getAnnotation(VarContextProvider.class);
+
+        if (varContextProvider == null) {
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    format(
+                            "%s should be annotated with @VarContextProvider",
+                            element
+                    ),
+                    element
+            );
+            return false;
+        }
+
         for (Element enclosed : element.getEnclosedElements()) {
             final Var annotation = enclosed.getAnnotation(Var.class);
             if (annotation != null) {
@@ -192,7 +174,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             ),
                             element
                     );
-                    return true;
+                    return false;
                 }
                 if (!executableType.getReturnType().toString().equals(typeMirror.toString())) { //check return type
                     messager.printMessage(
@@ -205,7 +187,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             ),
                             element
                     );
-                    return true;
+                    return false;
                 }
                 if (executableType.getParameterTypes().size() != 1) { //check number of parameters
                     messager.printMessage(
@@ -216,9 +198,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
                                     simpleName
                             ),
                             element);
-                    return true;
+                    return false;
                 }
-                if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) { //check whether there is no method with same name
+                if (elements.stream().map(Variable::getName).anyMatch(e -> e.contentEquals(simpleName))) { //check whether there is no method with same name
                     messager.printMessage(
                             Diagnostic.Kind.ERROR,
                             format(
@@ -228,7 +210,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             ),
                             element
                     );
-                    return true;
+                    return false;
                 }
                 elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
             }
@@ -244,7 +226,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
             );
         }
         varsHashMap.put(typeMirror, new VariableContextProvider(typeMirror, elements, varContextProvider.parametrization()));
-        return false;
+        varContextProviders.add(typeMirror);
+        return true;
     }
 
     /**
@@ -252,8 +235,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
      */
     private boolean extendsVariableContext(final TypeElement typeElement) {
         boolean extendsVariableContext = false;
-        for (TypeMirror extendingInterfaces : typeElement.getInterfaces()) {
-            if (extendingInterfaces.equals(elements.getTypeElement(VariableContext.class.getCanonicalName()).asType())) {
+        for (TypeMirror extendingInterface : typeElement.getInterfaces()) {
+            if (extendingInterface.toString().equals(VariableContext.class.getCanonicalName())) {
                 extendsVariableContext = true;
             }
         }
@@ -291,11 +274,11 @@ public class LogInvocationProcessor extends AbstractProcessor {
                             //TODO class is already compiled
                         }
                     } catch (MirroredTypeException ex) {
-                        final TypeMirror typeMirror = ex.getTypeMirror();
-
-                        if (varContextProviders.contains(typeMirror)) {
-                            fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(typeMirror));
+                        final TypeMirror contextProviderTypeMirror = ex.getTypeMirror();
+                        if (!checkVarContextProvider(contextProviderTypeMirror)) {
+                            return;
                         }
+                        fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(contextProviderTypeMirror));
                     }
                 }
             }
@@ -303,8 +286,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
             final TypeElement typeElement = (TypeElement) element;
             final TreePath path = trees.getPath(element);
 
-            // do not generate logger fields for classes which do not specify any LoggerContext annotated StructLogger
-            // and do not do any code replacement in such class
+            // do not do any code replacement in such class which do not specify any LoggerContext annotated StructLogger
             if (!fields.isEmpty()) {
                 try {
                     new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));

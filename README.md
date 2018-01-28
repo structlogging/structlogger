@@ -142,9 +142,14 @@ will create json schema `${schemasRoot}/schemas/events/edu/TestEvent.json`
 see [example](structlogger-example) where schemas are created after compilation in root of this module
 
 ## Creating your own Variable context provider
-Variable context is interface which provides parameters to be used in structured logging by event logger. To implement your own VariableContext, create new interface which extends [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) and only extends this interface, anotate your interface with [@VarContextProvider](structlogger/src/main/java/cz/muni/fi/annotation/VarContextProvider.java), then add methods annotated with [@Var](structlogger/src/main/java/cz/muni/fi/annotation/Var.java), these methods should all have return type your Interface and accept single parameter, please not that method overloading is not supported.
+Variable context is interface which provides parameters to be used in structured logging by event logger. To implement your own VariableContext,
+create new interface which extends [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) and only extends this interface, 
+annotate your interface with [@VarContextProvider](structlogger/src/main/java/cz/muni/fi/annotation/VarContextProvider.java), then add methods annotated with [@Var](structlogger/src/main/java/cz/muni/fi/annotation/Var.java),
+these methods should all have return type your Interface and accept single parameter, please not that method overloading is not supported.
 
 For example of custom Variable context see [BlockCacheContext](structlogger-example/src/main/java/cz/muni/fi/BlockCacheContext.java).
+
+Also note that your custom VariableContext is checked whether it is valid only checked lazily, when it is used.
 
 ### Log message parametrization
 [@VarContextProvider](structlogger/src/main/java/cz/muni/fi/annotation/VarContextProvider.java) has parameter called `parametrization`, which when set to true forces constraints on log message such that log message (String in `info`,`debug`,... method) must contain `{}` placeholders same count as parameters used in given log statement, for example
