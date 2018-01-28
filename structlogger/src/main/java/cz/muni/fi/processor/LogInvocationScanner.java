@@ -147,56 +147,33 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         final StructLoggerFieldContext structLoggerFieldContext = fields.get(name);
         final TypeMirror typeMirror = structLoggerFieldContext.getContextProvider();
         final VariableContextProvider variableContextProvider = varsHashMap.get(typeMirror);
+
+        //go through each call of method in this method and check whether it can be mapped to logging variable provided by
+        //VarContextProvider or it is logLevelMethod or log method call
         while (!stack.empty()) {
             final MethodAndParameter top = stack.pop();
+            //go through each variable and check whether
             for (Variable variable : variableContextProvider.getVariables()) {
                 final Name topMethodName = top.getMethodName();
+
                 if (variable.getName().equals(topMethodName)) {
                     addToUsedVariables(usedVariables, top, variable);
-                } else if (topMethodName.contentEquals("info")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
+                }
+                else {
+                    for (LogLevel logLevel : LogLevel.values()) {
+                        if (topMethodName.contentEquals(logLevel.getLevelMethodName())) {
+                            if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
+                                printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
+                                return;
+                            }
+                            literal = (JCTree.JCLiteral) node.getArguments().get(0);
+                            level = logLevel.getLevelName();
+                            break;
+                        }
                     }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "INFO";
-                } else if (topMethodName.contentEquals("error")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
-                    }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "ERROR";
-                } else if (topMethodName.contentEquals("debug")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
-                    }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "DEBUG";
-                } else if (topMethodName.contentEquals("warn")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
-                    }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "WARN";
-                } else if (topMethodName.contentEquals("trace")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
-                    }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "TRACE";
-                } else if (topMethodName.contentEquals("audit")) {
-                    if (!(node.getArguments().get(0) instanceof JCTree.JCLiteral)) {
-                        printStatementMustHaveStringLiteralError(statementInfo, topMethodName);
-                        return;
-                    }
-                    literal = (JCTree.JCLiteral) node.getArguments().get(0);
-                    level = "AUDIT";
                 }
             }
+
             if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
                 if (!(top.getParameter() instanceof JCTree.JCLiteral)){
                     printStatementMustHaveStringLiteralError(statementInfo, top.getMethodName());
