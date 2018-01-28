@@ -1,18 +1,12 @@
 package cz.muni.fi;
 
-import org.slf4j.helpers.MessageFormatter;
-
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * Slf4j logger wrapper for serializing objects.
  * Used internally by structlogger, you should not need to use this
  */
 public class EventLogger<T extends VariableContext> {
 
-    public static final AtomicLong SEQ_NUMBER = new AtomicLong(); //must be static, generated events use it to generate sequence id
-
-    public LoggingCallback callback;
+    private final LoggingCallback callback;
 
     public EventLogger(final LoggingCallback callback) {
         this.callback = callback;
@@ -60,10 +54,9 @@ public class EventLogger<T extends VariableContext> {
         callback.audit(e);
     }
 
-    // this are used just as placeholders, they should not be called at runtime,
+    // these are used just as placeholders
     // calls to these methods are replaced by annotation processor to calls to correct method which accepts LoggingEvent
     // these methods are just used to give programmer a nice way to work with fluent logging API instead of creating logging events manually
-
     public T debug(String message) {
         return null;
     }
@@ -88,15 +81,4 @@ public class EventLogger<T extends VariableContext> {
         return null;
     }
     /////////////////////////////////////////////////////////////
-
-    /**
-     * based on String pattern, which contains placeholder <code>{}</code>, inserts params into
-     * the pattern and returns resulting String
-     * @param pattern
-     * @param params
-     * @return String with params inserted into pattern
-     */
-    public static String format(final String pattern, Object... params) {
-        return MessageFormatter.arrayFormat(pattern, params).getMessage();
-    }
 }

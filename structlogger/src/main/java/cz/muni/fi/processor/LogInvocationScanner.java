@@ -16,6 +16,8 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
 import cz.muni.fi.EventLogger;
+import cz.muni.fi.MessageFormatterUtils;
+import cz.muni.fi.SidCounter;
 import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.processor.service.POJOService;
 import cz.muni.fi.processor.exception.PackageNameException;
@@ -310,6 +312,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
      */
     private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level, VariableContextProvider variableContextProvider) {
         final ListBuffer listBuffer = new ListBuffer();
+        final Class<SidCounter> sidCounterClass = SidCounter.class;
 
         if(variableContextProvider.shouldParametrize()) {
             listBuffer.add(createEventLoggerFormatCall(usedVariables, literal));
@@ -325,10 +328,16 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 com.sun.tools.javac.util.List.nil(),
                 treeMaker.Select(
                         treeMaker.Select(
-                                treeMaker.Select(
-                                        treeMaker.Ident(names.fromString("cz.muni.fi")), names.fromString("EventLogger")
-                                ), names.fromString("SEQ_NUMBER")
-                        ), names.fromString("incrementAndGet")
+                                treeMaker.Ident(
+                                        names.fromString(
+                                                sidCounterClass.getPackage().getName()
+                                        )
+                                ),
+                                names.fromString(
+                                        sidCounterClass.getSimpleName()
+                                )
+                        ),
+                        names.fromString("incrementAndGet")
                 ),
                 List.nil())
         );
@@ -367,9 +376,11 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         lb.add(literal);
         addVariablesToBuffer(usedVariables, lb);
 
+        final Class<MessageFormatterUtils> messageFormatterUtilsClass = MessageFormatterUtils.class;
+
         return treeMaker.Apply(List.nil(), treeMaker.Select(
                 treeMaker.Select(
-                        treeMaker.Ident(names.fromString(EventLogger.class.getPackage().getName())), names.fromString(EventLogger.class.getSimpleName())
+                        treeMaker.Ident(names.fromString(messageFormatterUtilsClass.getPackage().getName())), names.fromString(messageFormatterUtilsClass.getSimpleName())
                 ), names.fromString("format")
         ), lb.toList());
     }
