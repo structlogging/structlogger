@@ -116,7 +116,14 @@ public class LogInvocationProcessor extends AbstractProcessor {
             for (Class<?> c : typesAnnotatedWith) {
                 boolean extendsVariableContext = extendsVariableContext(c);
                 if (!extendsVariableContext) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", c.getName(), VariableContext.class.getName()));
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            format(
+                                    "%s should be extending %s",
+                                    c.getName(),
+                                    VariableContext.class.getName()
+                            )
+                    );
                     return;
                 }
 
@@ -130,14 +137,29 @@ public class LogInvocationProcessor extends AbstractProcessor {
         //use compiler api and annotation api here to get classes yet to be compiled
         for (Element element : roundEnv.getElementsAnnotatedWith(VarContextProvider.class)) {
             if (!element.getKind().isInterface()) { //check whether class is interface
-                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be interface", element), element);
+                messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        format(
+                                "%s should be interface",
+                                element
+                        ),
+                        element
+                );
                 return;
             }
             final TypeMirror typeMirror = element.asType();
             final TypeElement typeElement = (TypeElement) element;
             boolean extendsVariableContext = extendsVariableContext(typeElement);
             if (!extendsVariableContext) { //check whether interface extends VariableContext
-                messager.printMessage(Diagnostic.Kind.ERROR, format("%s should be extending %s", element, VariableContext.class.getName()), element);
+                messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        format(
+                                "%s should be extending %s",
+                                element,
+                                VariableContext.class.getName()
+                        ),
+                        element
+                );
                 return;
             }
             if (processElement(element, typeMirror))
@@ -161,26 +183,65 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         simpleName.contentEquals("debug") ||
                         simpleName.contentEquals("message") ||
                         simpleName.contentEquals("level")) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, format("%s interface cannot have method named %s", element, simpleName), element);
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            format(
+                                    "%s interface cannot have method named %s",
+                                    element,
+                                    simpleName
+                            ),
+                            element
+                    );
                     return true;
                 }
                 if (!executableType.getReturnType().toString().equals(typeMirror.toString())) { //check return type
-                    messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have return type %s", element, simpleName, element), element);
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            format(
+                                    "%s.%s method must have return type %s",
+                                    element,
+                                    simpleName,
+                                    element
+                            ),
+                            element
+                    );
                     return true;
                 }
                 if (executableType.getParameterTypes().size() != 1) { //check number of parameters
-                    messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method must have exactly one argument", element, simpleName), element);
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            format(
+                                    "%s.%s method must have exactly one argument",
+                                    element,
+                                    simpleName
+                            ),
+                            element);
                     return true;
                 }
                 if (elements.stream().map(e -> e.getName()).anyMatch(e -> e.contentEquals(simpleName))) { //check whether there is no method with same name
-                    messager.printMessage(Diagnostic.Kind.ERROR, format("%s.%s method cannot be overloaded", element, simpleName), element);
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            format(
+                                    "%s.%s method cannot be overloaded",
+                                    element,
+                                    simpleName
+                            ),
+                            element
+                    );
                     return true;
                 }
                 elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
             }
         }
         if (elements.isEmpty()) {
-            messager.printMessage(Diagnostic.Kind.WARNING, format("%s has no @Var annotated methods", element), element);
+            messager.printMessage(
+                    Diagnostic.Kind.WARNING,
+                    format(
+                            "%s has no @Var annotated methods",
+                            element
+                    ),
+                    element
+            );
         }
         varsHashMap.put(typeMirror, new VariableContextProvider(typeMirror, elements, varContextProvider.parametrization()));
         return false;
@@ -248,9 +309,15 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 try {
                     new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
                 } catch (IOException e) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, "IOException caught");
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            "IOException caught"
+                    );
                 } catch (PackageNameException e) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number");
+                    messager.printMessage(
+                            Diagnostic.Kind.ERROR,
+                            "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number"
+                    );
                 }
             }
         }
