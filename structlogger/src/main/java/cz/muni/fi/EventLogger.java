@@ -96,7 +96,7 @@ public class EventLogger<T extends VariableContext> {
      * @param params
      * @return String with params inserted into pattern
      */
-    static String format(final String pattern, Object... params) {
+    public static String format(final String pattern, Object... params) {
         return MessageFormatter.arrayFormat(pattern, params).getMessage();
     }
 }

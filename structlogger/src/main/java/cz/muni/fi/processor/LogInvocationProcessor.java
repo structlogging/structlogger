@@ -250,7 +250,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 } catch (IOException e) {
                     messager.printMessage(Diagnostic.Kind.ERROR, "IOException caught");
                 } catch (PackageNameException e) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+                    messager.printMessage(Diagnostic.Kind.ERROR, "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number");
                 }
             }
         }
