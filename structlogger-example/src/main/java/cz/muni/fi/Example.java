@@ -6,13 +6,25 @@ import org.slf4j.LoggerFactory;
 public class Example {
 
     @LoggerContext(context = DefaultContext.class)
-    private static EventLogger<DefaultContext> defaultLog = new EventLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("cz.muni.fi.Default")));
+    private static EventLogger<DefaultContext> defaultLog = new EventLogger<>(
+            new Slf4jLoggingCallback(
+                    LoggerFactory.getLogger("cz.muni.fi.Default")
+            )
+    );
 
     @LoggerContext(context = BlockCacheContext.class)
-    private static EventLogger<BlockCacheContext> structLog = new EventLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("cz.muni.fi.Structured")));
+    private static EventLogger<BlockCacheContext> structLog = new EventLogger<>(
+            new Slf4jLoggingCallback(
+                    LoggerFactory.getLogger("cz.muni.fi.Structured")
+            )
+    );
 
     @LoggerContext(context = AnotherContext.class)
-    private static EventLogger<AnotherContext> anotherContextStructLog = new EventLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("cz.muni.fi.Another")));
+    private static EventLogger<AnotherContext> anotherContextStructLog = new EventLogger<>(
+            new Slf4jLoggingCallback(
+                    LoggerFactory.getLogger("cz.muni.fi.Another")
+            )
+    );
 
     public static void main(String[] args) throws Exception {
 
