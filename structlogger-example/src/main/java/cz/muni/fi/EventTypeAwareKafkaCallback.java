@@ -16,45 +16,47 @@ import java.util.concurrent.ExecutionException;
 /**
  * Audit callback which sends logging event to topics based on event types
  */
-public class EventTypeAwareKafkaAuditCallback implements LoggingCallback {
+public class EventTypeAwareKafkaCallback implements LoggingCallback {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final Producer<Long, String> producer;
 
-    public EventTypeAwareKafkaAuditCallback(final String bootstrapServer) {
+    public EventTypeAwareKafkaCallback(final String bootstrapServer) {
         producer = createProducer(bootstrapServer);
     }
 
     @Override
     public void info(final LoggingEvent e) {
-        throw new UnsupportedOperationException("info logging not supported");
+        sendEvent(e);
     }
 
     @Override
     public void warn(final LoggingEvent e) {
-        throw new UnsupportedOperationException("warn logging not supported");
-
+        sendEvent(e);
     }
 
     @Override
     public void debug(final LoggingEvent e) {
-        throw new UnsupportedOperationException("debug logging not supported");
+        sendEvent(e);
     }
 
     @Override
     public void error(final LoggingEvent e) {
-        throw new UnsupportedOperationException("error logging not supported");
+        sendEvent(e);
     }
 
     @Override
     public void trace(final LoggingEvent e) {
-        throw new UnsupportedOperationException("trace logging not supported");
+        sendEvent(e);
     }
 
     @Override
     public void audit(final LoggingEvent e) {
+        sendEvent(e);
+    }
 
+    private void sendEvent(LoggingEvent e) {
         long time = System.currentTimeMillis();
 
         try {
@@ -78,7 +80,6 @@ public class EventTypeAwareKafkaAuditCallback implements LoggingCallback {
         } finally {
             producer.flush();
         }
-
     }
 
     private static Producer<Long, String> createProducer(final String bootstrap) {
