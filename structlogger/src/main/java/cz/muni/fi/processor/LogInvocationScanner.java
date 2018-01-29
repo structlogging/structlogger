@@ -87,9 +87,11 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
         final JCTree.JCExpressionStatement statement = (JCTree.JCExpressionStatement) getCurrentPath().getLeaf();
 
-        final StatementInfo statementInfo = new StatementInfo(scannerParams.getCompilationUnitTree().getLineMap().getLineNumber(statement.pos),
+        final StatementInfo statementInfo = new StatementInfo(
+                scannerParams.getCompilationUnitTree().getLineMap().getLineNumber(statement.pos),
                 scannerParams.getTypeElement().getQualifiedName().toString(),
-                statement);
+                statement
+        );
 
         final TreePathScanner scanner = new TreePathScanner<Object, ScannerParams>() {
             Stack<MethodAndParameter> stack = new Stack<>();
@@ -293,8 +295,13 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             int i = 0;
             do {
                 i++;
-                variableAndValue = new VariableAndValue(new Variable(elementUtils.getName(variable.getName().toString() + i), variable.getType()),
-                        top.getParameter());
+                variableAndValue = new VariableAndValue(
+                        new Variable(
+                                elementUtils.getName(variable.getName().toString() + i),
+                                variable.getType()
+                        ),
+                        top.getParameter()
+                );
             } while (usedVariables.contains(variableAndValue));
             usedVariables.add(variableAndValue);
         }
@@ -302,13 +309,6 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
     /**
      * replaces statement with our improved call to {@link EventLogger}
-     * @param loggerName
-     * @param generatedClassInfo
-     * @param statementInfo
-     * @param usedVariables
-     * @param literal
-     * @param level
-     * @param variableContextProvider
      */
     private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level, VariableContextProvider variableContextProvider) {
         final ListBuffer listBuffer = new ListBuffer();
@@ -378,11 +378,21 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
         final Class<MessageFormatterUtils> messageFormatterUtilsClass = MessageFormatterUtils.class;
 
-        return treeMaker.Apply(List.nil(), treeMaker.Select(
+        return treeMaker.Apply(
+                List.nil(),
                 treeMaker.Select(
-                        treeMaker.Ident(names.fromString(messageFormatterUtilsClass.getPackage().getName())), names.fromString(messageFormatterUtilsClass.getSimpleName())
-                ), names.fromString("format")
-        ), lb.toList());
+                        treeMaker.Select(
+                                treeMaker.Ident(
+                                        names.fromString(
+                                                messageFormatterUtilsClass.getPackage().getName()
+                                        )
+                                ),
+                                names.fromString(messageFormatterUtilsClass.getSimpleName())
+                        ),
+                        names.fromString("format")
+                ),
+                lb.toList()
+        );
     }
 
     private void addVariablesToBuffer(final java.util.List<VariableAndValue> usedVariables, final ListBuffer listBuffer) {

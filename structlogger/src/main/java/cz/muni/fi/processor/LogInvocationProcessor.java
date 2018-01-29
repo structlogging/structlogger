@@ -158,13 +158,16 @@ public class LogInvocationProcessor extends AbstractProcessor {
             if (annotation != null) {
                 final ExecutableType executableType = (ExecutableType) enclosed.asType();
                 final Name simpleName = enclosed.getSimpleName();
-                if (simpleName.contentEquals("log") || // check name of method
-                        simpleName.contentEquals("info") ||
-                        simpleName.contentEquals("error") ||
-                        simpleName.contentEquals("warn") ||
-                        simpleName.contentEquals("debug") ||
-                        simpleName.contentEquals("message") ||
-                        simpleName.contentEquals("level")) {
+                // check name of method
+                if (
+                                simpleName.contentEquals("log") ||
+                                simpleName.contentEquals("info") ||
+                                simpleName.contentEquals("error") ||
+                                simpleName.contentEquals("warn") ||
+                                simpleName.contentEquals("debug") ||
+                                simpleName.contentEquals("audit") ||
+                                simpleName.contentEquals("trace")
+                        ) {
                     messager.printMessage(
                             Diagnostic.Kind.ERROR,
                             format(
@@ -244,20 +247,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
     }
 
     /**
-     * Check whether class extends {@link VariableContext}
-     */
-    private boolean extendsVariableContext(final Class<?> c) {
-        final Class<?>[] interfaces = c.getInterfaces();
-        boolean extendsVariableContext = false;
-        for (Class intf : interfaces) {
-            if (intf.getCanonicalName().equals(VariableContext.class.getCanonicalName())) {
-                extendsVariableContext = true;
-            }
-        }
-        return extendsVariableContext;
-    }
-
-    /**
      * Find all classes, which have some fields annotated with {@link LoggerContext} and call {@link LogInvocationScanner} for given class if class indeed
      * have such fields
      */
@@ -289,7 +278,18 @@ public class LogInvocationProcessor extends AbstractProcessor {
             // do not do any code replacement in such class which do not specify any LoggerContext annotated StructLogger
             if (!fields.isEmpty()) {
                 try {
-                    new LogInvocationScanner(varsHashMap, fields, processingEnv, generatedClassesInfo).scan(path, new ScannerParams(typeElement, path.getCompilationUnit()));
+                    new LogInvocationScanner(
+                            varsHashMap,
+                            fields,
+                            processingEnv,
+                            generatedClassesInfo
+                    ).scan(
+                            path,
+                            new ScannerParams(
+                                    typeElement,
+                                    path.getCompilationUnit()
+                            )
+                    );
                 } catch (IOException e) {
                     messager.printMessage(
                             Diagnostic.Kind.ERROR,
