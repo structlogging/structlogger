@@ -34,12 +34,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -159,15 +155,20 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 final ExecutableType executableType = (ExecutableType) enclosed.asType();
                 final Name simpleName = enclosed.getSimpleName();
                 // check name of method
+                final List<String> logLevelsMethodNames = Arrays.asList(
+                        LogLevel.values()
+                ).stream()
+                        .map(
+                                e -> e.getLevelMethodName()
+                        )
+                        .collect(
+                                Collectors.toList()
+                        );
                 if (
-                                simpleName.contentEquals("log") ||
-                                simpleName.contentEquals("info") ||
-                                simpleName.contentEquals("error") ||
-                                simpleName.contentEquals("warn") ||
-                                simpleName.contentEquals("debug") ||
-                                simpleName.contentEquals("audit") ||
-                                simpleName.contentEquals("trace")
-                        ) {
+                        simpleName.contentEquals("log") ||
+                        logLevelsMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e))
+                   )
+                {
                     messager.printMessage(
                             Diagnostic.Kind.ERROR,
                             format(

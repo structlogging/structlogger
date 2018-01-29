@@ -79,6 +79,16 @@ public class SchemaGenerator implements TaskListener {
     }
 
     private String getDir(final String namespace) {
-        return schemasRoot + File.separator + "schemas" + File.separator + "events" + File.separator + namespace.replace(".", File.separator) + File.separator;
+        return schemasRoot +
+                File.separator +
+                "schemas" +
+                File.separator +
+                "events" +
+                File.separator +
+                namespace.replace(
+                        ".",
+                        File.separator
+                ) +
+                File.separator;
     }
 }
