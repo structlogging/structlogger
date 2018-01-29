@@ -44,7 +44,6 @@ public class SchemaGenerator implements TaskListener {
 
     @Override
     public void finished(final TaskEvent e) {
-
         if (e.getKind() != TaskEvent.Kind.GENERATE) {
             return;
         }
