@@ -34,18 +34,16 @@ public class Example {
         long datanodeUuid = 0;
         String reason = "reason";
 
-        defaultLog.info("test {} string literal {}")
+        defaultLog.info("Event with double={} and boolean={}")
                 .varDouble(1.2)
                 .varBoolean(false)
                 .log("edu.TestEvent");
 
-        defaultLog.info("cau3 {} {} {} mnau {} {} {}")
+        defaultLog.info("Event with double={} and boolean={} and double={} and double={}")
                 .varDouble(1.2)
                 .varBoolean(true)
                 .varDouble(5.6)
                 .varDouble(1.0)
-                .varBoolean(false)
-                .varBoolean(false)
                 .log();
 
         structLog.warn("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")
@@ -58,7 +56,7 @@ public class Example {
                 .dataNodeUuid(datanodeUuid)
                 .log();
 
-        structLog.info("Cannot cache block because")
+        structLog.info("Cannot cache block")
                 .blockId(blockId)
                 .reason(reason)
                 .log("CannotCache");
@@ -86,11 +84,11 @@ public class Example {
                 .dataNodeUuid(someMethod())
                 .log();
 
-        structLog.error("errorek")
+        structLog.error("Event with blockId")
                 .blockId(blockId)
                 .log();
 
-        anotherContextStructLog.info("ahoj")
+        anotherContextStructLog.info("Event with context")
                 .context("ahoj")
                 .log();
 
@@ -99,11 +97,11 @@ public class Example {
                 .dataNodeUuid(someMethod())
                 .log();
 
-        structLog.info("ahojkya")
+        structLog.info("Event with object")
                 .object(new Test("ahoj"))
                 .log();
 
-        structLog.audit("audited event with blockId and dataNode")
+        structLog.audit("Audit event with blockId and dataNodeUuid")
                 .blockId(1)
                 .dataNodeUuid(2)
                 .log();
