@@ -47,7 +47,7 @@ EventLogger field has to be annotated with `@LoggerContext` in order to structur
 this declared logger can then be used for logging in structured way like this:
 
 ```
-logger.info("test {} string literal {}")
+logger.info("Event with double={} and boolean={}")
       .varDouble(1.2)
       .varBoolean(false)
       .log();
@@ -56,10 +56,10 @@ logger.info("test {} string literal {}")
 this structured log statement will generate json like this:
 ```json
 { 
-        "message":"test 1.2 string literal false",
+        "message":"Event with double=1.2 and boolean=false",
         "sourceFile":"cz.muni.fi.Example",
-        "lineNumber":24,
-        "type":"Event853e32ae",
+        "lineNumber":37,
+        "type":"auto.Event677947de",
         "sid":1,
         "logLevel":"INFO",
         "varDouble":1.2,
@@ -69,7 +69,7 @@ this structured log statement will generate json like this:
 
 or you can choose your own name of generated event by passing String literal as argument to log method like this:
 ```
-logger.info("test {} string literal {}")
+logger.info("Event with double={} and boolean={}")
       .varDouble(1.2)
       .varBoolean(false)
       .log("edu.TestEvent");
@@ -79,7 +79,7 @@ Beware that you cannot pass String containing white spaces or new lines, such St
 this will generate event like this:
 ```json
 {
-        "message":"test 1.2 string literal false",
+        "message":"Event with double=1.2 and boolean=false",
         "sourceFile":"cz.muni.fi.Example",
         "lineNumber":24,
         "type":"edu.TestEvent",
@@ -98,7 +98,7 @@ For each generated structured logging event there is corresponding json schema c
 
 For example:
 ```
-logger.info("test {} string literal {}")
+logger.info("Event with double={} and boolean={}")
       .varDouble(1.2)
       .varBoolean(false)
       .log("edu.TestEvent");
@@ -109,7 +109,7 @@ will create json schema `${schemasRoot}/schemas/events/edu/TestEvent.json`
   "type" : "object",
   "id" : "urn:jsonschema:edu:TestEvent",
   "$schema" : "http://json-schema.org/draft-04/schema#",
-  "description" : "test {} string literal {}",
+  "description" : "Event with double={} and boolean={}",
   "title" : "edu.TestEvent",
   "properties" : {
     "message" : {
