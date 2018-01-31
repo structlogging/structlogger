@@ -1,0 +1,71 @@
+<configuration>
+
+    <logger name="Slf4jToFileBenchmark">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>benchmark.log</file>
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <loggerName/>
+                    <logLevel/>
+                    <pattern>
+                        <pattern>
+                            {
+                            "jsonMessage": "#asJson{%message}"
+                            }
+                        </pattern>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="FILE" />
+        </root>
+    </logger>
+
+    <logger name="Slf4jToFileBenchmark2">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>benchmark2.log</file>
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} %-5level %logger{35} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+
+        <root level="debug">
+            <appender-ref ref="FILE" />
+        </root>
+    </logger>
+
+    <logger name="Slf4jToFileBenchmark3">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>benchmark3.log</file>
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <loggerName/>
+                    <logLevel/>
+                    <pattern>
+                        <pattern>
+                            {
+                            "jsonMessage": "#asJson{%message}"
+                            }
+                        </pattern>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="FILE" />
+        </root>
+    </logger>
+
+</configuration>

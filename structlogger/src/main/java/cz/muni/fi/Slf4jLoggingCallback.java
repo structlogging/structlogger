@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.MarkerFactory;
 
 /**
- * Logging callback which serializes events as string and pass them to SLF4j
+ * Logging callback which serializes events as string and pass them to SLF4j inside log message
  */
 public class Slf4jLoggingCallback implements LoggingCallback {
 

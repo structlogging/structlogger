@@ -12,6 +12,7 @@
         <module>structlogger</module>
         <module>structlogger-example</module>
         <module>structlogger-tests</module>
+        <module>structlogger-benchmark</module>
     </modules>
 
     <properties>
