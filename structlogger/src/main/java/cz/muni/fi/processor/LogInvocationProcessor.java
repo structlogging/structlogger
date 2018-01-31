@@ -75,14 +75,21 @@ public class LogInvocationProcessor extends AbstractProcessor {
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        //TODO check that schemasRoot is set
-        schemaGenerator = new SchemaGenerator(generatedClassesInfo, processingEnv.getOptions().get("schemasRoot"));
-
-        JavacTask.instance(processingEnv).addTaskListener(schemaGenerator);
-
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         types = processingEnv.getTypeUtils();
+
+        final String schemasRoot = processingEnv.getOptions().get("schemasRoot");
+        if (schemasRoot != null) {
+            schemaGenerator = new SchemaGenerator(generatedClassesInfo, schemasRoot);
+            JavacTask.instance(processingEnv).addTaskListener(schemaGenerator);
+        }
+        else {
+            messager.printMessage(
+                    Diagnostic.Kind.MANDATORY_WARNING,
+                    "schemasRoot compiler argument is not set, no schemas will be created"
+            );
+        }
     }
 
     @Override

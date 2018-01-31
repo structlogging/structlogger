@@ -141,6 +141,8 @@ will create json schema `${schemasRoot}/schemas/events/edu/TestEvent.json`
 ```
 see [example](structlogger-example) where schemas are created after compilation in root of this module
 
+
+If `schemasRoot` compiler argument is not specified, no schemas will be created!
 ## Creating your own Variable context provider
 Variable context is interface which provides parameters to be used in structured logging by event logger. To implement your own VariableContext,
 create new interface which extends [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) and only extends this interface, 
