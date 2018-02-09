@@ -81,4 +81,28 @@ public class LogInvocationProcessorCompilationTest {
                 "Statement defaultLog.info(\"Should not compile {} {}\").varInt(1.2).varBoolean(false).log(\"CollisionEvent\"); generates different event structure for same event name [EventStructureCollision:21]"
         );
     }
+
+    @Test
+    public void shouldNotCompileInvalidLogMethodArgument() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("InvalidArgumentLogMethod.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "method log in defaultLog.info(\"Should not compile {} {}\").varDouble(1.2).varBoolean(false).log(value); statement must have String literal as argument [InvalidArgumentLogMethod:18]"
+        );
+    }
+
+    @Test
+    public void shouldNotCompileInvalidLogLevelMethodArgument() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("InvalidArgumentLogLevelMethod.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "method info in defaultLog.info(value).varDouble(1.2).varBoolean(false).log(); statement must have String literal as argument [InvalidArgumentLogLevelMethod:18]"
+        );
+    }
 }
