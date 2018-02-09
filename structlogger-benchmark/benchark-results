@@ -1,0 +1,40 @@
+hardware setup:
+	MacBook Pro (Retina, 13-inch, Early 2015)
+	processor: 2.7 GHz Intel Core i5
+	memory: 16 GB 1867 MHz DDR3
+
+results:
+Benchmark                                                         Mode  Cnt        Score       Error  Units
+Slf4jToFileBenchmark.notStructuredLogging100Calls                 avgt   25   405681.470 ±  4896.073  ns/op
+Slf4jToFileBenchmark.notStructuredLogging10Calls                  avgt   25    40380.854 ±   679.662  ns/op
+Slf4jToFileBenchmark.notStructuredLogging1Call                    avgt   25     4027.460 ±    64.659  ns/op
+Slf4jToFileBenchmark.notStructuredLogging20Calls                  avgt   25    82413.092 ±  1759.933  ns/op
+Slf4jToFileBenchmark.notStructuredLogging30Calls                  avgt   25   120116.035 ±  2058.861  ns/op
+Slf4jToFileBenchmark.notStructuredLogging40Calls                  avgt   25   161002.123 ±  2184.796  ns/op
+Slf4jToFileBenchmark.notStructuredLogging50Calls                  avgt   25   203330.733 ±  4746.963  ns/op
+Slf4jToFileBenchmark.notStructuredLogging60Calls                  avgt   25   242765.558 ±  3389.441  ns/op
+Slf4jToFileBenchmark.notStructuredLogging70Calls                  avgt   25   288003.869 ±  4726.829  ns/op
+Slf4jToFileBenchmark.notStructuredLogging80Calls                  avgt   25   326622.596 ±  5520.681  ns/op
+Slf4jToFileBenchmark.notStructuredLogging90Calls                  avgt   25   367774.515 ±  8141.161  ns/op
+Slf4jToFileBenchmark.structLogger100CallsWithParametrizedMessage  avgt   25  1459219.533 ± 17474.765  ns/op
+Slf4jToFileBenchmark.structLogger10CallsWithParametrizedMessage   avgt   25   143181.559 ±  1441.944  ns/op
+Slf4jToFileBenchmark.structLogger1CallWithParametrizedMessage     avgt   25    13565.737 ±   107.683  ns/op
+Slf4jToFileBenchmark.structLogger20CallsWithParametrizedMessage   avgt   25   286694.341 ±  3476.738  ns/op
+Slf4jToFileBenchmark.structLogger30CallsWithParametrizedMessage   avgt   25   429481.492 ±  5625.165  ns/op
+Slf4jToFileBenchmark.structLogger40CallsWithParametrizedMessage   avgt   25   571989.611 ±  5400.120  ns/op
+Slf4jToFileBenchmark.structLogger50CallsWithParametrizedMessage   avgt   25   716730.625 ±  7341.718  ns/op
+Slf4jToFileBenchmark.structLogger60CallsWithParametrizedMessage   avgt   25   877245.424 ± 18081.645  ns/op
+Slf4jToFileBenchmark.structLogger70CallsWithParametrizedMessage   avgt   25  1016032.925 ± 20620.837  ns/op
+Slf4jToFileBenchmark.structLogger80CallsWithParametrizedMessage   avgt   25  1178607.257 ± 20246.658  ns/op
+Slf4jToFileBenchmark.structLogger90CallsWithParametrizedMessage   avgt   25  1317230.385 ± 16968.079  ns/op
+Slf4jToFileBenchmark.structuredLogging100Calls                    avgt   25  1366729.597 ± 24468.329  ns/op
+Slf4jToFileBenchmark.structuredLogging10Calls                     avgt   25   135925.758 ±  1725.535  ns/op
+Slf4jToFileBenchmark.structuredLogging1Call                       avgt   25    13023.512 ±   231.455  ns/op
+Slf4jToFileBenchmark.structuredLogging20Calls                     avgt   25   270170.597 ±  2553.879  ns/op
+Slf4jToFileBenchmark.structuredLogging30Calls                     avgt   25   406463.197 ±  4895.781  ns/op
+Slf4jToFileBenchmark.structuredLogging40Calls                     avgt   25   545438.736 ±  7048.996  ns/op
+Slf4jToFileBenchmark.structuredLogging50Calls                     avgt   25   689041.970 ±  8320.414  ns/op
+Slf4jToFileBenchmark.structuredLogging60Calls                     avgt   25   823352.247 ± 10898.960  ns/op
+Slf4jToFileBenchmark.structuredLogging70Calls                     avgt   25   961032.055 ± 38530.636  ns/op
+Slf4jToFileBenchmark.structuredLogging80Calls                     avgt   25  1096405.749 ± 23954.375  ns/op
+Slf4jToFileBenchmark.structuredLogging90Calls                     avgt   25  1233256.026 ± 20683.882  ns/op
