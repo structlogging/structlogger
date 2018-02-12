@@ -155,6 +155,8 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         //go through each call of method in this method and check whether it can be mapped to logging variable provided by
         //VarContextProvider or it is logLevelMethod or log method call
         while (!stack.empty()) {
+            // check whether method on stack matched variable from context provider, or is log or log level method
+            boolean matched = false;
             final MethodAndParameter top = stack.pop();
             //go through each variable and check whether
             for (Variable variable : variableContextProvider.getVariables()) {
@@ -162,6 +164,8 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
                 if (variable.getName().equals(topMethodName)) {
                     addToUsedVariables(usedVariables, top, variable);
+                    matched = true;
+                    break;
                 }
                 else {
                     for (LogLevel logLevel : LogLevel.values()) {
@@ -172,6 +176,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                             }
                             literal = (JCTree.JCLiteral) node.getArguments().get(0);
                             level = logLevel.getLevelName();
+                            matched = true;
                             break;
                         }
                     }
@@ -179,7 +184,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             }
 
             if (top.getMethodName().contentEquals("log") && top.getParameter() != null) {
-                if (!(top.getParameter() instanceof JCTree.JCLiteral)){
+                if (!(top.getParameter() instanceof JCTree.JCLiteral)) {
                     printStatementMustHaveStringLiteralError(statementInfo, top.getMethodName());
                     return;
                 }
@@ -196,6 +201,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                     );
                     return;
                 }
+                matched = true;
+            } else if (top.getMethodName().contentEquals("log") && top.getParameter() == null) {
+                matched = true;
             }
             if (stack.empty() && !top.getMethodName().contentEquals("log")) {
                 messager.printMessage(
@@ -204,6 +212,19 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                                 "statement %s must be ended by calling log() method",
                                 statementInfo,
                                 statementInfo.getStatement()
+                        )
+                );
+                return;
+            }
+            if (!matched) {
+                messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        formatWithStatementLocation(
+                                "variable %s in statement %s is not specified by variable context %s",
+                                statementInfo,
+                                top.getMethodName(),
+                                statementInfo.getStatement(),
+                                variableContextProvider.getTypeMirror()
                         )
                 );
                 return;

@@ -198,4 +198,17 @@ public class LogInvocationProcessorCompilationTest {
                 "ContextProviderNoVar has no @Var annotated methods"
         );
     }
+
+    @Test
+    public void shouldNotCompileContextProviderUsingNotAnnotatedVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderOneVarMissing.java"),
+                                JavaFileObjects.forResource("UseProviderWithOneVarMissing.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "variable varString in statement defaultLog.info(\"Should not compile\").varLong(1L).varString(\"testik\").log(); is not specified by variable context ContextProviderOneVarMissing [UseProviderWithOneVarMissing:16]"
+        );
+    }
 }
