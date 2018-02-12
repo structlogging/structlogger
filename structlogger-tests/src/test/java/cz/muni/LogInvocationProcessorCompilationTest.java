@@ -105,4 +105,97 @@ public class LogInvocationProcessorCompilationTest {
                 "method info in defaultLog.info(value).varDouble(1.2).varBoolean(false).log(); statement must have String literal as argument [InvalidArgumentLogLevelMethod:18]"
         );
     }
+
+    @Test
+    public void shouldNotCompileContextProviderNotAnnotated() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderNotAnnotated.java"),
+                                JavaFileObjects.forResource("UseNotAnnotatedProvider.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderNotAnnotated should be annotated with @VarContextProvider"
+        );
+    }
+
+
+    @Test
+    public void shouldNotCompileContextProviderNotExtendingVarContext() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderNotExtending.java"),
+                                JavaFileObjects.forResource("UseProviderWhichDoesNotExtend.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderNotExtending should be extending cz.muni.fi.VariableContext"
+        );
+    }
+
+    @Test
+    public void shouldNotCompileContextProviderWithLogMethodOverriden() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderWithOverridenLogMethod.java"),
+                                JavaFileObjects.forResource("UseProviderWithOverridenLogMethod.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderWithOverridenLogMethod interface cannot have method named log"
+        );
+    }
+
+
+    @Test
+    public void shouldNotCompileContextProviderWithLogLevelMethodOverriden() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderWithLogLevelMethodOverriden.java"),
+                                JavaFileObjects.forResource("UseProviderWithLogLevelMethodOverriden.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderWithLogLevelMethodOverriden interface cannot have method named info"
+        );
+    }
+
+    @Test
+    public void shouldNotCompileContextProviderWithBadReturnType() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderBadReturnType.java"),
+                                JavaFileObjects.forResource("UseProviderWithBadReturnType.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderBadReturnType.varLong method must have return type ContextProviderBadReturnType"
+        );
+    }
+
+    @Test
+    public void shouldNotCompileContextProviderWithMultipleArgumentVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderMultipleArgumentVar.java"),
+                                JavaFileObjects.forResource("UseProviderWithMultipleArgumentVar.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderMultipleArgumentVar.varLong method must have exactly one argument"
+        );
+    }
+
+    @Test
+    public void shouldNotCompileContextProviderNoVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderNoVar.java"),
+                                JavaFileObjects.forResource("UseProviderWithNoVar.java"));
+
+        assertThat(compilation).hadWarningContaining(
+                "ContextProviderNoVar has no @Var annotated methods"
+        );
+    }
 }
