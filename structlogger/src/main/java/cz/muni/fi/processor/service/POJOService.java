@@ -7,7 +7,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.sun.tools.javac.tree.JCTree;
 import cz.muni.fi.LoggingEvent;
 import cz.muni.fi.processor.exception.PackageNameException;
-import cz.muni.fi.utils.VariableAndValue;
+import cz.muni.fi.processor.utils.VariableAndValue;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 

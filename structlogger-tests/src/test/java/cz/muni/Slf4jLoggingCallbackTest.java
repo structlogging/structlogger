@@ -39,7 +39,7 @@ public class Slf4jLoggingCallbackTest {
                 .varInt(1)
                 .varString("ahoj")
                 .log();
-        
+
         structLogger
                 .error("test logger is called")
                 .varInt(1)

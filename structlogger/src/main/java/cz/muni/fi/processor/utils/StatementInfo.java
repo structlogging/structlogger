@@ -1,4 +1,4 @@
-package cz.muni.fi.utils;
+package cz.muni.fi.processor.utils;
 
 import com.sun.tools.javac.tree.JCTree;
 

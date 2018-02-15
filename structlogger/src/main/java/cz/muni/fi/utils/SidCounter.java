@@ -1,4 +1,4 @@
-package cz.muni.fi;
+package cz.muni.fi.utils;
 
 import java.util.concurrent.atomic.AtomicLong;
 

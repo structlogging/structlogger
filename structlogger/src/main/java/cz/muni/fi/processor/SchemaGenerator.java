@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
-import cz.muni.fi.utils.GeneratedClassInfo;
+import cz.muni.fi.processor.utils.GeneratedClassInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;

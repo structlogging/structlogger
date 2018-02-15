@@ -11,11 +11,11 @@ import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.annotation.Var;
 import cz.muni.fi.annotation.VarContextProvider;
 import cz.muni.fi.processor.exception.PackageNameException;
-import cz.muni.fi.utils.GeneratedClassInfo;
-import cz.muni.fi.utils.ScannerParams;
-import cz.muni.fi.utils.StructLoggerFieldContext;
-import cz.muni.fi.utils.Variable;
-import cz.muni.fi.utils.VariableContextProvider;
+import cz.muni.fi.processor.utils.GeneratedClassInfo;
+import cz.muni.fi.processor.utils.ScannerParams;
+import cz.muni.fi.processor.utils.StructLoggerFieldContext;
+import cz.muni.fi.processor.utils.Variable;
+import cz.muni.fi.processor.utils.VariableContextProvider;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;

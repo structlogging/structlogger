@@ -1,4 +1,4 @@
-package cz.muni.fi.utils;
+package cz.muni.fi.processor.utils;
 
 import com.sun.source.tree.CompilationUnitTree;
 import cz.muni.fi.processor.LogInvocationScanner;
