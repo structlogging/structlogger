@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import cz.muni.fi.processor.utils.GeneratedClassInfo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,7 +68,6 @@ public class SchemaGenerator implements TaskListener {
 
     private void createSchemaFile(String namespace, String signature, JsonSchema schema) {
         try {
-
             final String dir = getDir(namespace);
             Files.createDirectories(Paths.get(dir));
             FileOutputStream out = new FileOutputStream(dir + signature + JSON_SUFFIX);
@@ -79,16 +79,20 @@ public class SchemaGenerator implements TaskListener {
     }
 
     private String getDir(final String namespace) {
-        return schemasRoot +
+        final String pathWithoutNamespace = schemasRoot +
                 File.separator +
                 "schemas" +
                 File.separator +
                 "events" +
-                File.separator +
-                namespace.replace(
-                        ".",
-                        File.separator
-                ) +
                 File.separator;
+        if (!StringUtils.isBlank(namespace)) {
+            return pathWithoutNamespace +
+                    namespace.replace(
+                            ".",
+                            File.separator
+                    ) +
+                    File.separator;
+        }
+        return pathWithoutNamespace;
     }
 }
