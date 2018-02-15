@@ -60,8 +60,8 @@ public class SchemaGenerator implements TaskListener {
                 schema.asObjectSchema().setTitle(generatedGeneratedClassInfo.getQualifiedName());
                 iterator.remove();
                 createSchemaFile(generatedGeneratedClassInfo.getPackageName(), generatedGeneratedClassInfo.getSimpleName(), schema);
-            } catch (Exception e1) {
-                //TODO
+            } catch (Exception ex) {
+                //IGNORE class is not accessible via reflection API
             }
         }
     }
