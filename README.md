@@ -40,7 +40,7 @@ private static EventLogger<DefaultContext> logger = new EventLogger<>(new Slf4jL
 ```
 
 please note that EventLogger should not be declared and cannot be used as local variable!!
-EventLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/cz/muni/fi/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/cz/muni/fi/LoggingCallback.java)
+EventLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/cz/muni/fi/slf4j/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/cz/muni/fi/LoggingCallback.java)
 
 EventLogger field has to be annotated with `@LoggerContext` in order to structured logging to work, you have to also specify extension of [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) as annotation parameter (this parameter must be same as generic argument of EventLogger otherwise you will encounter undefined behaviour). Variable context provides logging variables. You can create your own VariableContext like [BlockCacheContext](structlogger-example/src/main/java/cz/muni/fi/BlockCacheContext.java). Please see *Creating your own Variable context* section of README. 
 
@@ -168,3 +168,15 @@ If `parametrization` is set to false, no placeholder `{}` is replaced in log mes
 
 ## Structlogger tests
 tests of structlogger API and annotation processor are located in [structlogger-tests](structlogger-tests) module
+
+## Structlogger kafka support 
+You can use [EventTypeAwareKafkaCallback](structlogger/src/main/java/cz/muni/fi/kafka/EventTypeAwareKafkaCallback.java) to send events asynchronously to topics using provided Producer, just provide in your project dependency on `kafka-clients`, for example like this:
+
+```
+ <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>1.0.0</version>
+ </dependency>
+```
+Events are send with keys corresponding to system time in milliseconds, events are send to topics based on event type.
