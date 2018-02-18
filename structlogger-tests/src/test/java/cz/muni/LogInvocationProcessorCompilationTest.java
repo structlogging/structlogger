@@ -208,7 +208,7 @@ public class LogInvocationProcessorCompilationTest {
                                 JavaFileObjects.forResource("UseProviderWithOneVarMissing.java"));
 
         assertThat(compilation).hadErrorContaining(
-                "variable varString in statement defaultLog.info(\"Should not compile\").varLong(1L).varString(\"testik\").log(); is not specified by variable context ContextProviderOneVarMissing [UseProviderWithOneVarMissing:16]"
+                "variable varString in statement defaultLog.info(\"Should not compile\").varLong(1L).varString(\"testik\").log(); is not specified by variable context ContextProviderOneVarMissing [UseProviderWithOneVarMissing:15]"
         );
     }
 }

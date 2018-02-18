@@ -32,6 +32,7 @@
 package cz.muni.fi;
 
 import cz.muni.fi.annotation.LoggerContext;
+import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import org.openjdk.jmh.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

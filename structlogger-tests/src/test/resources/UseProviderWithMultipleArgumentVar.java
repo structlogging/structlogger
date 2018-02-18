@@ -1,7 +1,6 @@
-import cz.muni.fi.Slf4jLoggingCallback;
+import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.EventLogger;
-import cz.muni.fi.DefaultContext;
 
 public class UseProviderWithMultipleArgumentVar {
 

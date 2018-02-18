@@ -1,6 +1,8 @@
-package cz.muni.fi;
+package cz.muni.fi.slf4j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.muni.fi.LoggingCallback;
+import cz.muni.fi.LoggingEvent;
 import org.slf4j.Logger;
 import org.slf4j.MarkerFactory;
 
