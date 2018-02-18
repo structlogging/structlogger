@@ -1,4 +1,4 @@
-package cz.muni;
+package cz.muni.fi;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;

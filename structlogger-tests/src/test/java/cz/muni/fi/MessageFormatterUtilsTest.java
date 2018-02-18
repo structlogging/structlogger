@@ -1,4 +1,4 @@
-package cz.muni;
+package cz.muni.fi;
 
 import cz.muni.fi.utils.MessageFormatterUtils;
 import org.junit.Test;

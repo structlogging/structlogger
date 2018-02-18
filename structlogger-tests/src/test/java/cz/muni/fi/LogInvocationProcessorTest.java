@@ -1,4 +1,4 @@
-package cz.muni;
+package cz.muni.fi;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,9 +10,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-import cz.muni.fi.DefaultContext;
-import cz.muni.fi.EventLogger;
-import cz.muni.fi.LoggingEvent;
 import cz.muni.fi.annotation.LoggerContext;
 import org.junit.Before;
 import org.junit.Test;

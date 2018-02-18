@@ -1,4 +1,4 @@
-package cz.muni;
+package cz.muni.fi;
 
 import cz.muni.fi.LoggingCallback;
 import cz.muni.fi.LoggingEvent;

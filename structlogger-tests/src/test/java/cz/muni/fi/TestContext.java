@@ -1,6 +1,5 @@
-package cz.muni;
+package cz.muni.fi;
 
-import cz.muni.fi.VariableContext;
 import cz.muni.fi.annotation.Var;
 import cz.muni.fi.annotation.VarContextProvider;
 

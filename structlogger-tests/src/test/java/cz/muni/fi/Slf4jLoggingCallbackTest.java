@@ -1,6 +1,5 @@
-package cz.muni;
+package cz.muni.fi;
 
-import cz.muni.fi.EventLogger;
 import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import cz.muni.fi.annotation.LoggerContext;
 import org.junit.Before;
