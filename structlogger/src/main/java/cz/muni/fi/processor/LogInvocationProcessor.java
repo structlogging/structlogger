@@ -171,9 +171,20 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         .collect(
                                 Collectors.toList()
                         );
+
+                final List<String> logEventMethodNames = Arrays.asList(
+                        LogLevel.values()
+                ).stream()
+                        .map(
+                                e -> e.getLogEventMethodName()
+                        )
+                        .collect(
+                                Collectors.toList()
+                        );
                 if (
                         simpleName.contentEquals("log") ||
-                        logLevelsMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e))
+                        logLevelsMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e)) ||
+                        logEventMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e))
                    )
                 {
                     messager.printMessage(

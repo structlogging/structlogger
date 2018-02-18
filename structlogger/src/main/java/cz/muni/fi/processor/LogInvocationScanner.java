@@ -1,7 +1,5 @@
 package cz.muni.fi.processor;
 
-import static java.lang.String.format;
-
 import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
@@ -16,19 +14,19 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
 import cz.muni.fi.EventLogger;
-import cz.muni.fi.utils.MessageFormatterUtils;
-import cz.muni.fi.utils.SidCounter;
 import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.processor.service.POJOService;
 import cz.muni.fi.processor.exception.PackageNameException;
+import cz.muni.fi.processor.service.POJOService;
 import cz.muni.fi.processor.utils.GeneratedClassInfo;
 import cz.muni.fi.processor.utils.MethodAndParameter;
-import cz.muni.fi.processor.utils.VariableContextProvider;
 import cz.muni.fi.processor.utils.ScannerParams;
 import cz.muni.fi.processor.utils.StatementInfo;
 import cz.muni.fi.processor.utils.StructLoggerFieldContext;
 import cz.muni.fi.processor.utils.Variable;
 import cz.muni.fi.processor.utils.VariableAndValue;
+import cz.muni.fi.processor.utils.VariableContextProvider;
+import cz.muni.fi.utils.MessageFormatterUtils;
+import cz.muni.fi.utils.SidCounter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Messager;
@@ -43,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
+
+import static java.lang.String.format;
 
 /**
  * TreePathScanner which takes care of structured log statements replacement
@@ -178,6 +178,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                             level = logLevel.getLevelName();
                             matched = true;
                             break;
+                        }
+                        else if (topMethodName.contentEquals(logLevel.getLogEventMethodName())) {
+                            return; // nothing to do here, no code replacement needed
                         }
                     }
                 }

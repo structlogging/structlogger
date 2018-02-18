@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.mock;
 
 import cz.muni.fi.annotation.LoggerContext;
 import org.hamcrest.Matchers;
@@ -38,11 +39,31 @@ public class LogInvocationProcessorTest {
     }
 
     @Test
+    public void testLogEventMethodsUsedDirectly() {
+        final LoggingEvent mock = mock(LoggingEvent.class);
+
+        testLogger.infoEvent(mock);
+        testLogger.warnEvent(mock);
+        testLogger.errorEvent(mock);
+        testLogger.traceEvent(mock);
+        testLogger.auditEvent(mock);
+        testLogger.debugEvent(mock);
+
+        assertThat(callback.getLoggingEventList(), hasSize(6));
+
+        for(int i = 0; i < callback.getLoggingEventList().size(); i++) {
+            assertThat(callback.getLoggingEventList().get(0), is(mock));
+        }
+    }
+
+    @Test
     public void shouldLogEventWithNoNamespace() {
         testLogger.info("test")
                 .varInt(1)
                 .varString("ahoj")
                 .log("NoNamespaceEvent");
+
+        assertThat(callback.getLoggingEventList(), hasSize(1));
 
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
 
@@ -56,6 +77,8 @@ public class LogInvocationProcessorTest {
     public void shouldLogEventGeneratedEventName() {
         testLogger.info("test generated event name")
                 .log();
+
+        assertThat(callback.getLoggingEventList(), hasSize(1));
 
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
 
@@ -117,6 +140,8 @@ public class LogInvocationProcessorTest {
         testLogger.info("test")
                    .log("X4");
 
+        assertThat(callback.getLoggingEventList(), hasSize(4));
+
         final List<LoggingEvent> eventList = callback.getLoggingEventList();
         for (int i = 0; i < eventList.size() - 1; i++) {
             assertThat(eventList.get(i).getSid() + 1, is(equalTo(eventList.get(i + 1).getSid())));
@@ -168,6 +193,8 @@ public class LogInvocationProcessorTest {
         testLogger.audit("test")
                   .log("structlogger.test.K");
 
+        assertThat(callback.getLoggingEventList(), hasSize(6));
+
         assertThat(callback.getLoggingEventList().stream().map(LoggingEvent::getLogLevel).collect(Collectors.toList()),
                 is(hasItems("INFO", "WARN", "ERROR", "TRACE", "DEBUG", "AUDIT")));
     }
@@ -178,6 +205,8 @@ public class LogInvocationProcessorTest {
                             .varInt(1)
                             .varBoolean(true)
                             .log("structlogger.test.ParametrizedEvent");
+
+        assertThat(callback.getLoggingEventList(), hasSize(1));
 
         assertThat(callback.getLoggingEventList().get(0).getMessage(), is(equalTo("parameter1=1 parameter2=true")));
     }

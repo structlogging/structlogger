@@ -211,4 +211,17 @@ public class LogInvocationProcessorCompilationTest {
                 "variable varString in statement defaultLog.info(\"Should not compile\").varLong(1L).varString(\"testik\").log(); is not specified by variable context ContextProviderOneVarMissing [UseProviderWithOneVarMissing:15]"
         );
     }
+
+    @Test
+    public void shouldNotCompileContextProviderUsingInvalidMethodName() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ContextProviderWithInvalidMethodName.java"),
+                                JavaFileObjects.forResource("UseProviderWithInvalidMethodName.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "ContextProviderWithInvalidMethodName interface cannot have method named warnEvent"
+        );
+    }
 }
