@@ -1,8 +1,5 @@
 package cz.muni.fi;
 
-import cz.muni.fi.LoggingCallback;
-import cz.muni.fi.LoggingEvent;
-
 import java.util.LinkedList;
 import java.util.List;
 

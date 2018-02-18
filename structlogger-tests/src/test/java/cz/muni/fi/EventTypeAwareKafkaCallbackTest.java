@@ -14,9 +14,7 @@ import static org.hamcrest.Matchers.is;
 
 public class EventTypeAwareKafkaCallbackTest {
 
-    private MockProducer mockProducer;
-
-    private EventTypeAwareKafkaCallback kafkaCallback;
+    private MockProducer<Long, LoggingEvent> mockProducer;
 
     @LoggerContext(context = TestContext.class)
     private EventLogger<TestContext> testLogger;
@@ -29,13 +27,13 @@ public class EventTypeAwareKafkaCallbackTest {
                 new LoggingEventJsonSerializer()
         );
 
-        kafkaCallback = new EventTypeAwareKafkaCallback(mockProducer);
+        final EventTypeAwareKafkaCallback kafkaCallback = new EventTypeAwareKafkaCallback(mockProducer);
 
         testLogger = new EventLogger<>(kafkaCallback);
     }
 
     @Test
-    public void testEventIsSerializedAndSentUsingProducer() throws Exception {
+    public void testEventIsSerializedAndSentUsingProducer() {
         testLogger.info("Event sent via kafka")
                 .varInt(10)
                 .varString("string value")
@@ -48,21 +46,21 @@ public class EventTypeAwareKafkaCallbackTest {
 
         assertThat(mockProducer.history().size(), is(2));
 
-        final ProducerRecord e0 = (ProducerRecord) mockProducer.history().get(0);
-        final ProducerRecord e1 = (ProducerRecord) mockProducer.history().get(1);
+        final ProducerRecord<Long, LoggingEvent> e0 = mockProducer.history().get(0);
+        final ProducerRecord<Long, LoggingEvent> e1 = mockProducer.history().get(1);
 
         assertThat(e0.topic(), is("KafkaEvent1"));
         assertThat(e1.topic(), is("KafkaEvent2"));
 
-        final LoggingEvent loggingEventE0 = (LoggingEvent) e0.value();
-        final LoggingEvent loggingEventE1 = (LoggingEvent) e1.value();
+        final LoggingEvent loggingEventE0 = e0.value();
+        final LoggingEvent loggingEventE1 = e1.value();
 
         assertThat(loggingEventE0.getType(), is("KafkaEvent1"));
         assertThat(loggingEventE1.getType(), is("KafkaEvent2"));
     }
 
     @Test
-    public void testEventIsSerializedAndSentUsingProducerToSameTopic() throws Exception {
+    public void testEventIsSerializedAndSentUsingProducerToSameTopic() {
         final String topicName = "SAME_TOPIC";
         testLogger = new EventLogger<>(new EventTypeAwareKafkaCallback(mockProducer, e -> topicName));
 
@@ -76,14 +74,14 @@ public class EventTypeAwareKafkaCallbackTest {
 
         assertThat(mockProducer.history().size(), is(2));
 
-        final ProducerRecord e0 = (ProducerRecord) mockProducer.history().get(0);
-        final ProducerRecord e1 = (ProducerRecord) mockProducer.history().get(1);
+        final ProducerRecord<Long, LoggingEvent> e0 = mockProducer.history().get(0);
+        final ProducerRecord<Long, LoggingEvent> e1 = mockProducer.history().get(1);
 
         assertThat(e0.topic(), is(topicName));
         assertThat(e1.topic(), is(topicName));
 
-        final LoggingEvent loggingEventE0 = (LoggingEvent) e0.value();
-        final LoggingEvent loggingEventE1 = (LoggingEvent) e1.value();
+        final LoggingEvent loggingEventE0 = e0.value();
+        final LoggingEvent loggingEventE1 = e1.value();
 
         assertThat(loggingEventE0.getType(), is("KafkaEvent3"));
         assertThat(loggingEventE1.getType(), is("KafkaEvent4"));

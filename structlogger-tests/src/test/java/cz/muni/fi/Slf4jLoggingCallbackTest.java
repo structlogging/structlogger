@@ -18,7 +18,7 @@ public class Slf4jLoggingCallbackTest {
     private EventLogger<TestContext> structLogger;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         logger = mock(Logger.class);
         structLogger = new EventLogger<>(
                 new Slf4jLoggingCallback(logger)
@@ -26,7 +26,7 @@ public class Slf4jLoggingCallbackTest {
     }
 
     @Test
-    public void testLoggerIsCalled() throws Exception {
+    public void testLoggerIsCalled() {
         structLogger
                 .info("test logger is called")
                 .varInt(1)

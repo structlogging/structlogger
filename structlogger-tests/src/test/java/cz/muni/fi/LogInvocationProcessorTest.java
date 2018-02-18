@@ -11,9 +11,11 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import cz.muni.fi.annotation.LoggerContext;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,14 +31,14 @@ public class LogInvocationProcessorTest {
     private EventLogger<DefaultContext> defaultContextLogger;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         callback = new ListLoggingCallback();
         testLogger = new EventLogger<>(callback);
         defaultContextLogger = new EventLogger<>(callback);
     }
 
     @Test
-    public void shouldLogEventWithNoNamespace() throws Exception {
+    public void shouldLogEventWithNoNamespace() {
         testLogger.info("test")
                 .varInt(1)
                 .varString("ahoj")
@@ -51,7 +53,7 @@ public class LogInvocationProcessorTest {
     }
 
     @Test
-    public void shouldLogEventGeneratedEventName() throws Exception {
+    public void shouldLogEventGeneratedEventName() {
         testLogger.info("test generated event name")
                 .log();
 
@@ -63,7 +65,7 @@ public class LogInvocationProcessorTest {
     }
 
     @Test
-    public void shouldLogCorrectEvent() throws Exception {
+    public void shouldLogCorrectEvent() {
         testLogger.info("test")
                 .varInt(1)
                 .varString("ahoj")
@@ -80,12 +82,12 @@ public class LogInvocationProcessorTest {
         assertThat(testEvent.getClass().getPackage().getName(), is(equalTo("structlogger.test")));
         assertThat(testEvent.getClass().getSimpleName(), is(equalTo("TestEvent")));
 
-        final List<String> eventFields = Arrays.asList(testEvent.getClass().getDeclaredFields()).stream().map(e -> e.getName()).collect(Collectors.toList());
+        final List<String> eventFields = Arrays.stream(testEvent.getClass().getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
         assertThat(eventFields, containsInAnyOrder(equalTo("varInt"), equalTo("varString")));
     }
 
     @Test
-    public void shouldLogEventWithSequencedFields() throws Exception {
+    public void shouldLogEventWithSequencedFields() {
         testLogger.info("test")
                 .varInt(1)
                 .varInt(1)
@@ -97,12 +99,12 @@ public class LogInvocationProcessorTest {
 
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
 
-        final List<String> eventFields = Arrays.asList(testEvent.getClass().getDeclaredFields()).stream().map(e -> e.getName()).collect(Collectors.toList());
-        assertThat(eventFields, containsInAnyOrder(equalTo("varInt"), equalTo("varInt1"), equalTo("varInt2"), equalTo("varInt3")));
+        final List<String> eventFields = Arrays.stream(testEvent.getClass().getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+        assertThat(eventFields, Matchers.<String>containsInAnyOrder(equalTo("varInt"), equalTo("varInt1"), equalTo("varInt2"), equalTo("varInt3")));
     }
 
     @Test
-    public void shouldLogEventWithIncreasingSid() throws Exception {
+    public void shouldLogEventWithIncreasingSid() {
         testLogger.info("test")
                   .log("X1");
 
@@ -147,7 +149,7 @@ public class LogInvocationProcessorTest {
     }
 
     @Test
-    public void shouldLogEventsWithCorrectLogLevel() throws Exception {
+    public void shouldLogEventsWithCorrectLogLevel() {
         testLogger.info("test")
                   .log("structlogger.test.F");
 
@@ -166,12 +168,12 @@ public class LogInvocationProcessorTest {
         testLogger.audit("test")
                   .log("structlogger.test.K");
 
-        assertThat(callback.getLoggingEventList().stream().map(e -> e.getLogLevel()).collect(Collectors.toList()),
+        assertThat(callback.getLoggingEventList().stream().map(LoggingEvent::getLogLevel).collect(Collectors.toList()),
                 is(hasItems("INFO", "WARN", "ERROR", "TRACE", "DEBUG", "AUDIT")));
     }
 
     @Test
-    public void shouldParametrizeMessage() throws Exception {
+    public void shouldParametrizeMessage() {
         defaultContextLogger.info("parameter1={} parameter2={}")
                             .varInt(1)
                             .varBoolean(true)

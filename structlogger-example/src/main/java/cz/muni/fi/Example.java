@@ -27,7 +27,7 @@ public class Example {
             )
     );
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         int numCached = 0;
         int neededCached = 0;

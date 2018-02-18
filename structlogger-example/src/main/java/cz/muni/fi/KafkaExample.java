@@ -19,7 +19,7 @@ public class KafkaExample {
             )
     );
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         logger.audit("start action")
                 .id(1)
