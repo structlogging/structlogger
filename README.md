@@ -8,13 +8,13 @@ clone this project from github and build this project using maven `mvn clean ins
 add dependency to your project 
 ```
 <dependency>
-    <groupId>cz.muni.fi</groupId>
+    <groupId>com.github.tantalor93</groupId>
     <artifactId>structlogger</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
-then you should set compiler argument `schemasRoot` in order to set path where schemas are generated, also you can set package (namespace) for auto generated events using compiler argument `generatedEventsPackage`, which takes qualified package (dot notation, e.g. cz.muni.fi). You can set compiler arguments using maven-compiler-plugin
+then you should set compiler argument `schemasRoot` in order to set path where schemas are generated, also you can set package (namespace) for auto generated events using compiler argument `generatedEventsPackage`, which takes qualified package (dot notation, e.g. com.github.tantalor93). You can set compiler arguments using maven-compiler-plugin
 
 ```
 <plugin>
@@ -40,9 +40,9 @@ private static StructLogger<DefaultContext> logger = new StructLogger<>(new Slf4
 ```
 
 please note that StructLogger should not be declared and cannot be used as local variable!!
-StructLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/cz/muni/fi/slf4j/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/cz/muni/fi/LoggingCallback.java)
+StructLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/com/github/tantalor93/slf4j/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/com/github/tantalor93/LoggingCallback.java)
 
-StructLogger field has to be annotated with `@LoggerContext` in order to structured logging to work, you have to also specify extension of [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) as annotation parameter (this parameter must be same as generic argument of StructLogger otherwise you will encounter undefined behaviour). Variable context provides logging variables. You can create your own VariableContext like [BlockCacheContext](structlogger-example/src/main/java/cz/muni/fi/BlockCacheContext.java). Please see *Creating your own Variable context* section of README. 
+StructLogger field has to be annotated with `@LoggerContext` in order to structured logging to work, you have to also specify extension of [VariableContext](structlogger/src/main/java/com/github/tantalor93/VariableContext.java) as annotation parameter (this parameter must be same as generic argument of StructLogger otherwise you will encounter undefined behaviour). Variable context provides logging variables. You can create your own VariableContext like [BlockCacheContext](structlogger-example/src/main/java/com/github/tantalor93/BlockCacheContext.java). Please see *Creating your own Variable context* section of README. 
 
 this declared logger can then be used for logging in structured way like this:
 
@@ -57,7 +57,7 @@ this structured log statement will generate json like this:
 ```json
 { 
         "message":"Event with double=1.2 and boolean=false",
-        "sourceFile":"cz.muni.fi.Example",
+        "sourceFile":"com.github.tantalor93.Example",
         "lineNumber":37,
         "type":"auto.Event677947de",
         "sid":1,
@@ -80,7 +80,7 @@ this will generate event like this:
 ```json
 {
         "message":"Event with double=1.2 and boolean=false",
-        "sourceFile":"cz.muni.fi.Example",
+        "sourceFile":"com.github.tantalor93.Example",
         "lineNumber":24,
         "type":"edu.TestEvent",
         "sid":1,
@@ -144,17 +144,17 @@ see [example](structlogger-example) where schemas are created after compilation 
 
 If `schemasRoot` compiler argument is not specified, no schemas will be created!
 ## Creating your own Variable context provider
-Variable context is interface which provides parameters to be used in structured logging by [StructLogger](structlogger/src/main/java/cz/muni/fi/StructLogger.java). To implement your own VariableContext,
-create new interface which extends [VariableContext](structlogger/src/main/java/cz/muni/fi/VariableContext.java) and only extends this interface, 
-annotate your interface with [@VarContextProvider](structlogger/src/main/java/cz/muni/fi/annotation/VarContextProvider.java), then add methods annotated with [@Var](structlogger/src/main/java/cz/muni/fi/annotation/Var.java),
+Variable context is interface which provides parameters to be used in structured logging by [StructLogger](structlogger/src/main/java/com/github/tantalor93/StructLogger.java). To implement your own VariableContext,
+create new interface which extends [VariableContext](structlogger/src/main/java/com/github/tantalor93/VariableContext.java) and only extends this interface, 
+annotate your interface with [@VarContextProvider](structlogger/src/main/java/com/github/tantalor93/annotation/VarContextProvider.java), then add methods annotated with [@Var](structlogger/src/main/java/com/github/tantalor93/annotation/Var.java),
 these methods should all have return type your Interface and accept single parameter, please not that method overloading is not supported.
 
-For example of custom Variable context see [BlockCacheContext](structlogger-example/src/main/java/cz/muni/fi/BlockCacheContext.java).
+For example of custom Variable context see [BlockCacheContext](structlogger-example/src/main/java/com/github/tantalor93/BlockCacheContext.java).
 
 Also note that your custom VariableContext is checked whether it is valid only checked lazily, when it is used.
 
 ### Log message parametrization
-[@VarContextProvider](structlogger/src/main/java/cz/muni/fi/annotation/VarContextProvider.java) has parameter called `parametrization`, which when set to true forces constraints on log message such that log message (String in `info`,`debug`,... method) must contain `{}` placeholders same count as parameters used in given log statement, for example
+[@VarContextProvider](structlogger/src/main/java/com/github/tantalor93/annotation/VarContextProvider.java) has parameter called `parametrization`, which when set to true forces constraints on log message such that log message (String in `info`,`debug`,... method) must contain `{}` placeholders same count as parameters used in given log statement, for example
 ```
 logger.info("test {} string literal {}")
       .varDouble(1.2)
@@ -170,7 +170,7 @@ If `parametrization` is set to false, no placeholder `{}` is replaced in log mes
 tests of structlogger API and annotation processor are located in [structlogger-tests](structlogger-tests) module
 
 ## Structlogger kafka support 
-You can use [EventTypeAwareKafkaCallback](structlogger/src/main/java/cz/muni/fi/kafka/EventTypeAwareKafkaCallback.java) to send events asynchronously to topics using provided Producer, just provide in your project dependency on `kafka-clients`, for example like this:
+You can use [EventTypeAwareKafkaCallback](structlogger/src/main/java/com/github/tantalor93/kafka/EventTypeAwareKafkaCallback.java) to send events asynchronously to topics using provided Producer, just provide in your project dependency on `kafka-clients`, for example like this:
 
 ```
  <dependency>

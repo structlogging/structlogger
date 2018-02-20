@@ -1,13 +1,13 @@
-import cz.muni.fi.slf4j.Slf4jLoggingCallback;
-import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.StructLogger;
+import com.github.tantalor93.slf4j.Slf4jLoggingCallback;
+import com.github.tantalor93.annotation.LoggerContext;
+import com.github.tantalor93.StructLogger;
 
 public class UseProviderWithLogLevelMethodOverriden {
 
     @LoggerContext(context = ContextProviderWithLogLevelMethodOverriden.class)
     private static StructLogger<ContextProviderWithLogLevelMethodOverriden> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
-                    LoggerFactory.getLogger("cz.muni.fi.Default")
+                    LoggerFactory.getLogger("com.github.tantalor93.Default")
             )
     );
 

@@ -34,11 +34,11 @@
 
     <parent>
         <artifactId>structlogger-parent</artifactId>
-        <groupId>cz.muni.fi</groupId>
+        <groupId>com.github.tantalor93</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>cz.muni.fi</groupId>
+    <groupId>com.github.tantalor93</groupId>
     <artifactId>structlogger-benchmark</artifactId>
     <packaging>jar</packaging>
 
@@ -62,7 +62,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>cz.muni.fi</groupId>
+            <groupId>com.github.tantalor93</groupId>
             <artifactId>structlogger</artifactId>
             <version>${project.version}</version>
         </dependency>
