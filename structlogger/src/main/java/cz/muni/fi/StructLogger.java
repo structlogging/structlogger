@@ -1,14 +1,13 @@
 package cz.muni.fi;
 
 /**
- * Slf4j logger wrapper for serializing objects.
- * Used internally by structlogger, you should not need to use this
+ * Main class providing structured logging, parametrized by interface extending {@link VariableContext} class
  */
-public class EventLogger<T extends VariableContext> {
+public class StructLogger<T extends VariableContext> {
 
     private final LoggingCallback callback;
 
-    public EventLogger(final LoggingCallback callback) {
+    public StructLogger(final LoggingCallback callback) {
         this.callback = callback;
     }
 

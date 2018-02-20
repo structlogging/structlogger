@@ -13,7 +13,7 @@ import java.util.Properties;
 public class KafkaExample {
 
     @LoggerContext(context = AuditContext.class)
-    private static EventLogger<AuditContext> logger = new EventLogger<>(
+    private static StructLogger<AuditContext> logger = new StructLogger<>(
             new EventTypeAwareKafkaCallback(
                     createProducer("localhost:9092")
             )

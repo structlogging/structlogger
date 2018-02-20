@@ -1,11 +1,11 @@
 import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.EventLogger;
+import cz.muni.fi.StructLogger;
 
 public class UseProviderWithInvalidMethodName {
 
     @LoggerContext(context = ContextProviderWithInvalidMethodName.class)
-    private static EventLogger<ContextProviderWithInvalidMethodName> defaultLog = new EventLogger<>(
+    private static StructLogger<ContextProviderWithInvalidMethodName> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Default")
             )

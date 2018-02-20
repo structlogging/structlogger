@@ -1,11 +1,11 @@
 import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.EventLogger;
+import cz.muni.fi.StructLogger;
 
 public class UseProviderWithMultipleArgumentVar {
 
     @LoggerContext(context = ContextProviderMultipleArgumentVar.class)
-    private static EventLogger<ContextProviderMultipleArgumentVar> defaultLog = new EventLogger<>(
+    private static StructLogger<ContextProviderMultipleArgumentVar> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Default")
             )

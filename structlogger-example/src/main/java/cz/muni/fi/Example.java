@@ -7,21 +7,21 @@ import org.slf4j.LoggerFactory;
 public class Example {
 
     @LoggerContext(context = DefaultContext.class)
-    private static EventLogger<DefaultContext> defaultLog = new EventLogger<>(
+    private static StructLogger<DefaultContext> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Default")
             )
     );
 
     @LoggerContext(context = BlockCacheContext.class)
-    private static EventLogger<BlockCacheContext> structLog = new EventLogger<>(
+    private static StructLogger<BlockCacheContext> structLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Structured")
             )
     );
 
     @LoggerContext(context = AnotherContext.class)
-    private static EventLogger<AnotherContext> anotherContextStructLog = new EventLogger<>(
+    private static StructLogger<AnotherContext> anotherContextStructLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Another")
             )

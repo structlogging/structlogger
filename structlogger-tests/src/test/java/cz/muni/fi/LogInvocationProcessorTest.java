@@ -26,16 +26,16 @@ public class LogInvocationProcessorTest {
     private ListLoggingCallback callback;
 
     @LoggerContext(context = TestContext.class)
-    private EventLogger<TestContext> testLogger;
+    private StructLogger<TestContext> testLogger;
 
     @LoggerContext(context = DefaultContext.class)
-    private EventLogger<DefaultContext> defaultContextLogger;
+    private StructLogger<DefaultContext> defaultContextLogger;
 
     @Before
     public void setUp() {
         callback = new ListLoggingCallback();
-        testLogger = new EventLogger<>(callback);
-        defaultContextLogger = new EventLogger<>(callback);
+        testLogger = new StructLogger<>(callback);
+        defaultContextLogger = new StructLogger<>(callback);
     }
 
     @Test

@@ -1,11 +1,11 @@
 import cz.muni.fi.slf4j.Slf4jLoggingCallback;
 import cz.muni.fi.annotation.LoggerContext;
-import cz.muni.fi.EventLogger;
+import cz.muni.fi.StructLogger;
 
 public class UseProviderWhichDoesNotExtend {
 
     @LoggerContext(context = ContextProviderNotExtending.class)
-    private static EventLogger<ContextProviderNotExtending> defaultLog = new EventLogger<>(
+    private static StructLogger<ContextProviderNotExtending> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger("cz.muni.fi.Default")
             )

@@ -13,7 +13,7 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Names;
-import cz.muni.fi.EventLogger;
+import cz.muni.fi.StructLogger;
 import cz.muni.fi.annotation.LoggerContext;
 import cz.muni.fi.processor.exception.PackageNameException;
 import cz.muni.fi.processor.service.POJOService;
@@ -80,7 +80,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
     /**
      *  Checks expressions, if expression is method call on {@link LoggerContext} field, it is considered structured log statement and is
-     *  expression is transformed in such way, that expression is replaced with call to {@link EventLogger} with generated Event for given expression
+     *  expression is transformed in such way, that expression is replaced with call to {@link StructLogger} with generated Event for given expression
      */
     @Override
     public Object visitExpressionStatement(final ExpressionStatementTree node, final ScannerParams scannerParams) {
@@ -332,14 +332,14 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     /**
-     * replaces statement with our improved call to {@link EventLogger}
+     * replaces statement with our improved call to {@link StructLogger}
      */
     private void replaceInCode(final String loggerName, final GeneratedClassInfo generatedClassInfo, final StatementInfo statementInfo, java.util.List<VariableAndValue> usedVariables, JCTree.JCLiteral literal, String level, VariableContextProvider variableContextProvider) {
         final ListBuffer listBuffer = new ListBuffer();
         final Class<SidCounter> sidCounterClass = SidCounter.class;
 
         if(variableContextProvider.shouldParametrize()) {
-            listBuffer.add(createEventLoggerFormatCall(usedVariables, literal));
+            listBuffer.add(createFormatCall(usedVariables, literal));
         }
         else {
             listBuffer.add(literal);
@@ -395,7 +395,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         statementInfo.getStatement().expr = apply;
     }
 
-    private JCTree.JCMethodInvocation createEventLoggerFormatCall(final java.util.List<VariableAndValue> usedVariables, final JCTree.JCLiteral literal) {
+    private JCTree.JCMethodInvocation createFormatCall(final java.util.List<VariableAndValue> usedVariables, final JCTree.JCLiteral literal) {
         final ListBuffer lb = new ListBuffer();
         lb.add(literal);
         addVariablesToBuffer(usedVariables, lb);

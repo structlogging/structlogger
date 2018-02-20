@@ -15,12 +15,12 @@ public class Slf4jLoggingCallbackTest {
     private Logger logger = mock(Logger.class);
 
     @LoggerContext(context = TestContext.class)
-    private EventLogger<TestContext> structLogger;
+    private StructLogger<TestContext> structLogger;
 
     @Before
     public void setUp() {
         logger = mock(Logger.class);
-        structLogger = new EventLogger<>(
+        structLogger = new StructLogger<>(
                 new Slf4jLoggingCallback(logger)
         );
     }

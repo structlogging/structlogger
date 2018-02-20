@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 public class Slf4jToFileBenchmark {
 
     @LoggerContext(context = DefaultContext.class)
-    private static EventLogger<DefaultContext> structLogger = new EventLogger<>(
+    private static StructLogger<DefaultContext> structLogger = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger(
                             Slf4jToFileBenchmark.class.getSimpleName()
@@ -56,7 +56,7 @@ public class Slf4jToFileBenchmark {
     private static Logger logger = LoggerFactory.getLogger(Slf4jToFileBenchmark.class.getSimpleName() + "2");
 
     @LoggerContext(context = DefaultContextWithoutParametrization.class)
-    private static EventLogger<DefaultContext> structLoggerNoMessageParametrization = new EventLogger<>(
+    private static StructLogger<DefaultContext> structLoggerNoMessageParametrization = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger(
                             Slf4jToFileBenchmark.class.getSimpleName() + "3"

@@ -17,7 +17,7 @@ public class EventTypeAwareKafkaCallbackTest {
     private MockProducer<Long, LoggingEvent> mockProducer;
 
     @LoggerContext(context = TestContext.class)
-    private EventLogger<TestContext> testLogger;
+    private StructLogger<TestContext> testLogger;
 
     @Before
     public void setUp() {
@@ -29,7 +29,7 @@ public class EventTypeAwareKafkaCallbackTest {
 
         final EventTypeAwareKafkaCallback kafkaCallback = new EventTypeAwareKafkaCallback(mockProducer);
 
-        testLogger = new EventLogger<>(kafkaCallback);
+        testLogger = new StructLogger<>(kafkaCallback);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class EventTypeAwareKafkaCallbackTest {
     @Test
     public void testEventIsSerializedAndSentUsingProducerToSameTopic() {
         final String topicName = "SAME_TOPIC";
-        testLogger = new EventLogger<>(new EventTypeAwareKafkaCallback(mockProducer, e -> topicName));
+        testLogger = new StructLogger<>(new EventTypeAwareKafkaCallback(mockProducer, e -> topicName));
 
         testLogger.info("Event sent via kafka")
                 .varInt(10)

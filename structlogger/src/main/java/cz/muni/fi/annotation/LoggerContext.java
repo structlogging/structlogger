@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to specify {@link cz.muni.fi.EventLogger} fields
+ * Annotation to specify {@link cz.muni.fi.StructLogger} fields
  * and specifying used {@link VariableContext} and name of logger (underlying slf4j logger)
  *
  * Typical usage:
