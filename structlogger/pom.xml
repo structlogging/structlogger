@@ -41,6 +41,25 @@
 
     <artifactId>structlogger</artifactId>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Library for structured logging</description>
+    <url>https://github.com/Tantalor93/structlogger</url>
+
+    <licenses>
+        <license>
+            <name>The 2-Clause BSD License</name>
+            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Ondrej Benkovsky</name>
+            <email>Obenky@gmail.com</email>
+            <organizationUrl>https://github.com/Tantalor93</organizationUrl>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>com.google.auto.service</groupId>

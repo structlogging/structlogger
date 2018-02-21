@@ -42,12 +42,24 @@
     <artifactId>structlogger-benchmark</artifactId>
     <packaging>jar</packaging>
 
-    <name>structlogger-benchmark</name>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Module with benchmarks</description>
+    <url>https://github.com/Tantalor93/structlogger</url>
 
-    <!--
-       This is the demo/sample template build script for building Java benchmarks with JMH.
-       Edit as needed.
-    -->
+    <licenses>
+        <license>
+            <name>The 2-Clause BSD License</name>
+            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Ondrej Benkovsky</name>
+            <email>Obenky@gmail.com</email>
+            <organizationUrl>https://github.com/Tantalor93</organizationUrl>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>

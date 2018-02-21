@@ -45,6 +45,25 @@
         <module>structlogger-benchmark</module>
     </modules>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Multi-build module for structured logging framework</description>
+    <url>https://github.com/Tantalor93/structlogger</url>
+
+    <licenses>
+        <license>
+            <name>The 2-Clause BSD License</name>
+            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Ondrej Benkovsky</name>
+            <email>Obenky@gmail.com</email>
+            <organizationUrl>https://github.com/Tantalor93</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
         <java.version>1.8</java.version>
     </properties>
