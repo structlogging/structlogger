@@ -56,9 +56,15 @@
         <developer>
             <name>Ondrej Benkovsky</name>
             <email>Obenky@gmail.com</email>
-            <organizationUrl>https://github.com/Tantalor93</organizationUrl>
+            <organizationUrl>http://github.com/Tantalor93</organizationUrl>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Tantalor93/structlogger.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Tantalor93/structlogger.git</developerConnection>
+        <url>http://github.com/Tantalor93/structlogger/tree/master</url>
+    </scm>
 
     <properties>
         <generatedEventsPackage>auto</generatedEventsPackage>
