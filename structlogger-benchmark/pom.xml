@@ -63,7 +63,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/Tantalor93/structlogger.git</connection>
-        <developerConnection>scm:git:ssh://github.com:Tantalor93/structlogger.git</developerConnection>
+        <developerConnection>scm:git:git://github.com:Tantalor93/structlogger.git</developerConnection>
         <url>http://github.com/Tantalor93/structlogger/tree/master</url>
     </scm>
 
