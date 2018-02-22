@@ -43,8 +43,8 @@ import java.lang.annotation.Target;
  * Typical usage:
  * <code>
  * public class Example {
- *      @VarContext(context = DefaultContext.class)
- *      private static StructLogger<DefaultContext> defaultLog = StructLogger.instance();
+ *      {@literal @}VarContext(context = DefaultContext.class)
+ *      private static StructLogger{@literal <}DefaultContext{@literal >} defaultLog = StructLogger.instance();
  * }
  * </code>
  */

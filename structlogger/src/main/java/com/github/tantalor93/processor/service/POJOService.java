@@ -83,6 +83,7 @@ public class POJOService {
      * @param literal String literal used in structured log statement
      * @param usedVariables list of logging variables used by structured log statement
      * @return JavaFile representing Structured log Event (this JavaFile is not yet written, @see POJOService.writeJavaFile)
+     * @throws PackageNameException when event name is not correct
      */
     public JavaFile createPojo(final String name,
                                final JCTree.JCLiteral literal,

@@ -39,36 +39,70 @@ public class StructLogger<T extends VariableContext> {
         this.callback = callback;
     }
 
-    // these are used just as placeholders
-    // calls to these methods are replaced by annotation processor to calls to correct method which accepts LoggingEvent
-    // these methods are just used to give programmer a nice way to work with fluent logging API instead of creating logging events manually
+
+    /**
+     * log event on debug level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by debugEvent event with appropriate generated event passed to it
+     */
     public T debug(String message) {
         return null;
     }
 
+    /**
+     * log event on info level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by infoEvent event with appropriate generated event passed to it
+     */
     public T info(String message) {
         return null;
     }
 
+    /**
+     * log event on error level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by errorEvent event with appropriate generated event passed to it
+     */
     public T error(String message) {
         return null;
     }
 
+    /**
+     * log event on warn level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by warnEvent event with appropriate generated event passed to it
+     */
     public T warn(String message) {
         return null;
     }
 
+    /**
+     * log event on trace level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by traceEvent event with appropriate generated event passed to it
+     */
     public T trace(String message) {
         return null;
     }
 
+    /**
+     * log event on audit level, beginning point of fluent API logging
+     * @param message to be logged
+     * @return VariableContext placeholder, it returns null, but null is never used in compiled code,
+     *         fluent api structured call statement is replaced by auditEvent event with appropriate generated event passed to it
+     */
     public T audit(String message) {
         return null;
     }
-    /////////////////////////////////////////////////////////////
 
     /**
      * log event on info level
+     * @param e event to log
      */
     public void infoEvent(final LoggingEvent e) {
         callback.info(e);
@@ -76,6 +110,7 @@ public class StructLogger<T extends VariableContext> {
 
     /**
      * log event on debug level
+     * @param e event to log
      */
     public void debugEvent(final LoggingEvent e) {
         callback.debug(e);
@@ -83,6 +118,7 @@ public class StructLogger<T extends VariableContext> {
 
     /**
      * log event on error level
+     * @param e event to log
      */
     public void errorEvent(final LoggingEvent e) {
         callback.error(e);
@@ -90,6 +126,7 @@ public class StructLogger<T extends VariableContext> {
 
     /**
      * log event on warn level
+     * @param e event to log
      */
     public void warnEvent(final LoggingEvent e) {
         callback.warn(e);
@@ -97,6 +134,7 @@ public class StructLogger<T extends VariableContext> {
 
     /**
      * log event on trace level
+     * @param e event to log
      */
     public void traceEvent(final LoggingEvent e) {
         callback.trace(e);
@@ -104,6 +142,7 @@ public class StructLogger<T extends VariableContext> {
 
     /**
      * log audit event
+     * @param e event to log
      */
     public void auditEvent(final LoggingEvent e) {
         callback.audit(e);

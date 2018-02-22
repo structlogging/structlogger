@@ -38,6 +38,7 @@ public class SidCounter {
 
     /**
      * increment and get new value of SID
+     * @return incremented counter value
      */
     public static long incrementAndGet() {
         return SEQ_NUMBER.incrementAndGet();

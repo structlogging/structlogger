@@ -37,8 +37,8 @@ public final class MessageFormatterUtils {
     /**
      * based on String pattern, which contains placeholder <code>{}</code>, inserts params into
      * the pattern and returns resulting String
-     * @param pattern
-     * @param params
+     * @param pattern string pattern with placeholders {}
+     * @param params to replace placeholders with
      * @return String with params inserted into pattern
      */
     public static String format(final String pattern, Object... params) {

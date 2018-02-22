@@ -35,31 +35,37 @@ public interface LoggingCallback {
 
     /**
      * corresponds to INFO level of logging
+     * @param e event to log
      */
     void info(LoggingEvent e);
 
     /**
      * corresponds to WARN level of logging
+     * @param e event to log
      */
     void warn(LoggingEvent e);
 
     /**
      * corresponds to DEBUG level of logging
+     * @param e event to log
      */
     void debug(LoggingEvent e);
 
     /**
      * corresponds to ERROR level of logging
+     * @param e event to log
      */
     void error(LoggingEvent e);
 
     /**
      * corresponds to TRACE level of logging
+     * @param e event to log
      */
     void trace(LoggingEvent e);
 
     /**
      * logging of audit related events
+     * @param e event to log
      */
     void audit(LoggingEvent e);
 }
