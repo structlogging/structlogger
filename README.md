@@ -3,14 +3,12 @@
 [![Build Status](https://travis-ci.org/Tantalor93/structlogger.svg?branch=master)](https://travis-ci.org/Tantalor93/structlogger)
 
 ## How to use this project
-clone this project from github and build this project using maven `mvn clean install`
-
 add dependency to your project 
 ```
 <dependency>
     <groupId>com.github.tantalor93</groupId>
     <artifactId>structlogger</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
