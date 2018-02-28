@@ -28,8 +28,6 @@
  */
 package com.github.structlogging;
 
-import com.github.structlogging.DefaultContext;
-import com.github.structlogging.StructLogger;
 import com.github.structlogging.annotation.LoggerContext;
 import com.github.structlogging.slf4j.Slf4jLoggingCallback;
 import org.openjdk.jmh.annotations.Benchmark;
