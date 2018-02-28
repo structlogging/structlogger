@@ -29,10 +29,16 @@
 package com.github.structlogging.processor;
 
 import com.github.structlogging.StructLogger;
-import com.github.structlogging.annotation.LoggerContext;
 import com.github.structlogging.processor.exception.PackageNameException;
 import com.github.structlogging.processor.service.POJOService;
-import com.github.structlogging.processor.utils.*;
+import com.github.structlogging.processor.utils.GeneratedClassInfo;
+import com.github.structlogging.processor.utils.MethodAndParameter;
+import com.github.structlogging.processor.utils.ScannerParams;
+import com.github.structlogging.processor.utils.StatementInfo;
+import com.github.structlogging.processor.utils.StructLoggerFieldContext;
+import com.github.structlogging.processor.utils.Variable;
+import com.github.structlogging.processor.utils.VariableAndValue;
+import com.github.structlogging.processor.utils.VariableContextProvider;
 import com.github.structlogging.utils.MessageFormatterUtils;
 import com.github.structlogging.utils.SidCounter;
 import com.squareup.javapoet.JavaFile;
@@ -96,8 +102,9 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     /**
-     *  Checks expressions, if expression is method call on {@link LoggerContext} field, it is considered structured log statement and is
-     *  expression is transformed in such way, that expression is replaced with call to {@link StructLogger} with generated Event for given expression
+     *  Checks expressions, if expression is method call on {@link StructLogger} field, it is considered structured log statement and is
+     *  expression is transformed in such way, that method chain is replaced with one call to corresponding infoEvent, errorEvent,... method
+     *  with instance of generated class of Event based on method chain
      */
     @Override
     public Object visitExpressionStatement(final ExpressionStatementTree node, final ScannerParams scannerParams) {
@@ -110,6 +117,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 statement
         );
 
+        //inner scanner to go through statement methods
         final TreePathScanner scanner = new TreePathScanner<Object, ScannerParams>() {
             Stack<MethodAndParameter> stack = new Stack<>();
 
@@ -154,7 +162,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     /**
      *
      * @param stack all method calls on one line
-     * @param node
+     * @param node to analyze
      * @param name of field
      * @param statementInfo about whole one line statement
      */
@@ -412,6 +420,12 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         statementInfo.getStatement().expr = apply;
     }
 
+    /**
+     *
+     * @param usedVariables used variables list
+     * @param literal string literal to be used as format pattern
+     * @return proper call to MessageFormatterUtils.format with arguments
+     */
     private JCTree.JCMethodInvocation createFormatCall(final java.util.List<VariableAndValue> usedVariables, final JCTree.JCLiteral literal) {
         final ListBuffer lb = new ListBuffer();
         lb.add(literal);

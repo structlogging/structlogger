@@ -132,7 +132,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     }
 
     /**
-     * checks VarContextProvider
+     * checks VarContextProvider, whether it is interface, extends VariableContext, is properly annotated, contains proper logging variable methods
      * @param typeMirror of VarContextProvider
      * @return false when VarContextProvider is not valid
      */
@@ -184,12 +184,15 @@ public class LogInvocationProcessor extends AbstractProcessor {
             return false;
         }
 
+        //check methods of interface
         for (Element enclosed : element.getEnclosedElements()) {
             final Var annotation = enclosed.getAnnotation(Var.class);
             if (annotation != null) {
                 final ExecutableType executableType = (ExecutableType) enclosed.asType();
                 final Name simpleName = enclosed.getSimpleName();
                 // check name of method
+
+                //should not have method with names info, debug, error,...
                 final List<String> logLevelsMethodNames = Arrays.asList(
                         LogLevel.values()
                 ).stream()
@@ -200,6 +203,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                                 Collectors.toList()
                         );
 
+                //should not have method with names infoEvent, debugEvent, errorEvent,...
                 final List<String> logEventMethodNames = Arrays.asList(
                         LogLevel.values()
                 ).stream()
@@ -210,7 +214,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                                 Collectors.toList()
                         );
                 if (
-                        simpleName.contentEquals("log") ||
+                        simpleName.contentEquals("log") || //should not have method with name log
                         logLevelsMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e)) ||
                         logEventMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e))
                    )
