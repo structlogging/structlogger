@@ -35,7 +35,7 @@
     <groupId>com.github.structlogging</groupId>
     <artifactId>structlogger-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.9.0</version>
     <modules>
         <module>structlogger</module>
         <module>structlogger-example</module>
@@ -66,7 +66,7 @@
         <connection>scm:git:git@github.com/structlogging/structlogger.git</connection>
         <developerConnection>scm:git:git@github.com:structlogging/structlogger.git</developerConnection>
         <url>http://github.com/structlogging/structlogger/tree/master</url>
-      <tag>HEAD</tag>
+      <tag>structlogger-parent-0.9.0</tag>
   </scm>
 
     <properties>
