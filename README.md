@@ -12,7 +12,7 @@ add dependency to your project
 <dependency>
     <groupId>com.github.structlogging</groupId>
     <artifactId>structlogger</artifactId>
-    <version>1.0.0</version>
+    <version>0.9.0</version>
 </dependency>
 ```
 
