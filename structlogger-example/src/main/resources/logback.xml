@@ -24,7 +24,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.github.tantalor93" level="trace" additivity="false">
+    <logger name="com.github.structlogging" level="trace" additivity="false">
         <appender-ref ref="STRUCT_STDOUT"/>
     </logger>
 

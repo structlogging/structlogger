@@ -1,14 +1,14 @@
-import com.github.tantalor93.slf4j.Slf4jLoggingCallback;
-import com.github.tantalor93.annotation.LoggerContext;
-import com.github.tantalor93.StructLogger;
-import com.github.tantalor93.DefaultContext;
+import com.github.structlogging.slf4j.Slf4jLoggingCallback;
+import com.github.structlogging.annotation.LoggerContext;
+import com.github.structlogging.StructLogger;
+import com.github.structlogging.DefaultContext;
 
 public class InvalidArgumentLogMethod {
 
     @LoggerContext(context = DefaultContext.class)
     private static StructLogger<DefaultContext> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
-                    LoggerFactory.getLogger("com.github.tantalor93.Default")
+                    LoggerFactory.getLogger("com.github.structlogging.Default")
             )
     );
 

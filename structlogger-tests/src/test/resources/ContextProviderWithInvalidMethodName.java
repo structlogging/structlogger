@@ -1,6 +1,6 @@
-import com.github.tantalor93.annotation.Var;
-import com.github.tantalor93.annotation.VarContextProvider;
-import com.github.tantalor93.VariableContext;
+import com.github.structlogging.annotation.Var;
+import com.github.structlogging.annotation.VarContextProvider;
+import com.github.structlogging.VariableContext;
 
 @VarContextProvider
 public interface ContextProviderWithInvalidMethodName extends VariableContext {

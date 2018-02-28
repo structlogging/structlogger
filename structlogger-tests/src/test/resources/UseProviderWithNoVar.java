@@ -1,13 +1,13 @@
-import com.github.tantalor93.slf4j.Slf4jLoggingCallback;
-import com.github.tantalor93.annotation.LoggerContext;
-import com.github.tantalor93.StructLogger;
+import com.github.structlogging.slf4j.Slf4jLoggingCallback;
+import com.github.structlogging.annotation.LoggerContext;
+import com.github.structlogging.StructLogger;
 
 public class UseProviderWithNoVar {
 
     @LoggerContext(context = ContextProviderNoVar.class)
     private static StructLogger<ContextProviderNoVar> defaultLog = new StructLogger<>(
             new Slf4jLoggingCallback(
-                    LoggerFactory.getLogger("com.github.tantalor93.Default")
+                    LoggerFactory.getLogger("com.github.structlogging.Default")
             )
     );
 

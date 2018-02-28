@@ -33,17 +33,17 @@
 
     <parent>
         <artifactId>structlogger-parent</artifactId>
-        <groupId>com.github.tantalor93</groupId>
+        <groupId>com.github.structlogging</groupId>
         <version>0.1.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.github.tantalor93</groupId>
+    <groupId>com.github.structlogging</groupId>
     <artifactId>structlogger-benchmark</artifactId>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Module with benchmarks</description>
-    <url>https://github.com/Tantalor93/structlogger</url>
+    <url>https://github.com/structlogging/structlogger</url>
 
     <licenses>
         <license>
@@ -56,14 +56,14 @@
         <developer>
             <name>Ondrej Benkovsky</name>
             <email>Obenky@gmail.com</email>
-            <organizationUrl>http://github.com/Tantalor93</organizationUrl>
+            <organizationUrl>http://github.com/structlogging</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com/Tantalor93/structlogger.git</connection>
-        <developerConnection>scm:git:git@github.com:Tantalor93/structlogger.git</developerConnection>
-        <url>http://github.com/Tantalor93/structlogger/tree/master</url>
+        <connection>scm:git:git@github.com/structlogging/structlogger.git</connection>
+        <developerConnection>scm:git:git@github.com:structlogging/structlogger.git</developerConnection>
+        <url>http://github.com/structlogging/structlogger/tree/master</url>
       <tag>HEAD</tag>
   </scm>
 
@@ -80,7 +80,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tantalor93</groupId>
+            <groupId>com.github.structlogging</groupId>
             <artifactId>structlogger</artifactId>
             <version>${project.version}</version>
         </dependency>
