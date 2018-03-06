@@ -35,7 +35,7 @@ then you should set compiler argument `schemasRoot` in order to set path where s
 </plugin>
 ```
 
-in your java code you can then declare, fields like this:
+in your java code you can then declare fields like this:
 ```
 @LoggerContext(context = DefaultContext.class)
 private static StructLogger<DefaultContext> logger = new StructLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("LOGGER")));
