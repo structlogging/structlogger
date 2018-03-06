@@ -4,7 +4,7 @@
 
 ## What?
 This is master thesis project at Masaryk University [Faculty of Informatics](https://fi.muni.cz/index.html.en) under supervision of Daniel Tovarňák ([xdanos](https://github.com/xdanos)).
-This project is based on project [ngmon-structlog-java-fal](https://github.com/lasaris/ngmon-structlog-java-fal), which supports structured logging in Java using Variable Contexts (see [dissertation thesis chapter 3](https://is.muni.cz/th/172673/fi_d/)).
+This project is based on project [ngmon-structlog-java-fal](https://github.com/lasaris/ngmon-structlog-java-fal), which supports structured logging in Java using so-called Variable Contexts (see [Daniel's dissertation thesis, Chapter 3](https://is.muni.cz/th/172673/fi_d/)).
 
 ## How to use this project
 add dependency to your project 
