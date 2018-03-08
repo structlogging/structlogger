@@ -3,21 +3,8 @@
     <logger name="Slf4jToFileBenchmark">
         <appender name="FILE" class="ch.qos.logback.core.FileAppender">
             <file>benchmark.log</file>
-            <!-- encoders are assigned the type
-                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-                <providers>
-                    <timestamp/>
-                    <loggerName/>
-                    <logLevel/>
-                    <pattern>
-                        <pattern>
-                            {
-                            "jsonMessage": "#asJson{%message}"
-                            }
-                        </pattern>
-                    </pattern>
-                </providers>
+            <encoder>
+                <pattern>%msg%n</pattern>
             </encoder>
         </appender>
 
@@ -47,18 +34,51 @@
             <file>benchmark3.log</file>
             <!-- encoders are assigned the type
                  ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder>
+                <pattern>%msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="FILE" />
+        </root>
+    </logger>
+
+    <logger name="Slf4jToFileBenchmark4">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>benchmark4.log</file>
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
                 <providers>
                     <timestamp/>
                     <loggerName/>
                     <logLevel/>
-                    <pattern>
-                        <pattern>
-                            {
-                            "jsonMessage": "#asJson{%message}"
-                            }
-                        </pattern>
-                    </pattern>
+                    <callerData/>
+                    <message/>
+                    <arguments/>
+                </providers>
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="FILE" />
+        </root>
+    </logger>
+
+    <logger name="Slf4jToFileBenchmark5">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>benchmark5.log</file>
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp/>
+                    <loggerName/>
+                    <logLevel/>
+                    <callerData/>
+                    <message/>
+                    <arguments/>
                 </providers>
             </encoder>
         </appender>
