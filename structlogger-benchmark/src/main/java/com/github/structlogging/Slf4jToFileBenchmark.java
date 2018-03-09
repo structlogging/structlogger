@@ -30,6 +30,7 @@ package com.github.structlogging;
 
 import com.github.structlogging.annotation.LoggerContext;
 import com.github.structlogging.slf4j.Slf4jLoggingCallback;
+import org.ngmon.structlog.StructLog;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -40,6 +41,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -72,6 +74,17 @@ public class Slf4jToFileBenchmark {
     private static Logger loggerLogstashParametrizedMessage = LoggerFactory.getLogger(Slf4jToFileBenchmark.class.getSimpleName() + "4");
 
     private static Logger loggerLogstash = LoggerFactory.getLogger(Slf4jToFileBenchmark.class.getSimpleName() + "5");
+
+
+    private static StructLog<FALContext> LOGX;
+
+    static {
+        try {
+            LOGX = new StructLog<>(FALContext.class, new FALLogger());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Warmup(iterations = 5)
@@ -478,6 +491,89 @@ public class Slf4jToFileBenchmark {
         logstashMessageLog10Calls(10);
     }
 
+    //FAL logger
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging1Call() {
+        LOGX.info("Event with double and boolean")
+                .varDouble(1.2)
+                .varBoolean(false)
+                .log();
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging10Calls() {
+        FALlogger10Calls(1);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging20Calls() {
+        FALlogger10Calls(2);
+    }
+
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging30Calls() {
+        FALlogger10Calls(3);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging40Calls() {
+        FALlogger10Calls(4);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging50Calls() {
+        FALlogger10Calls(5);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging60Calls() {
+        FALlogger10Calls(6);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging70Calls() {
+        FALlogger10Calls(7);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging80Calls() {
+        FALlogger10Calls(8);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging90Calls() {
+        FALlogger10Calls(9);
+    }
+
+    @Warmup(iterations = 5)
+    @Measurement(iterations = 5)
+    @Benchmark
+    public void FALLogging100Calls() {
+        FALlogger10Calls(10);
+    }
+
     private void structLogger10CallsWithParametrizedMessage(int number) {
         for(int i = 0; i < number; i++) {
             structLogger.info("Event with double={} and boolean={}")
@@ -584,6 +680,63 @@ public class Slf4jToFileBenchmark {
                     .log();
 
             structLoggerNoMessageParametrization.info("Event with string and string and long and boolean value")
+                    .varString("string value 1")
+                    .varString("string value 2")
+                    .varLong(1L)
+                    .varBoolean(true)
+                    .log();
+        }
+    }
+
+    private void FALlogger10Calls(int number) {
+        for(int i = 0; i < number; i++) {
+            LOGX.info("Event with double and boolean")
+                    .varDouble(1.2)
+                    .varBoolean(false)
+                    .log();
+
+            LOGX.info("Event with integer")
+                    .varInt(1)
+                    .log();
+
+            LOGX.info("Event with double and boolean and string")
+                    .varDouble(1.2)
+                    .varBoolean(false)
+                    .varString("test string value")
+                    .log();
+
+            LOGX.info("Event with double and boolean and long and string")
+                    .varDouble(1.2)
+                    .varBoolean(false)
+                    .varLong(1)
+                    .varString("test string")
+                    .log();
+
+            LOGX.info("Event with double")
+                    .varDouble(1.2)
+                    .log();
+
+            LOGX.error("Event with string and long and boolean")
+                    .varString("super error")
+                    .varLong(42)
+                    .varBoolean(true)
+                    .log();
+
+            LOGX.info("Event with two booleans and integer")
+                    .varBoolean(true)
+                    .varBoolean(false)
+                    .varInt(1)
+                    .log();
+
+            LOGX.error("Event with no parameters")
+                    .log();
+
+            LOGX.info("Event with string and string")
+                    .varString("string value 1")
+                    .varString("string value 2")
+                    .log();
+
+            LOGX.info("Event with string and string and long and boolean value")
                     .varString("string value 1")
                     .varString("string value 2")
                     .varLong(1L)

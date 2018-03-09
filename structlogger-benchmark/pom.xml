@@ -99,6 +99,11 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.ngmon.structlog</groupId>
+            <artifactId>ngmon-structlog-java</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <properties>
