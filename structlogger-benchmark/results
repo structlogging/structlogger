@@ -65,3 +65,15 @@ Slf4jToFileBenchmark.structLoggerLogging70Calls                            avgt 
 Slf4jToFileBenchmark.structLoggerLogging80Calls                            avgt   25   450552.254 ±  3992.035  ns/op
 Slf4jToFileBenchmark.structLoggerLogging90Calls                            avgt   25   511769.418 ± 12082.359  ns/op
 Slf4jToFileBenchmark.structLoggerLogging100Calls                           avgt   25   571010.249 ±  9213.584  ns/op
+
+Slf4jToFileBenchmark.FALLogging1Call                                       avgt   25     7996.959 ±   209.237  ns/op
+Slf4jToFileBenchmark.FALLogging10Calls                                     avgt   25    96403.024 ±  9446.369  ns/op
+Slf4jToFileBenchmark.FALLogging20Calls                                     avgt   25   181820.389 ±  9300.000  ns/op
+Slf4jToFileBenchmark.FALLogging30Calls                                     avgt   25   273881.479 ±  6147.414  ns/op
+Slf4jToFileBenchmark.FALLogging40Calls                                     avgt   25   362451.677 ±  5747.689  ns/op
+Slf4jToFileBenchmark.FALLogging50Calls                                     avgt   25   445648.826 ± 10920.131  ns/op
+Slf4jToFileBenchmark.FALLogging60Calls                                     avgt   25   530995.133 ±  4282.237  ns/op
+Slf4jToFileBenchmark.FALLogging70Calls                                     avgt   25   620886.838 ± 16849.652  ns/op
+Slf4jToFileBenchmark.FALLogging80Calls                                     avgt   25   712244.619 ± 22330.762  ns/op
+Slf4jToFileBenchmark.FALLogging90Calls                                     avgt   25   792969.000 ± 13838.818  ns/op
+Slf4jToFileBenchmark.FALLogging100Calls                                    avgt   25   881265.691 ±  9810.971  ns/op
