@@ -327,7 +327,7 @@ public class Slf4jToFileBenchmark {
     @Measurement(iterations = 5)
     @Benchmark
     public void logstashStructuredParametrizedMessageLogging1Call() {
-        loggerLogstashParametrizedMessage.info("Event with double={} and boolean={}", 1.2, false);
+        loggerLogstashParametrizedMessage.info("Event with double={} and boolean={}", value("varDouble", 1.2), value("varBoolean", false));
     }
 
     @Warmup(iterations = 5)
