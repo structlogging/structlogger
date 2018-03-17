@@ -817,4 +817,14 @@ public class Slf4jToFileBenchmark {
             loggerLogstash.info("Event with string and string and long and boolean", value("varString", "string value 1"), value("varString", "string value 2"), value("varLong", 1L), value("varBoolean", true));
         }
     }
+
+    public static void main(String[] args) {
+        Slf4jToFileBenchmark slf4jToFileBenchmark = new Slf4jToFileBenchmark();
+        slf4jToFileBenchmark.FALLogging1Call();
+        slf4jToFileBenchmark.logstashStructuredLogging1Calls();
+        slf4jToFileBenchmark.logstashStructuredParametrizedMessageLogging1Call();
+        slf4jToFileBenchmark.notStructuredLogging1Call();
+        slf4jToFileBenchmark.structLoggerLogging1Call();
+        slf4jToFileBenchmark.structLogger1CallWithParametrizedMessage();
+    }
 }

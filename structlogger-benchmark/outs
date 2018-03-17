@@ -1,0 +1,18 @@
+structlogger-parametrized:
+{"message":"Event with double=1.2 and boolean=false","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":95,"type":"structlogger.generated.Event677947de","sid":2,"logLevel":"INFO","varDouble":1.2,"varBoolean":false}
+
+structlogger:
+{"message":"Event with double and boolean","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":178,"type":"structlogger.generated.Event2c56200e","sid":1,"logLevel":"INFO","varDouble":1.2,"varBoolean":false}
+
+notstructured:
+23:59:18.095 INFO  Slf4jToFileBenchmark2 - log double=1.2 and boolean=false
+
+logstash-parametrized:
+{"@timestamp":"2018-03-17T23:59:18.092+01:00","logger_name":"Slf4jToFileBenchmark4","level":"INFO","caller_class_name":"com.github.structlogging.Slf4jToFileBenchmark","caller_method_name":"logstashStructuredParametrizedMessageLogging1Call","caller_file_name":"Slf4jToFileBenchmark.java","caller_line_number":343,"message":"Event with double=1.2 and boolean=false","varDouble":1.2,"varBoolean":false}
+
+logstash:
+{"@timestamp":"2018-03-17T23:59:18.078+01:00","logger_name":"Slf4jToFileBenchmark5","level":"INFO","caller_class_name":"com.github.structlogging.Slf4jToFileBenchmark","caller_method_name":"logstashStructuredLogging1Calls","caller_file_name":"Slf4jToFileBenchmark.java","caller_line_number":422,"message":"Event with double and boolean","varDouble":1.2,"varBoolean":false}
+
+FAL:
+{"sid":"Event_8f315f5c_2c56200e","level":"INFO","sid_ns":"events","_":{"varBoolean":false,"varDouble":1.2,"message":"Event with double and boolean"}}
+
