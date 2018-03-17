@@ -3,6 +3,10 @@ hardware setup:
 	processor: 2.7 GHz Intel Core i5
 	memory: 16 GB 1867 MHz DDR3
 
+software setup:
+    macOs High Sierra, version 10.13.3
+    java version "1.8.0_161"
+
 results:
 Benchmark                                                                  Mode  Cnt        Score       Error     Units
 
