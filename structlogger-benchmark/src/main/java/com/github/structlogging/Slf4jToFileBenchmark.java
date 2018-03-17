@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
 import static net.logstash.logback.argument.StructuredArguments.value;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -418,7 +419,7 @@ public class Slf4jToFileBenchmark {
     @Measurement(iterations = 5)
     @Benchmark
     public void logstashStructuredLogging1Calls() {
-        loggerLogstash.info("Event with double and boolean", 1.2, false);
+        loggerLogstash.info("Event with double and boolean", keyValue("varDouble", 1.2), keyValue("varBoolean", false));
     }
 
     @Warmup(iterations = 5)
