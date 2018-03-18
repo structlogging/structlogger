@@ -31,7 +31,7 @@ package com.github.structlogging;
 /**
  * Main class providing structured logging, parametrized by interface extending {@link VariableContext} class
  */
-public class StructLogger<T extends VariableContext> {
+public final class StructLogger<T extends VariableContext> {
 
     private final LoggingCallback callback;
 
