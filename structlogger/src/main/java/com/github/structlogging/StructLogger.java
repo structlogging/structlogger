@@ -47,7 +47,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by debugEvent event with appropriate generated event passed to it
      */
     public T debug(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**
@@ -57,7 +57,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by infoEvent event with appropriate generated event passed to it
      */
     public T info(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**
@@ -67,7 +67,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by errorEvent event with appropriate generated event passed to it
      */
     public T error(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**
@@ -77,7 +77,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by warnEvent event with appropriate generated event passed to it
      */
     public T warn(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**
@@ -87,7 +87,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by traceEvent event with appropriate generated event passed to it
      */
     public T trace(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**
@@ -97,7 +97,7 @@ public final class StructLogger<T extends VariableContext> {
      *         fluent api structured call statement is replaced by auditEvent event with appropriate generated event passed to it
      */
     public T audit(String message) {
-        return null;
+        return null; //return null on purpose, calls to this methods are replaced by LogInvocationProcessor to corresponding event method
     }
 
     /**

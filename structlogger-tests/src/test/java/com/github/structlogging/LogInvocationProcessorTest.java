@@ -154,7 +154,7 @@ public class LogInvocationProcessorTest {
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
 
         final List<String> eventFields = Arrays.stream(testEvent.getClass().getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
-        assertThat(eventFields, Matchers.<String>containsInAnyOrder(equalTo("varInt"), equalTo("varInt1"), equalTo("varInt2"), equalTo("varInt3")));
+        assertThat(eventFields, Matchers.containsInAnyOrder(equalTo("varInt"), equalTo("varInt1"), equalTo("varInt2"), equalTo("varInt3")));
     }
 
     @Test

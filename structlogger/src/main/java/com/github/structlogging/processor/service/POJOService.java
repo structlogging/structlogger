@@ -126,13 +126,11 @@ public class POJOService {
 
         final TypeSpec build = classBuilder.addMethod(constructorBuilder.build()).build();
 
-        final JavaFile javaFile = JavaFile.builder(packageName, build).build();
-
-        return javaFile;
+        return JavaFile.builder(packageName, build).build();
     }
 
     private void checkString(final String s) throws PackageNameException {
-        final boolean packageContainsJavaKeyword = javaKeywords.stream().anyMatch(e -> s.equals(e));
+        final boolean packageContainsJavaKeyword = javaKeywords.stream().anyMatch(s::equals);
         if (packageContainsJavaKeyword || s.matches("\\d.*")) {
             throw new PackageNameException("string is not valid");
         }

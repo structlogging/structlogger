@@ -95,10 +95,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Messager messager;
     private Types types;
 
-    /**
-     * Used for generating json schemas by {@link SchemaGenerator}
-     */
-    private SchemaGenerator schemaGenerator;
     private LogInvocationScanner logInvocationScanner;
 
     private boolean initFailed = false; //flag that init method has errors
@@ -130,7 +126,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
         final String schemasRoot = processingEnv.getOptions().get("schemasRoot");
         if (schemasRoot != null) {
-            schemaGenerator = new SchemaGenerator(generatedClassesInfo, schemasRoot);
+
+            // Used for generating json schemas by {@link SchemaGenerator}
+            SchemaGenerator schemaGenerator = new SchemaGenerator(generatedClassesInfo, schemasRoot);
             JavacTask.instance(processingEnv).addTaskListener(schemaGenerator);
         }
         else {
@@ -217,30 +215,30 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 // check name of method
 
                 //should not have method with names info, debug, error,...
-                final List<String> logLevelsMethodNames = Arrays.asList(
+                final List<String> logLevelsMethodNames = Arrays.stream(
                         LogLevel.values()
-                ).stream()
+                )
                         .map(
-                                e -> e.getLevelMethodName()
+                                LogLevel::getLevelMethodName
                         )
                         .collect(
                                 Collectors.toList()
                         );
 
                 //should not have method with names infoEvent, debugEvent, errorEvent,...
-                final List<String> logEventMethodNames = Arrays.asList(
+                final List<String> logEventMethodNames = Arrays.stream(
                         LogLevel.values()
-                ).stream()
+                )
                         .map(
-                                e -> e.getLogEventMethodName()
+                                LogLevel::getLogEventMethodName
                         )
                         .collect(
                                 Collectors.toList()
                         );
                 if (
                         simpleName.contentEquals("log") || //should not have method with name log
-                        logLevelsMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e)) ||
-                        logEventMethodNames.stream().anyMatch(e -> simpleName.contentEquals(e))
+                        logLevelsMethodNames.stream().anyMatch(simpleName::contentEquals) ||
+                        logEventMethodNames.stream().anyMatch(simpleName::contentEquals)
                    )
                 {
                     messager.printMessage(

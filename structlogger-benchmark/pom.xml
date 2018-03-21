@@ -37,7 +37,6 @@
         <version>0.9.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.github.structlogging</groupId>
     <artifactId>structlogger-benchmark</artifactId>
     <packaging>jar</packaging>
 
