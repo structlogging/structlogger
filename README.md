@@ -1,7 +1,7 @@
-## Travis build
+## Project status
 
 [![Build Status](https://travis-ci.org/structlogging/structlogger.svg?branch=master)](https://travis-ci.org/structlogging/structlogger)
-
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central//com.github.structlogging/structlogger/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.structlogging/structlogger)
 ## What?
 This is master thesis project at Masaryk University [Faculty of Informatics](https://fi.muni.cz/index.html.en) under supervision of Daniel Tovarňák ([xdanos](https://github.com/xdanos)).
 This project is based on project [ngmon-structlog-java-fal](https://github.com/lasaris/ngmon-structlog-java-fal), which supports structured logging in Java using so-called Variable Contexts (see [Daniel's dissertation thesis, Chapter 3](https://is.muni.cz/th/172673/fi_d/)).
@@ -12,7 +12,7 @@ add dependency to your project
 <dependency>
     <groupId>com.github.structlogging</groupId>
     <artifactId>structlogger</artifactId>
-    <version>0.9.0</version>
+    <version>${structlogger.version}</version>
 </dependency>
 ```
 
