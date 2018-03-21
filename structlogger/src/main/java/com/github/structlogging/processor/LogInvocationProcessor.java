@@ -101,6 +101,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private SchemaGenerator schemaGenerator;
     private LogInvocationScanner logInvocationScanner;
 
+    private boolean initFailed = false; //flag that init method has errors
+
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -117,11 +119,13 @@ public class LogInvocationProcessor extends AbstractProcessor {
                     Diagnostic.Kind.ERROR,
                     "IOException caught"
             );
+            initFailed = true;
         } catch (PackageNameException e) {
             messager.printMessage(
                     Diagnostic.Kind.ERROR,
                     "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number"
             );
+            initFailed = true;
         }
 
         final String schemasRoot = processingEnv.getOptions().get("schemasRoot");
@@ -140,6 +144,9 @@ public class LogInvocationProcessor extends AbstractProcessor {
     @Override
     public boolean process(final Set<? extends TypeElement> annotations,
                            final RoundEnvironment roundEnv) {
+        if (initFailed) {
+            return false;
+        }
         // process every class to be compiled, locate all StructLogger fields annotated with LoggerContext annotation, find all usages in given file and replace
         // it with generated event class
         processStructLogExpressions(roundEnv);
