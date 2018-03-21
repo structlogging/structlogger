@@ -31,7 +31,7 @@ package com.github.structlogging.utils;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Sequence ID counter
+ * Sequence ID counter, used for generating sid part of result
  */
 public class SidCounter {
     private static final AtomicLong SEQ_NUMBER = new AtomicLong(); //must be static, generated events use it to generate sequence id

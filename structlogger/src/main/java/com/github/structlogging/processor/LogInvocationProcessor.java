@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 /**
  * Main annotation processor of structlogger, takes care of locating {@link VarContextProvider} annotated classes, {@link LoggerContext} annotated StructLogger fields
- * and takes care of replacing all valid structured log statements with generated structured log events invocations of slf4j logging API
+ * and takes care of replacing all valid structured log statements with generated structured log events invocations
  */
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)

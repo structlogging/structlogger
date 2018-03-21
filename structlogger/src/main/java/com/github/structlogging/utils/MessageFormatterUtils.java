@@ -30,6 +30,9 @@ package com.github.structlogging.utils;
 
 import org.slf4j.helpers.MessageFormatter;
 
+/**
+ * Utility class for formatting message
+ */
 public final class MessageFormatterUtils {
 
     private MessageFormatterUtils() { }

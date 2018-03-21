@@ -33,7 +33,14 @@ package com.github.structlogging;
  * providing concrete logging variables
  */
 public interface VariableContext {
+
+    /**
+     * log event with generated name derived from message of current log statement
+     */
     void log();
 
+    /**
+     * log event with specified name
+     */
     void log(final String name);
 }

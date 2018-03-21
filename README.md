@@ -150,13 +150,13 @@ Variable context is interface which provides parameters to be used in structured
 create new interface which extends [VariableContext](structlogger/src/main/java/com/github/structlogging/VariableContext.java) and only extends this interface, 
 annotate your interface with [@VarContextProvider](structlogger/src/main/java/com/github/structlogging/annotation/VarContextProvider.java), then add methods annotated with [@Var](structlogger/src/main/java/com/github/structlogging/annotation/Var.java),
 these methods should all have return type your Interface and accept single parameter, please not that method overloading is not supported.
-
+also these method names are prohibited: `info`, `debug`, `error`, `warn`, `trace`, `audit`, `infoEvent`, `debugEvent`, `errorEvent`, `warnEvent`, `traceEvent`, `auditEvent` `log`, 
 For example of custom Variable context see [BlockCacheContext](structlogger-example/src/main/java/com/github/structlogging/BlockCacheContext.java).
 
 Also note that your custom VariableContext is checked whether it is valid only checked lazily, when it is used.
 
 ### Log message parametrization
-[@VarContextProvider](structlogger/src/main/java/com/github/structlogging/annotation/VarContextProvider.java) has parameter called `parametrization`, which when set to true forces constraints on log message such that log message (String in `info`,`debug`,... method) must contain `{}` placeholders same count as parameters used in given log statement, for example
+[@VarContextProvider](structlogger/src/main/java/com/github/structlogging/annotation/VarContextProvider.java) has parameter called `parametrization`, which when set to `true` forces constraints on log message such that log message (String in `info`,`debug`,... method) must contain `{}` placeholders same count as parameters used in given log statement, for example
 ```
 logger.info("test {} string literal {}")
       .varDouble(1.2)
