@@ -84,7 +84,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     /**
      * Map representing for all {@link VarContextProvider} annotated classes, what kind of variables they expose (all {@link Var} annotated elements
      */
-    private final HashMap<TypeMirror, VariableContextProvider> varsHashMap = new HashMap<>();
+    private final Map<TypeMirror, VariableContextProvider> varsHashMap = new HashMap<>();
 
     /**
      * Set of all generated classes (logging events), used by {@link SchemaGenerator}
@@ -99,6 +99,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
      * Used for generating json schemas by {@link SchemaGenerator}
      */
     private SchemaGenerator schemaGenerator;
+    private LogInvocationScanner logInvocationScanner;
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -106,6 +107,22 @@ public class LogInvocationProcessor extends AbstractProcessor {
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         types = processingEnv.getTypeUtils();
+
+        try {
+            logInvocationScanner = new LogInvocationScanner(
+                    processingEnv
+            );
+        } catch (IOException e) {
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "IOException caught"
+            );
+        } catch (PackageNameException e) {
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number"
+            );
+        }
 
         final String schemasRoot = processingEnv.getOptions().get("schemasRoot");
         if (schemasRoot != null) {
@@ -328,30 +345,17 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
             // do not do any code replacement in such class which do not specify any LoggerContext annotated StructLogger
             if (!fields.isEmpty()) {
-                try {
-                    new LogInvocationScanner(
-                            varsHashMap,
-                            fields,
-                            processingEnv,
-                            generatedClassesInfo
-                    ).scan(
-                            path,
-                            new ScannerParams(
-                                    typeElement,
-                                    path.getCompilationUnit()
-                            )
-                    );
-                } catch (IOException e) {
-                    messager.printMessage(
-                            Diagnostic.Kind.ERROR,
-                            "IOException caught"
-                    );
-                } catch (PackageNameException e) {
-                    messager.printMessage(
-                            Diagnostic.Kind.ERROR,
-                            "generatedEventsPackage compiler argument is not valid, either it contains java keyword or subpackage or class name starts with number"
-                    );
-                }
+                logInvocationScanner.scan(
+                        path,
+                        new ScannerParams(
+                                typeElement,
+                                path.getCompilationUnit(),
+                                varsHashMap,
+                                fields,
+                                generatedClassesInfo
+                        )
+                );
+
             }
         }
     }

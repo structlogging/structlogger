@@ -73,32 +73,22 @@ import static java.lang.String.format;
 public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams> {
 
 
-    private final HashMap<TypeMirror, VariableContextProvider> varsHashMap;
-    private final Map<Name, StructLoggerFieldContext> fields;
     private final TreeMaker treeMaker;
     private final JavacElements elementUtils;
     private final Names names;
     private final POJOService pojoService;
     private final Messager messager;
-    private final Set<GeneratedClassInfo> generatedClassesNames;
 
-    public LogInvocationScanner(final HashMap<TypeMirror, VariableContextProvider> varsHashMap,
-                                final Map<Name, StructLoggerFieldContext> fields,
-                                final ProcessingEnvironment processingEnvironment,
-                                final Set<GeneratedClassInfo> generatedClassesNames) throws IOException, PackageNameException {
+    public LogInvocationScanner(final ProcessingEnvironment processingEnvironment) throws IOException, PackageNameException {
         final Context context = ((JavacProcessingEnvironment) processingEnvironment).getContext();
 
-        this.varsHashMap = varsHashMap;
-        this.fields = fields;
         this.treeMaker = TreeMaker.instance(context);
         this.elementUtils = (JavacElements) processingEnvironment.getElementUtils();
         this.messager = processingEnvironment.getMessager();
 
-        //TODO check that generatedEventsPackage is set
         final String generatedEventsPackage = processingEnvironment.getOptions().get("generatedEventsPackage");
         this.pojoService = new POJOService(processingEnvironment.getFiler(), generatedEventsPackage);
         this.names = Names.instance(context);
-        this.generatedClassesNames = generatedClassesNames;
     }
 
     /**
@@ -131,7 +121,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                             parameter = node.getArguments().get(0);
                         }
                         stack.add(new MethodAndParameter(methodSelect.name, parameter));
-                        handle(methodSelect, stack, node, statementInfo);
+                        handle(methodSelect, stack, node, statementInfo, scannerParams);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -147,14 +137,18 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         return super.visitExpressionStatement(node, scannerParams);
     }
 
-    private void handle(final JCTree.JCFieldAccess fieldAccess, final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final StatementInfo statementInfo) throws Exception {
+    private void handle(final JCTree.JCFieldAccess fieldAccess,
+                        final Stack<MethodAndParameter> stack,
+                        final MethodInvocationTree node,
+                        final StatementInfo statementInfo,
+                        final ScannerParams scannerParams) {
         if (fieldAccess.getExpression() instanceof JCTree.JCFieldAccess) {
-            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, node, statementInfo);
+            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, node, statementInfo, scannerParams);
         } else if (fieldAccess.getExpression() instanceof JCTree.JCIdent) {
             final JCTree.JCIdent ident = (JCTree.JCIdent) fieldAccess.getExpression();
             final Name name = ident.getName();
-            if (fields.containsKey(name)) {
-                handleStructLogExpression(stack, node, name, statementInfo);
+            if (scannerParams.getFields().containsKey(name)) {
+                handleStructLogExpression(stack, node, name, statementInfo, scannerParams);
             }
         }
     }
@@ -166,16 +160,20 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
      * @param name of field
      * @param statementInfo about whole one line statement
      */
-    private void handleStructLogExpression(final Stack<MethodAndParameter> stack, final MethodInvocationTree node, final Name name, final StatementInfo statementInfo) {
+    private void handleStructLogExpression(final Stack<MethodAndParameter> stack,
+                                           final MethodInvocationTree node,
+                                           final Name name,
+                                           final StatementInfo statementInfo,
+                                           final ScannerParams scannerParams) {
         final java.util.List<VariableAndValue> usedVariables = new ArrayList<>();
         JCTree.JCLiteral literal = null;
         String level = null;
         String eventName = null;
 
         //statement check
-        final StructLoggerFieldContext structLoggerFieldContext = fields.get(name);
+        final StructLoggerFieldContext structLoggerFieldContext = scannerParams.getFields().get(name);
         final TypeMirror typeMirror = structLoggerFieldContext.getContextProvider();
-        final VariableContextProvider variableContextProvider = varsHashMap.get(typeMirror);
+        final VariableContextProvider variableContextProvider = scannerParams.getVarsHashMap().get(typeMirror);
 
         //go through each call of method in this method and check whether it can be mapped to logging variable provided by
         //VarContextProvider or it is logLevelMethod or log method call
@@ -297,7 +295,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         final String className = javaFile.typeSpec.name;
         final String qualifiedName = StringUtils.isBlank(javaFile.packageName) ? className : javaFile.packageName + "." + className;
         final GeneratedClassInfo generatedClassInfo = new GeneratedClassInfo(qualifiedName, className, (String) literal.getValue(), usedVariables, javaFile.packageName);
-        for (GeneratedClassInfo info : generatedClassesNames) {
+        for (GeneratedClassInfo info : scannerParams.getGeneratedClassesInfo()) {
             if (info.getQualifiedName().equals(generatedClassInfo.getQualifiedName())
                     && !info.getUsedVariables().equals(generatedClassInfo.getUsedVariables())
                     ) {
@@ -312,7 +310,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 return;
             }
         }
-        generatedClassesNames.add(generatedClassInfo);
+        scannerParams.getGeneratedClassesInfo().add(generatedClassInfo);
 
         pojoService.writeJavaFile(javaFile);
 

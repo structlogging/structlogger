@@ -28,22 +28,48 @@
  */
 package com.github.structlogging.processor.utils;
 
+import com.github.structlogging.annotation.Var;
+import com.github.structlogging.annotation.VarContextProvider;
+import com.github.structlogging.processor.SchemaGenerator;
 import com.sun.source.tree.CompilationUnitTree;
 import com.github.structlogging.processor.LogInvocationScanner;
 
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class representing parameters passed to {@link LogInvocationScanner}
  */
 public class ScannerParams {
 
-    private final TypeElement typeElement;
+    private final TypeElement typeElement; //type which is being scanned
     private final CompilationUnitTree compilationUnitTree;
 
-    public ScannerParams(final TypeElement typeElement, final CompilationUnitTree compilationUnitTree) {
+    /**
+     * Map representing for all {@link VarContextProvider} annotated classes, what kind of variables they expose (all {@link Var} annotated elements
+     */
+    private final Map<TypeMirror, VariableContextProvider> varsHashMap;
+    private final Map<Name, StructLoggerFieldContext> fields;
+
+    /**
+     * Set of all generated classes (logging events), this set is continuously filled by {@link LogInvocationScanner} and when scanning of all compiled events is done
+     * this set is passed to {@link SchemaGenerator}
+     */
+    private final Set<GeneratedClassInfo> generatedClassesInfo;
+
+    public ScannerParams(final TypeElement typeElement,
+                         final CompilationUnitTree compilationUnitTree,
+                         final Map<TypeMirror, VariableContextProvider> varsHashMap,
+                         final Map<Name, StructLoggerFieldContext> fields,
+                         final Set<GeneratedClassInfo> generatedClassesInfo) {
         this.typeElement = typeElement;
         this.compilationUnitTree = compilationUnitTree;
+        this.varsHashMap = varsHashMap;
+        this.fields = fields;
+        this.generatedClassesInfo = generatedClassesInfo;
     }
 
     public TypeElement getTypeElement() {
@@ -52,5 +78,17 @@ public class ScannerParams {
 
     public CompilationUnitTree getCompilationUnitTree() {
         return compilationUnitTree;
+    }
+
+    public Map<TypeMirror, VariableContextProvider> getVarsHashMap() {
+        return varsHashMap;
+    }
+
+    public Map<Name, StructLoggerFieldContext> getFields() {
+        return fields;
+    }
+
+    public Set<GeneratedClassInfo> getGeneratedClassesInfo() {
+        return generatedClassesInfo;
     }
 }
