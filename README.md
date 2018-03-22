@@ -30,7 +30,7 @@ then you should set compiler argument `schemasRoot` in order to set path where s
                     <target>1.8</target>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <arg>-AschemasRoot=${basedir}</arg>
+                        <arg>-AschemasRoot=${project.basedir}</arg>
                         <arg>-AgeneratedEventsPackage=${generatedEventsPackage}</arg>
                     </compilerArgs>
                 </configuration>

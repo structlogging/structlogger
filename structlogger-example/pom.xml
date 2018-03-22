@@ -120,7 +120,7 @@
                     <target>1.8</target>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <arg>-AschemasRoot=${basedir}</arg>
+                        <arg>-AschemasRoot=${project.basedir}</arg>
                         <arg>-AgeneratedEventsPackage=${generatedEventsPackage}</arg>
                     </compilerArgs>
                 </configuration>
