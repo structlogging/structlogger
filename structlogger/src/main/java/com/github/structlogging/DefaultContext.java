@@ -51,4 +51,10 @@ public interface DefaultContext extends VariableContext {
 
     @Var
     DefaultContext varBoolean(boolean var);
+
+    @Var
+    DefaultContext varObject(Object object);
+
+    @Var
+    DefaultContext varException(Exception exception);
 }

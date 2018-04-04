@@ -134,6 +134,11 @@ public class Example {
                 .blockId(1)
                 .dataNodeUuid(2)
                 .log();
+
+        defaultLog.info("Event with default object={} and exception={}")
+                .varObject(new Test("cau"))
+                .varException(new Exception())
+                .log();
     }
 
     private static int someMethod() {
