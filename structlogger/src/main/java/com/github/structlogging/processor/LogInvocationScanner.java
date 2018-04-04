@@ -113,7 +113,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
 
             @Override
             public Object visitMethodInvocation(final MethodInvocationTree node, final ScannerParams o) {
-                if (node.getMethodSelect() instanceof JCTree.JCFieldAccess) {
+                if (node.getMethodSelect() instanceof JCTree.JCFieldAccess) { // if is call on field
                     try {
                         final JCTree.JCFieldAccess methodSelect = (JCTree.JCFieldAccess) node.getMethodSelect();
                         ExpressionTree parameter = null;
