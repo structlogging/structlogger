@@ -330,6 +330,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         );
     }
 
+    //System.format with string representing statement location added at the end
     private String formatWithStatementLocation(String format, StatementInfo statementInfo, Object... args) {
         return format(format, args) + format(" [%s:%s]", statementInfo.getSourceFileName(), statementInfo.getLineNumber());
     }
