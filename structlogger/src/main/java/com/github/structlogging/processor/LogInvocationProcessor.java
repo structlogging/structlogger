@@ -194,7 +194,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         final List<Variable> elements = new ArrayList<>();
         final VarContextProvider varContextProvider = element.getAnnotation(VarContextProvider.class);
 
-        if (varContextProvider == null) {
+        if (varContextProvider == null) { //must be annotated with @VarContextProvider
             messager.printMessage(
                     Diagnostic.Kind.ERROR,
                     format(
@@ -291,7 +291,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
                 elements.add(new Variable(simpleName, executableType.getParameterTypes().get(0)));
             }
         }
-        if (elements.isEmpty()) {
+        if (elements.isEmpty()) { //
             messager.printMessage(
                     Diagnostic.Kind.WARNING,
                     format(
@@ -320,7 +320,8 @@ public class LogInvocationProcessor extends AbstractProcessor {
     }
 
     /**
-     * Find all classes, which have some fields annotated with {@link LoggerContext} and call {@link LogInvocationScanner} for given class if class indeed
+     * Find all classes, which have some fields annotated with {@link LoggerContext}
+     * and call {@link LogInvocationScanner} for given class if class indeed
      * have such fields
      */
     private void processStructLogExpressions(final RoundEnvironment roundEnv) {

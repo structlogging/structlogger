@@ -28,6 +28,7 @@
  */
 package com.github.structlogging.slf4j;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.structlogging.LoggingEvent;
 import com.github.structlogging.LoggingCallback;
@@ -50,7 +51,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void info(final LoggingEvent e) {
         try {
-            logger.info(MAPPER.writeValueAsString(e));
+            logger.info(serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -59,7 +60,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void warn(final LoggingEvent e) {
         try {
-            logger.warn(MAPPER.writeValueAsString(e));
+            logger.warn(serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -68,7 +69,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void debug(final LoggingEvent e) {
         try {
-            logger.debug(MAPPER.writeValueAsString(e));
+            logger.debug(serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -77,7 +78,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void error(final LoggingEvent e) {
         try {
-            logger.error(MAPPER.writeValueAsString(e));
+            logger.error(serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -86,7 +87,7 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void trace(final LoggingEvent e) {
         try {
-            logger.trace(MAPPER.writeValueAsString(e));
+            logger.trace(serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
@@ -98,9 +99,13 @@ public class Slf4jLoggingCallback implements LoggingCallback {
     @Override
     public void audit(final LoggingEvent e) {
         try {
-            logger.info(MarkerFactory.getMarker(AUDIT), MAPPER.writeValueAsString(e));
+            logger.info(MarkerFactory.getMarker(AUDIT), serialize(e));
         } catch (Exception ex) {
             throw new RuntimeException("unable to serialize event", ex);
         }
+    }
+
+    private String serialize(LoggingEvent e) throws JsonProcessingException {
+        return MAPPER.writeValueAsString(e);
     }
 }

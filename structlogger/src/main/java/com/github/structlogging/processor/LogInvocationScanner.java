@@ -120,6 +120,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                         if (!node.getArguments().isEmpty()) {
                             parameter = node.getArguments().get(0);
                         }
+                        // each method invocation on field is added to stack
                         stack.add(new MethodAndParameter(methodSelect.name, parameter));
                         handle(methodSelect, stack, node, statementInfo, scannerParams);
                     } catch (Exception e) {
@@ -154,8 +155,10 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
     }
 
     /**
+     * structlogger statement which uses fluent API is replaced with form, which uses
+     * generated logging event, this method does all the checks of statement
      *
-     * @param stack all method calls on one line
+     * @param stack all method calls of structlogger field on one line
      * @param node to analyze
      * @param name of field
      * @param statementInfo about whole one line statement
@@ -335,6 +338,8 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         return format(format, args) + format(" [%s:%s]", statementInfo.getSourceFileName(), statementInfo.getLineNumber());
     }
 
+    //adds variable to usedVariables, if variable is already present in used variables, variable is added to used variables
+    //with incremented name, e.g. if used variables are A,B and we want to add A, it is added as A1
     private void addToUsedVariables(final java.util.List<VariableAndValue> usedVariables, final MethodAndParameter top, final Variable variable) {
         VariableAndValue variableAndValue = new VariableAndValue(variable, top.getParameter());
         if (!usedVariables.contains(variableAndValue)) {
@@ -449,6 +454,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         );
     }
 
+    // all used variables are added to listbuffer
     private void addVariablesToBuffer(final java.util.List<VariableAndValue> usedVariables, final ListBuffer listBuffer) {
         for (VariableAndValue variableAndValue : usedVariables) {
             listBuffer.add(variableAndValue.getValue());
