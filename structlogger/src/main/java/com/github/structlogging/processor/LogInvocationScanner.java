@@ -44,7 +44,9 @@ import com.github.structlogging.utils.SidCounter;
 import com.squareup.javapoet.JavaFile;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -143,9 +145,16 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                         final MethodInvocationTree node,
                         final StatementInfo statementInfo,
                         final ScannerParams scannerParams) {
-        if (fieldAccess.getExpression() instanceof JCTree.JCFieldAccess) {
-            handle((JCTree.JCFieldAccess) fieldAccess.getExpression(), stack, node, statementInfo, scannerParams);
-        } else if (fieldAccess.getExpression() instanceof JCTree.JCIdent) {
+        if (fieldAccess.getExpression().getKind().equals( Tree.Kind.MEMBER_SELECT)) {
+            //to handle when structlogger field is referenced through this.field and ClassName.field
+            final MemberSelectTree expression = (MemberSelectTree) fieldAccess.getExpression();
+            final Name name = expression.getIdentifier();
+            if (scannerParams.getFields().containsKey(name)) {
+                handleStructLogExpression(stack, node, name, statementInfo, scannerParams);
+            }
+        }
+        else if (fieldAccess.getExpression().getKind().equals( Tree.Kind.IDENTIFIER)) {
+            // to handle when structlogger field is referenced directly
             final JCTree.JCIdent ident = (JCTree.JCIdent) fieldAccess.getExpression();
             final Name name = ident.getName();
             if (scannerParams.getFields().containsKey(name)) {

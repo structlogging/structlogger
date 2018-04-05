@@ -39,9 +39,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 
-import com.github.structlogging.DefaultContext;
-import com.github.structlogging.LoggingEvent;
-import com.github.structlogging.StructLogger;
 import com.github.structlogging.annotation.LoggerContext;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -62,11 +59,15 @@ public class LogInvocationProcessorTest {
     @LoggerContext(context = DefaultContext.class)
     private StructLogger<DefaultContext> defaultContextLogger;
 
+    @LoggerContext(context = DefaultContext.class)
+    private static StructLogger<DefaultContext> staticDefaultContextLogger;
+
     @Before
     public void setUp() {
         callback = new ListLoggingCallback();
         testLogger = new StructLogger<>(callback);
         defaultContextLogger = new StructLogger<>(callback);
+        staticDefaultContextLogger = new StructLogger<>(callback);
     }
 
     @Test
@@ -240,5 +241,25 @@ public class LogInvocationProcessorTest {
         assertThat(callback.getLoggingEventList(), hasSize(1));
 
         assertThat(callback.getLoggingEventList().get(0).getMessage(), is(equalTo("parameter1=1 parameter2=true")));
+    }
+
+    @Test
+    public void shouldLogEventWhenReferencingFieldViaThis() {
+        this.defaultContextLogger.info("parameter1={} parameter2={}")
+                .varInt(1)
+                .varBoolean(true)
+                .log("structlogger.test.ParametrizedEvent");
+
+        assertThat(callback.getLoggingEventList(), hasSize(1));
+    }
+
+    @Test
+    public void shouldLogEventWhenReferencingStaticFieldLoggerViaClassName() {
+        LogInvocationProcessorTest.staticDefaultContextLogger.info("parameter1={} parameter2={}")
+                .varInt(1)
+                .varBoolean(true)
+                .log("structlogger.test.ParametrizedEvent");
+
+        assertThat(callback.getLoggingEventList(), hasSize(1));
     }
 }

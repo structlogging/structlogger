@@ -43,7 +43,6 @@ in your java code you can then declare fields like this:
 private static StructLogger<DefaultContext> logger = new StructLogger<>(new Slf4jLoggingCallback(LoggerFactory.getLogger("LOGGER")));
 ```
 
-please note that StructLogger should not be declared and cannot be used as local variable!!
 StructLogger takes implementation of LoggingCallback, which implements basic logging operations, for example here we use [Slf4jLoggingCallback](structlogger/src/main/java/com/github/structlogging/slf4j/Slf4jLoggingCallback.java), which encapsulates SLF4j logger and all it does is it serializes incoming events as string and pass them to SLF4j logger, or you can implement your own [LoggingCallback](structlogger/src/main/java/com/github/structlogging/LoggingCallback.java)
 
 StructLogger field has to be annotated with `@LoggerContext` in order to structured logging to work, you have to also specify extension of [VariableContext](structlogger/src/main/java/com/github/structlogging/VariableContext.java) as annotation parameter (this parameter must be same as generic argument of StructLogger otherwise you will encounter undefined behaviour). Variable context provides logging variables. You can create your own VariableContext like [BlockCacheContext](structlogger-example/src/main/java/com/github/structlogging/BlockCacheContext.java). Please see *Creating your own Variable context* section of README. 
@@ -169,6 +168,15 @@ logger.info("test {} string literal {}")
 must contain two `{}` placeholders, because we are using two parameters here `varDouble` and `varBoolean`, these placeholders are at runtime replaced with values passed as argument to log parameters, so here it will create event message will look like this `test 1.2 string literal false`.
 
 If `parametrization` is set to false, no placeholder `{}` is replaced in log message and no placeholders are enforced in log message during compilation
+
+## Usage restrictions
+There are some restrictions due to the way this library is implemented.
+Please note that:
+ * **StructLogger should not be declared and cannot be used as local variable** 
+ * **StructLogger field should be only referenced within class where it is declared** 
+ * **StructLogger field should be referenced directly (not via some access method or something like that)**.
+ * **StructLogger field name should not be shadowed by any local variable**
+
 
 ## Structlogger tests
 tests of structlogger API and annotation processor are located in [structlogger-tests](structlogger-tests) module
