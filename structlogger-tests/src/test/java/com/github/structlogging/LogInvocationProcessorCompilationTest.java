@@ -252,4 +252,16 @@ public class LogInvocationProcessorCompilationTest {
                 "ContextProviderWithInvalidMethodName interface cannot have method named warnEvent"
         );
     }
+
+    @Test
+    public void shouldNotCompileBadUsageOfLoggerContextAnnotation() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("BadUsageOfLoggerContextAnnotation.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "field badField in BadUsageOfLoggerContextAnnotation should be of type StructLogger"
+        );
+    }
 }

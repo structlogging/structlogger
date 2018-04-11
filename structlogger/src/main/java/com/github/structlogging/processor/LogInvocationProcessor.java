@@ -30,6 +30,7 @@ package com.github.structlogging.processor;
 
 import static java.lang.String.format;
 
+import com.github.structlogging.StructLogger;
 import com.github.structlogging.VariableContext;
 import com.github.structlogging.annotation.VarContextProvider;
 import com.github.structlogging.processor.utils.StructLoggerFieldContext;
@@ -59,6 +60,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
@@ -94,6 +96,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
     private Trees trees;
     private Messager messager;
     private Types types;
+    private Elements elements;
 
     private LogInvocationScanner logInvocationScanner;
 
@@ -105,6 +108,7 @@ public class LogInvocationProcessor extends AbstractProcessor {
         trees = Trees.instance(processingEnv);
         messager = processingEnv.getMessager();
         types = processingEnv.getTypeUtils();
+        elements = processingEnv.getElementUtils();
 
         try {
             logInvocationScanner = new LogInvocationScanner(
@@ -333,7 +337,19 @@ public class LogInvocationProcessor extends AbstractProcessor {
                     try {
                         final LoggerContext annotation = enclosed.getAnnotation(LoggerContext.class);
                         if (annotation != null) {
-                            annotation.context();
+                            final TypeMirror typeMirrorOfField = enclosed.asType();
+                            final TypeMirror typeMirrorOfStructlogger = elements.getTypeElement(StructLogger.class.getCanonicalName()).asType();
+
+                            if (!types.isSubtype(typeMirrorOfField, types.erasure(typeMirrorOfStructlogger))) { //check that annotated field is of type StructLogger
+                                messager.printMessage(
+                                        Diagnostic.Kind.ERROR,
+                                        format("field %s in %s should be of type StructLogger", enclosed, element),
+                                        enclosed
+                                );
+                                return;
+                            }
+
+                            annotation.context(); //throws exception
                             //TODO class is already compiled
                         }
                     } catch (MirroredTypeException ex) {
