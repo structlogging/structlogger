@@ -34,7 +34,7 @@
     <parent>
         <artifactId>structlogger-parent</artifactId>
         <groupId>com.github.structlogging</groupId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.10.0</version>
     </parent>
 
     <artifactId>structlogger-benchmark</artifactId>
@@ -63,7 +63,7 @@
         <connection>scm:git:git@github.com/structlogging/structlogger.git</connection>
         <developerConnection>scm:git:git@github.com:structlogging/structlogger.git</developerConnection>
         <url>http://github.com/structlogging/structlogger/tree/master</url>
-      <tag>HEAD</tag>
+      <tag>structlogger-parent-0.10.0</tag>
   </scm>
 
     <dependencies>
