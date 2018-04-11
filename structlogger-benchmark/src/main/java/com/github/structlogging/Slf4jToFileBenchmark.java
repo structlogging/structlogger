@@ -62,7 +62,7 @@ public class Slf4jToFileBenchmark {
     private static Logger logger = LoggerFactory.getLogger(Slf4jToFileBenchmark.class.getSimpleName() + "2");
 
     @LoggerContext(context = DefaultContextWithoutParametrization.class)
-    private static StructLogger<DefaultContext> structLoggerNoMessageParametrization = new StructLogger<>(
+    private static StructLogger<DefaultContextWithoutParametrization> structLoggerNoMessageParametrization = new StructLogger<>(
             new Slf4jLoggingCallback(
                     LoggerFactory.getLogger(
                             Slf4jToFileBenchmark.class.getSimpleName() + "3"

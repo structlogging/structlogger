@@ -57,6 +57,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
@@ -334,7 +335,6 @@ public class LogInvocationProcessor extends AbstractProcessor {
 
             for (Element enclosed : element.getEnclosedElements()) {
                 if (enclosed.getKind().isField()) {
-                    try {
                         final LoggerContext annotation = enclosed.getAnnotation(LoggerContext.class);
                         if (annotation != null) {
                             final TypeMirror typeMirrorOfField = enclosed.asType();
@@ -349,16 +349,29 @@ public class LogInvocationProcessor extends AbstractProcessor {
                                 return;
                             }
 
-                            annotation.context(); //throws exception
-                            //TODO class is already compiled
+                            try {
+                                annotation.context(); //throws exception
+                                //TODO class is already compiled
+                            } catch (MirroredTypeException ex) {
+                                final TypeMirror contextProviderTypeMirror = ex.getTypeMirror();
+
+                                //check that type specified by @LoggerContext annotation matches type specified by generic parameter
+                                if (!types.isSameType(((DeclaredType) typeMirrorOfField).getTypeArguments().get(0), contextProviderTypeMirror)) {
+                                    messager.printMessage(
+                                            Diagnostic.Kind.ERROR,
+                                            format("Generic type of field %s in class %s differs from type specified in @LoggerContext annotation", enclosed, element),
+                                            enclosed
+                                    );
+                                    return;
+                                }
+
+                                if (!checkVarContextProvider(contextProviderTypeMirror)) {
+                                    return;
+                                }
+                                fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(contextProviderTypeMirror));
+                            }
                         }
-                    } catch (MirroredTypeException ex) {
-                        final TypeMirror contextProviderTypeMirror = ex.getTypeMirror();
-                        if (!checkVarContextProvider(contextProviderTypeMirror)) {
-                            return;
-                        }
-                        fields.put(enclosed.getSimpleName(), new StructLoggerFieldContext(contextProviderTypeMirror));
-                    }
+
                 }
             }
 

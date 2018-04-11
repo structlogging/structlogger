@@ -264,4 +264,17 @@ public class LogInvocationProcessorCompilationTest {
                 "field badField in BadUsageOfLoggerContextAnnotation should be of type StructLogger"
         );
     }
+
+    @Test
+    public void LoggerContextAnnotationParamDiffers() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("LoggerContextAnnotationParamDiffers.java"),
+                                JavaFileObjects.forResource("AnotherContext.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "Generic type of field defaultLog in class LoggerContextAnnotationParamDiffers differs from type specified in @LoggerContext annotation"
+        );
+    }
 }
