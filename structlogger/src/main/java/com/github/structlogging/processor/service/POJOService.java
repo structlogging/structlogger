@@ -72,7 +72,7 @@ public class POJOService {
 
         //check each subpackage name
         for (String s : this.generatedEventsPackage.split("\\.")) {
-            checkString(s);
+            checkStringIsValidName(s);
         }
     }
 
@@ -94,14 +94,14 @@ public class POJOService {
             //get event name and package name from qualified name
             final String[] split = name.split("\\.");
             eventName = split[split.length-1];
-            checkString(eventName);
+            checkStringIsValidName(eventName);
             final StringBuffer stringBuffer = new StringBuffer();
             for (int i = 0; i < split.length - 1; i++) {
                 if (i != 0) {
                     stringBuffer.append(".");
                 }
                 stringBuffer.append(split[i]);
-                checkString(split[i]);
+                checkStringIsValidName(split[i]);
             }
             packageName = stringBuffer.toString();
 
@@ -118,7 +118,7 @@ public class POJOService {
 
         final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
 
-        addCommonLoggingEventFields(constructorBuilder);
+        addCommonLoggingEventFieldsToConstructor(constructorBuilder);
 
         for (VariableAndValue variableAndValue : usedVariables) {
             addPojoField(classBuilder, constructorBuilder, variableAndValue.getVariable().getName().toString(), TypeName.get(variableAndValue.getVariable().getType()));
@@ -129,14 +129,23 @@ public class POJOService {
         return JavaFile.builder(packageName, build).build();
     }
 
-    private void checkString(final String s) throws PackageNameException {
+    /**
+     * Checks that string is not java keyword and is qualified java name
+     * @param s to be checked
+     * @throws PackageNameException thrown when string passed is java keyword
+     */
+    private void checkStringIsValidName(final String s) throws PackageNameException {
         final boolean packageContainsJavaKeyword = javaKeywords.stream().anyMatch(s::equals);
         if (packageContainsJavaKeyword || s.matches("\\d.*")) {
             throw new PackageNameException("string is not valid");
         }
     }
 
-    private void addCommonLoggingEventFields(final MethodSpec.Builder constructorBuilder) {
+    /**
+     * add common attributes to constructor
+     * @param constructorBuilder to be modified
+     */
+    private void addCommonLoggingEventFieldsToConstructor(final MethodSpec.Builder constructorBuilder) {
         constructorBuilder.addParameter(TypeName.get(String.class), "message", Modifier.FINAL);
         constructorBuilder.addParameter(TypeName.get(String.class), "sourceFile", Modifier.FINAL);
         constructorBuilder.addParameter(TypeName.LONG, "lineNumber", Modifier.FINAL);
@@ -157,6 +166,13 @@ public class POJOService {
         }
     }
 
+    /**
+     * adds field to POJO, adds getter and adds parameter to constructor
+     * @param classBuilder class to modify
+     * @param constructorBuilder constructor to modify
+     * @param fieldName field name to add
+     * @param fieldClass class of field to be added
+     */
     private void addPojoField(final TypeSpec.Builder classBuilder,
                               final MethodSpec.Builder constructorBuilder,
                               final String fieldName,
@@ -166,11 +182,23 @@ public class POJOService {
         addConstructorParameter(constructorBuilder, fieldName, fieldClass);
     }
 
+    /**
+     * adds attribute to constructor
+     * @param constructorBuilder constructor to modify
+     * @param attributeName name of attribute to be added
+     * @param type type of attribute to be added
+     */
     private void addConstructorParameter(final MethodSpec.Builder constructorBuilder, final String attributeName, final TypeName type) {
         constructorBuilder.addParameter(type, attributeName, Modifier.FINAL);
         constructorBuilder.addCode("this." + attributeName + "=" + attributeName + ";");
     }
 
+    /**
+     * adds getter for field to class
+     * @param classBuilder class to modify
+     * @param attributeName name of attribute to be referenced
+     * @param type type of attribue to be referenced
+     */
     private void addGetter(final TypeSpec.Builder classBuilder, final String attributeName, final TypeName type) {
         final String getterMethodName = "get" + attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
         final MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder(getterMethodName);
@@ -181,6 +209,11 @@ public class POJOService {
         classBuilder.addMethod(getterBuilder.build());
     }
 
+    /**
+     * hash String with stable hash function
+     * @param string to be hashed
+     * @return hashed string
+     */
     private String hash(String string) {
         final String sha1Hex = DigestUtils.sha1Hex(string);
         return StringUtils.substring(sha1Hex, 0, 8);

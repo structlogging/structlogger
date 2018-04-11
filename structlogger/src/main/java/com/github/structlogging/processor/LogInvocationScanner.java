@@ -140,6 +140,17 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
         return super.visitExpressionStatement(node, scannerParams);
     }
 
+
+    /**
+     * checks whether fieldAccess node's expression is MEMBER_SELECT or IDENTIFIER
+     * and if so then checks that accessed field name corresponds with some declared structlogger field
+     * and if it does correspond, then whole statement is handled as structlogger expression
+     * @param fieldAccess to be analyzed
+     * @param stack filled with previous method calls
+     * @param node AST node
+     * @param statementInfo info about analyzed statement
+     * @param scannerParams params passed from processor
+     */
     private void handle(final JCTree.JCFieldAccess fieldAccess,
                         final Stack<MethodAndParameter> stack,
                         final MethodInvocationTree node,
@@ -193,7 +204,7 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
             // check whether method on stack matched variable from context provider, or is log or log level method
             boolean matched = false;
             final MethodAndParameter top = stack.pop();
-            //go through each variable and check whether
+            //go through each variable and check whether it matches
             for (Variable variable : variableContextProvider.getVariables()) {
                 final Name topMethodName = top.getMethodName();
 
