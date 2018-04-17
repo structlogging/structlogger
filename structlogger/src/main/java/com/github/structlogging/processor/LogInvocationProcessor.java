@@ -356,7 +356,17 @@ public class LogInvocationProcessor extends AbstractProcessor {
                                 final TypeMirror contextProviderTypeMirror = ex.getTypeMirror();
 
                                 //check that type specified by @LoggerContext annotation matches type specified by generic parameter
-                                if (!types.isSameType(((DeclaredType) typeMirrorOfField).getTypeArguments().get(0), contextProviderTypeMirror)) {
+                                final List<? extends TypeMirror> typeArguments = ((DeclaredType) typeMirrorOfField).getTypeArguments();
+                                if (typeArguments.size() != 1) {
+                                    messager.printMessage(
+                                            Diagnostic.Kind.ERROR,
+                                            format("Expected 1 type argument specified in field %s in %s", enclosed, element),
+                                            enclosed
+                                    );
+                                    return;
+                                }
+
+                                if (!types.isSameType(typeArguments.get(0), contextProviderTypeMirror)) {
                                     messager.printMessage(
                                             Diagnostic.Kind.ERROR,
                                             format("Generic type of field %s in class %s differs from type specified in @LoggerContext annotation", enclosed, element),
