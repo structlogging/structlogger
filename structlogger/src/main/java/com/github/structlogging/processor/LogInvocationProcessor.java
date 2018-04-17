@@ -65,6 +65,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,7 +132,17 @@ public class LogInvocationProcessor extends AbstractProcessor {
         }
 
         final String schemasRoot = processingEnv.getOptions().get("schemasRoot");
+
         if (schemasRoot != null) {
+            try {
+                new URI(schemasRoot); //check that schemasRoot is valid path
+            } catch (URISyntaxException e) {
+                initFailed = true;
+                messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        format("Provided schemasRoot compiler argument value [%s] is not valid path", schemasRoot)
+                );
+            }
 
             // Used for generating json schemas by {@link SchemaGenerator}
             SchemaGenerator schemaGenerator = new SchemaGenerator(generatedClassesInfo, schemasRoot);

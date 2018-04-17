@@ -266,7 +266,7 @@ public class LogInvocationProcessorCompilationTest {
     }
 
     @Test
-    public void LoggerContextAnnotationParamDiffers() {
+    public void shouldNotCompileLoggerContextAnnotationParamDiffers() {
         final Compilation compilation =
                 javac()
                         .withProcessors(new LogInvocationProcessor())
@@ -275,6 +275,33 @@ public class LogInvocationProcessorCompilationTest {
 
         assertThat(compilation).hadErrorContaining(
                 "Generic type of field defaultLog in class LoggerContextAnnotationParamDiffers differs from type specified in @LoggerContext annotation"
+        );
+    }
+
+
+    @Test
+    public void shouldNotCompileInvalidSchemasRoot() {
+        final String invalidPath = "/\\({}{213./cad./zs";
+        final Compilation compilation =
+                javac()
+                        .withOptions("-AschemasRoot=" + invalidPath)
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ValidUsage.java"));
+
+        assertThat(compilation).hadErrorContaining(
+                "Provided schemasRoot compiler argument value [" + invalidPath + "] is not valid path"
+        );
+    }
+
+    @Test
+    public void shouldCompileWithWarningNoSchemasRoot() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("ValidUsage.java"));
+
+        assertThat(compilation).hadWarningContaining(
+                "schemasRoot compiler argument is not set, no schemas will be created"
         );
     }
 }
