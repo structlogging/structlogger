@@ -29,35 +29,45 @@
 package com.github.structlogging;
 
 /**
- * All generated logging events should extend this class
- * All changes made to this class should be reflected in LogInvocationScanner and POJOService or you risk incorrect behaviour of processor
+ * Contextual information about LoggingEvent
  */
-public class LoggingEvent {
-    private final String type;
-    private final Long timestamp;
-    private final LoggingEventContext context;
+public class LoggingEventContext {
 
-    public LoggingEvent(final String message,
-                        final String sourceFile,
-                        final Long lineNumber,
-                        final String type,
-                        final Long sid,
-                        final String logLevel,
-                        final Long timestamp) {
-        this.type = type;
-        this.timestamp = timestamp;
-        this.context = new LoggingEventContext(message, sourceFile, lineNumber, sid, logLevel);
+    private final String message;
+    private final String sourceFile;
+    private final Long lineNumber;
+    private final Long sid;
+    private final String logLevel;
+
+    public LoggingEventContext(final String message,
+                               final String sourceFile,
+                               final Long lineNumber,
+                               final Long sid,
+                               final String logLevel) {
+        this.message = message;
+        this.sourceFile = sourceFile;
+        this.lineNumber = lineNumber;
+        this.sid = sid;
+        this.logLevel = logLevel;
     }
 
-    public String getType() {
-        return type;
+    public String getMessage() {
+        return message;
     }
 
-    public Long getTimestamp() {
-        return timestamp;
+    public String getSourceFile() {
+        return sourceFile;
     }
 
-    public LoggingEventContext getContext() {
-        return context;
+    public Long getLineNumber() {
+        return lineNumber;
+    }
+
+    public Long getSid() {
+        return sid;
+    }
+
+    public String getLogLevel() {
+        return logLevel;
     }
 }

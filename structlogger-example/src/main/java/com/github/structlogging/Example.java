@@ -118,7 +118,7 @@ public class Example {
                 .log();
 
         anotherContextStructLog.info("Event with context")
-                .context("ahoj")
+                .contextValue("ahoj")
                 .log();
 
         structLog.info("Block removal for dataNode from PENDING_UNCACHED - it was uncached by the dataNode")

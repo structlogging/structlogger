@@ -35,6 +35,6 @@ import com.github.structlogging.annotation.VarContextProvider;
 public interface AnotherContext extends VariableContext {
 
     @Var
-    AnotherContext context(String context);
+    AnotherContext contextValue(String context);
 
 }

@@ -58,15 +58,18 @@ logger.info("Event with double={} and boolean={}")
 
 this structured log statement will generate json like this:
 ```json
-{ 
-        "message":"Event with double=1.2 and boolean=false",
-        "sourceFile":"com.github.structlogging.Example",
-        "lineNumber":37,
-        "type":"auto.Event677947de",
-        "sid":1,
-        "logLevel":"INFO",
-        "varDouble":1.2,
-        "varBoolean":false
+{
+  "type":"edu.TestEvent",
+  "timestamp":1524037512388,
+  "context":{
+    "message":"Event with double=1.2 and boolean=false",
+    "sourceFile":"auto.Event677947de",
+    "lineNumber":66,
+    "sid":1,
+    "logLevel":"INFO"
+  },
+  "varDouble":1.2,
+  "varBoolean":false
 }
 ```
 
@@ -82,13 +85,17 @@ Beware that you cannot pass String containing white spaces or new lines, such St
 this will generate event like this:
 ```json
 {
-        "message":"Event with double=1.2 and boolean=false",
-        "sourceFile":"com.github.structlogging.Example",
-        "lineNumber":24,
-        "type":"edu.TestEvent",
-        "sid":1,
-        "varDouble":1.2,
-        "varBoolean":false
+  "type":"edu.TestEvent",
+  "timestamp":1524037512388,
+  "context":{
+    "message":"Event with double=1.2 and boolean=false",
+    "sourceFile":"com.github.structlogging.Example",
+    "lineNumber":66,
+    "sid":1,
+    "logLevel":"INFO"
+  },
+  "varDouble":1.2,
+  "varBoolean":false
 }
 ```
 
@@ -115,26 +122,32 @@ will create json schema `${schemasRoot}/schemas/events/edu/TestEvent.json`
   "description" : "Event with double={} and boolean={}",
   "title" : "edu.TestEvent",
   "properties" : {
-    "message" : {
-      "type" : "string"
-    },
-    "sourceFile" : {
-      "type" : "string"
-    },
-    "lineNumber" : {
-      "type" : "integer"
-    },
     "type" : {
-      "type" : "string"
-    },
-    "sid" : {
-      "type" : "integer"
-    },
-    "logLevel" : {
       "type" : "string"
     },
     "timestamp" : {
       "type" : "integer"
+    },
+    "context" : {
+      "type" : "object",
+      "id" : "urn:jsonschema:com:github:structlogging:LoggingEventContext",
+      "properties" : {
+        "message" : {
+          "type" : "string"
+        },
+        "sourceFile" : {
+          "type" : "string"
+        },
+        "lineNumber" : {
+          "type" : "integer"
+        },
+        "sid" : {
+          "type" : "integer"
+        },
+        "logLevel" : {
+          "type" : "string"
+        }
+      }
     },
     "varDouble" : {
       "type" : "number"

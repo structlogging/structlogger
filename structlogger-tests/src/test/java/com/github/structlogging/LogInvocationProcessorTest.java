@@ -30,13 +30,7 @@ package com.github.structlogging;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 
 import com.github.structlogging.annotation.LoggerContext;
@@ -131,9 +125,16 @@ public class LogInvocationProcessorTest {
         final LoggingEvent testEvent = callback.getLoggingEventList().get(0);
 
         assertThat(testEvent.getType(), is(equalTo("structlogger.test.TestEvent")));
-        assertThat(testEvent.getLogLevel(), is(equalTo("INFO")));
-        assertThat(testEvent.getMessage(), is(equalTo("test")));
-        assertThat(testEvent.getTimestamp(), is(notNullValue()));
+        assertThat(testEvent.getTimestamp(), is(not(0)));
+
+        assertThat(testEvent.getContext(), is(notNullValue()));
+        // LINE NUMBER OF STRUCTLOGGER STATEMENT may change if you update tests, so fix this value accordingly
+        assertThat(testEvent.getContext().getLineNumber(), is(equalTo(118L)));
+
+        assertThat(testEvent.getContext().getSourceFile(), is(LogInvocationProcessorTest.class.getCanonicalName()));
+        assertThat(testEvent.getContext().getLogLevel(), is(equalTo("INFO")));
+        assertThat(testEvent.getContext().getMessage(), is(equalTo("test")));
+        assertThat(testEvent.getContext().getSid(), is(not(0)));
 
         assertThat(testEvent.getClass().getPackage().getName(), is(equalTo("structlogger.test")));
         assertThat(testEvent.getClass().getSimpleName(), is(equalTo("TestEvent")));
@@ -177,7 +178,7 @@ public class LogInvocationProcessorTest {
 
         final List<LoggingEvent> eventList = callback.getLoggingEventList();
         for (int i = 0; i < eventList.size() - 1; i++) {
-            assertThat(eventList.get(i).getSid() + 1, is(equalTo(eventList.get(i + 1).getSid())));
+            assertThat(eventList.get(i).getContext().getSid() + 1, is(equalTo(eventList.get(i + 1).getContext().getSid())));
         }
     }
 
@@ -228,7 +229,7 @@ public class LogInvocationProcessorTest {
 
         assertThat(callback.getLoggingEventList(), hasSize(6));
 
-        assertThat(callback.getLoggingEventList().stream().map(LoggingEvent::getLogLevel).collect(Collectors.toList()),
+        assertThat(callback.getLoggingEventList().stream().map(e-> e.getContext().getLogLevel()).collect(Collectors.toList()),
                 is(hasItems("INFO", "WARN", "ERROR", "TRACE", "DEBUG", "AUDIT")));
     }
 
@@ -241,7 +242,7 @@ public class LogInvocationProcessorTest {
 
         assertThat(callback.getLoggingEventList(), hasSize(1));
 
-        assertThat(callback.getLoggingEventList().get(0).getMessage(), is(equalTo("parameter1=1 parameter2=true")));
+        assertThat(callback.getLoggingEventList().get(0).getContext().getMessage(), is(equalTo("parameter1=1 parameter2=true")));
     }
 
     @Test
