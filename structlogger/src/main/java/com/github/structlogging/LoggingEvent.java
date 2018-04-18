@@ -29,7 +29,7 @@
 package com.github.structlogging;
 
 /**
- * All generated logging events should extend this class
+ * All generated logging events should extend this class, this class contains common attributes of all logging events
  * All changes made to this class should be reflected in LogInvocationScanner and POJOService or you risk incorrect behaviour of processor
  */
 public class LoggingEvent {
