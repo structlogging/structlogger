@@ -133,6 +133,9 @@ will create json schema `${schemasRoot}/schemas/events/edu/TestEvent.json`
     "logLevel" : {
       "type" : "string"
     },
+    "timestamp" : {
+      "type" : "integer"
+    },
     "varDouble" : {
       "type" : "number"
     },

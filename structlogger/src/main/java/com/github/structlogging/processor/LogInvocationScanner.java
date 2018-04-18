@@ -415,6 +415,23 @@ public class LogInvocationScanner extends TreePathScanner<Object, ScannerParams>
                 List.nil())
         );
         listBuffer.add(treeMaker.Literal(level));
+        listBuffer.add(treeMaker.Apply(
+                com.sun.tools.javac.util.List.nil(),
+                treeMaker.Select(
+                        treeMaker.Select(
+                                treeMaker.Ident(
+                                        names.fromString(
+                                                System.class.getPackage().getName()
+                                        )
+                                ),
+                                names.fromString(
+                                        System.class.getSimpleName()
+                                )
+                        ),
+                        names.fromString("currentTimeMillis")
+                ),
+                List.nil())
+        );
         addVariablesToBuffer(usedVariables, listBuffer);
 
         final JCTree.JCNewClass jcNewClass = treeMaker.NewClass(

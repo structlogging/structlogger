@@ -133,6 +133,7 @@ public class LogInvocationProcessorTest {
         assertThat(testEvent.getType(), is(equalTo("structlogger.test.TestEvent")));
         assertThat(testEvent.getLogLevel(), is(equalTo("INFO")));
         assertThat(testEvent.getMessage(), is(equalTo("test")));
+        assertThat(testEvent.getTimestamp(), is(notNullValue()));
 
         assertThat(testEvent.getClass().getPackage().getName(), is(equalTo("structlogger.test")));
         assertThat(testEvent.getClass().getSimpleName(), is(equalTo("TestEvent")));

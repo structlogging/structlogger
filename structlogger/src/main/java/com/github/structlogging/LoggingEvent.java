@@ -39,14 +39,21 @@ public class LoggingEvent {
     private final String type;
     private final Long sid;
     private final String logLevel;
+    private final Long timestamp;
 
-    public LoggingEvent(final String message, final String sourceFile, final Long lineNumber, final String type, final Long sid, final String logLevel) {
+    public LoggingEvent(final String message,
+                        final String sourceFile,
+                        final Long lineNumber,
+                        final String type,
+                        final Long sid,
+                        final String logLevel, Long timestamp) {
         this.message = message;
         this.sourceFile = sourceFile;
         this.lineNumber = lineNumber;
         this.type = type;
         this.sid = sid;
         this.logLevel = logLevel;
+        this.timestamp = timestamp;
     }
 
     public String getMessage() {
@@ -71,5 +78,9 @@ public class LoggingEvent {
 
     public String getLogLevel() {
         return logLevel;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
     }
 }
