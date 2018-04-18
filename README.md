@@ -98,11 +98,8 @@ this will generate event like this:
   "varBoolean":false
 }
 ```
-
-and this json will logged using *slf4j* logging API, implementation of this API should be provided by your project (like logback or log4j)
-
-this structured event is send as message to implementation of *slf4j* logging API
- 
+Logging events such as these are send to the specified `LoggingCallback` implementation to correct method representing log level
+on which event was send (in this example it is `INFO`)
 ## Event json schemas
 For each generated structured logging event there is corresponding json schema created during compilation on path specified by compiler argument `schemasRoot` in folder `schemas/events` and each event with namespace is nested in corresponding folder,
 
