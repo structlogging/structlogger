@@ -14,7 +14,7 @@ public class LoggerContextAnnotationParamDiffers {
 
     public void test() {
         defaultLog.info("Should not compile")
-                .context("should really not compile")
+                .contextValue("should really not compile")
                 .log();
     }
 }

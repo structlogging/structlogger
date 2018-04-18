@@ -3,9 +3,9 @@ import com.github.structlogging.annotation.Var;
 import com.github.structlogging.annotation.VarContextProvider;
 
 @VarContextProvider
-public interface AnotherContext extends VariableContext {
+public interface ContextWithForbiddenName extends VariableContext {
 
     @Var
-    AnotherContext contextValue(String context);
+    ContextWithForbiddenName context(String context);
 
 }

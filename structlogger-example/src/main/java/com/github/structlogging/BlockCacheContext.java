@@ -50,9 +50,6 @@ public interface BlockCacheContext extends VariableContext {
     BlockCacheContext reason(String reason);
 
     @Var
-    BlockCacheContext context(int context);
-
-    @Var
     BlockCacheContext object(Test test);
 
 }

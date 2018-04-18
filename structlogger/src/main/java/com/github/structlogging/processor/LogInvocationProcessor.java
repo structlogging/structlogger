@@ -30,6 +30,7 @@ package com.github.structlogging.processor;
 
 import static java.lang.String.format;
 
+import com.github.structlogging.LoggingEvent;
 import com.github.structlogging.StructLogger;
 import com.github.structlogging.VariableContext;
 import com.github.structlogging.annotation.VarContextProvider;
@@ -252,10 +253,14 @@ public class LogInvocationProcessor extends AbstractProcessor {
                         .collect(
                                 Collectors.toList()
                         );
+
+                List<String> loggingEventFieldNames =
+                        Arrays.stream(LoggingEvent.class.getDeclaredFields()).map(e -> e.getName()).collect(Collectors.toList());
                 if (
                         simpleName.contentEquals("log") || //should not have method with name log
                         logLevelsMethodNames.stream().anyMatch(simpleName::contentEquals) ||
-                        logEventMethodNames.stream().anyMatch(simpleName::contentEquals)
+                        logEventMethodNames.stream().anyMatch(simpleName::contentEquals) ||
+                        loggingEventFieldNames.stream().anyMatch(simpleName::contentEquals)
                    )
                 {
                     messager.printMessage(

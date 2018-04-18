@@ -304,4 +304,37 @@ public class LogInvocationProcessorCompilationTest {
                 "schemasRoot compiler argument is not set, no schemas will be created"
         );
     }
+
+    @Test
+    public void shouldNotCompileVarContextHasContextVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("UsageOfContextWithForbiddenName.java"),
+                                JavaFileObjects.forResource("ContextWithForbiddenName.java"));
+
+        assertThat(compilation).hadErrorContaining("ContextWithForbiddenName interface cannot have method named context");
+    }
+
+    @Test
+    public void shouldNotCompileVarContextHasTimestampVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("UsageOfContextWithForbiddenName2.java"),
+                                JavaFileObjects.forResource("ContextWithForbiddenName2.java"));
+
+        assertThat(compilation).hadErrorContaining("ContextWithForbiddenName2 interface cannot have method named timestamp");
+    }
+
+    @Test
+    public void shouldNotCompileVarContextHasTypeVar() {
+        final Compilation compilation =
+                javac()
+                        .withProcessors(new LogInvocationProcessor())
+                        .compile(JavaFileObjects.forResource("UsageOfContextWithForbiddenName3.java"),
+                                JavaFileObjects.forResource("ContextWithForbiddenName3.java"));
+
+        assertThat(compilation).hadErrorContaining("ContextWithForbiddenName3 interface cannot have method named type");
+    }
 }
