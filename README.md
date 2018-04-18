@@ -59,11 +59,11 @@ logger.info("Event with double={} and boolean={}")
 this structured log statement will generate json like this:
 ```json
 {
-  "type":"edu.TestEvent",
+  "type":"auto.Event677947de",
   "timestamp":1524037512388,
   "context":{
     "message":"Event with double=1.2 and boolean=false",
-    "sourceFile":"auto.Event677947de",
+    "sourceFile":"com.github.structlogging.Example",
     "lineNumber":66,
     "sid":1,
     "logLevel":"INFO"
@@ -90,8 +90,8 @@ this will generate event like this:
   "context":{
     "message":"Event with double=1.2 and boolean=false",
     "sourceFile":"com.github.structlogging.Example",
-    "lineNumber":66,
-    "sid":1,
+    "lineNumber":71,
+    "sid":2,
     "logLevel":"INFO"
   },
   "varDouble":1.2,

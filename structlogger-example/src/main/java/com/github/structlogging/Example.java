@@ -66,6 +66,11 @@ public class Example {
         defaultLog.info("Event with double={} and boolean={}")
                 .varDouble(1.2)
                 .varBoolean(false)
+                .log();
+
+        defaultLog.info("Event with double={} and boolean={}")
+                .varDouble(1.2)
+                .varBoolean(false)
                 .log("edu.TestEvent");
 
         defaultLog.info("Event with double={} and boolean={} and double={} and double={}")
