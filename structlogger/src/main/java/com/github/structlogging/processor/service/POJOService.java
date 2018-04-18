@@ -152,7 +152,7 @@ public class POJOService {
         constructorBuilder.addParameter(TypeName.get(String.class), "type", Modifier.FINAL);
         constructorBuilder.addParameter(TypeName.LONG, "sid", Modifier.FINAL);
         constructorBuilder.addParameter(TypeName.get(String.class), "logLevel", Modifier.FINAL);
-        constructorBuilder.addParameter(TypeName.get(Long.class), "timestamp", Modifier.FINAL);
+        constructorBuilder.addParameter(TypeName.LONG, "timestamp", Modifier.FINAL);
         constructorBuilder.addCode("super(message,sourceFile,lineNumber,type,sid,logLevel,timestamp);");
     }
 
