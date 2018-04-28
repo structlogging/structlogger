@@ -35,14 +35,14 @@ public class LoggingEventContext {
 
     private final String message;
     private final String sourceFile;
-    private final Long lineNumber;
-    private final Long sid;
+    private final long lineNumber;
+    private final long sid;
     private final String logLevel;
 
     public LoggingEventContext(final String message,
                                final String sourceFile,
-                               final Long lineNumber,
-                               final Long sid,
+                               final long lineNumber,
+                               final long sid,
                                final String logLevel) {
         this.message = message;
         this.sourceFile = sourceFile;
@@ -59,11 +59,11 @@ public class LoggingEventContext {
         return sourceFile;
     }
 
-    public Long getLineNumber() {
+    public long getLineNumber() {
         return lineNumber;
     }
 
-    public Long getSid() {
+    public long getSid() {
         return sid;
     }
 

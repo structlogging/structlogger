@@ -34,16 +34,16 @@ package com.github.structlogging;
  */
 public class LoggingEvent {
     private final String type;
-    private final Long timestamp;
+    private final long timestamp;
     private final LoggingEventContext context;
 
     public LoggingEvent(final String message,
                         final String sourceFile,
-                        final Long lineNumber,
+                        final long lineNumber,
                         final String type,
-                        final Long sid,
+                        final long sid,
                         final String logLevel,
-                        final Long timestamp) {
+                        final long timestamp) {
         this.type = type;
         this.timestamp = timestamp;
         this.context = new LoggingEventContext(message, sourceFile, lineNumber, sid, logLevel);
@@ -53,7 +53,7 @@ public class LoggingEvent {
         return type;
     }
 
-    public Long getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
