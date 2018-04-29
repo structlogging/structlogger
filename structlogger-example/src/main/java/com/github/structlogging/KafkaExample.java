@@ -38,6 +38,9 @@ import org.apache.kafka.common.serialization.LongSerializer;
 
 import java.util.Properties;
 
+/**
+ * Example usage of StructLogger Kafka integration using EventTypeAwareKafkaCallback
+ */
 public class KafkaExample {
 
     @LoggerContext(context = AuditContext.class)

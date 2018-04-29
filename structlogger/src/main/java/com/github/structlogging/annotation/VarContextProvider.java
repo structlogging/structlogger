@@ -42,5 +42,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.TYPE})
 public @interface VarContextProvider {
+
+    //whether parametrization is enforced on log message, set true to enforce parametrization
     boolean parametrization() default false;
 }

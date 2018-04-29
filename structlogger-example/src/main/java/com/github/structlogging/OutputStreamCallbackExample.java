@@ -30,6 +30,9 @@ package com.github.structlogging;
 
 import com.github.structlogging.annotation.LoggerContext;
 
+/**
+ * Example usage of StructLogger logging callback of OutputStreamCallback
+ */
 public class OutputStreamCallbackExample {
 
     @LoggerContext(context = BlockCacheContext.class)

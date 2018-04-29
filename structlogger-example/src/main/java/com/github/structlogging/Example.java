@@ -32,6 +32,9 @@ import com.github.structlogging.slf4j.Slf4jLoggingCallback;
 import com.github.structlogging.annotation.LoggerContext;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Example usage of StructLogger
+ */
 public class Example {
 
     @LoggerContext(context = DefaultContext.class)
