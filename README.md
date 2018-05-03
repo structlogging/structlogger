@@ -80,7 +80,7 @@ logger.info("Event with double={} and boolean={}")
       .varBoolean(false)
       .log("edu.TestEvent");
 ```
-Beware that you cannot pass String containing white spaces or new lines, such String will generate compilation error
+Beware that you cannot pass String containing white spaces or new lines, such String will generate compilation error. This String literal has to be in format FQDN in Java (for example `edu.TestEvent`, `cz.muni.TestEvent`, `TestEvent`, ...)  
 
 this will generate event like this:
 ```json
