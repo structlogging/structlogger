@@ -1,8 +1,10 @@
+## Examples of outputs
+
 structlogger-parametrized:
-{"message":"Event with double=1.2 and boolean=false","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":95,"type":"structlogger.generated.Event677947de","sid":2,"logLevel":"INFO","varDouble":1.2,"varBoolean":false}
+{"type":"structlogger.generated.Event677947de","timestamp":1524040294471,"context":{"message":"Event with double=1.2 and boolean=false","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":82,"sid":1,"logLevel":"INFO"},"varDouble":1.2,"varBoolean":false}
 
 structlogger:
-{"message":"Event with double and boolean","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":178,"type":"structlogger.generated.Event2c56200e","sid":1,"logLevel":"INFO","varDouble":1.2,"varBoolean":false}
+{"type":"structlogger.generated.Event2c56200e","timestamp":1524040294529,"context":{"message":"Event with double and boolean","sourceFile":"com.github.structlogging.Slf4jToFileBenchmark","lineNumber":165,"sid":2,"logLevel":"INFO"},"varDouble":1.2,"varBoolean":false}
 
 notstructured:
 23:59:18.095 INFO  Slf4jToFileBenchmark2 - log double=1.2 and boolean=false
